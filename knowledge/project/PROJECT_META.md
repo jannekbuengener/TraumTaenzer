@@ -1,0 +1,23 @@
+# PROJECT_META
+
+- Projektname: Traumtänzer (Modus Mono)
+- Ziel: Private, sanfte 1:1‑Membership als Traum‑Erlebnisraum für Selbsterkenntnis durch Erfahrung; Langzeit‑Mustererkennung wird subtil im Erlebnis sichtbar (kein Dashboard, keine Scores).
+- Nicht-Ziele:
+  - Keine Therapie, Diagnose oder Heilversprechen (keine medizinische Zweckbestimmung).
+  - Keine autoritäre „Traumdeutung als Wahrheit“; nur Hypothesen/Fragen/Erlebnis.
+  - Kein manipulativer Companion/Bindungs‑Design; keine Abhängigkeitsmechaniken.
+  - Kein datenhungriges Tracking; Datenminimierung/Privacy-by-Default.
+- Owner: Jannek Büngener
+- Risiken:
+  - Trigger-/Belastungsrisiko (Trauma, Dissoziation, Realitätsdrift) → Exit/Safeword/Notfall-Flow.
+  - Fehlinterpretation als Therapie/medizinisches Produkt → Claim-Framework + klare TOS/Disclaimer.
+  - GDPR Art. 9 Sonderkategorien in Traumtexten → DPIA, Retention, Löschung, minimale Speicherung.
+  - EU AI Act Transparenz/Disclosure + verbotene Manipulation/Vulnerabilitätsausnutzung → Guardrails/Policy.
+  - Halluzination/Overreach der KI (falsche Gewissheiten) → Guided discovery, Unsicherheits-UX, Red-Team.
+- Definition of Done:
+  - P0: Claim-Framework (Do/Don’t-Claims) + Nicht‑Therapie‑Positionierung schriftlich fixiert.
+  - P0: Privacy-by-Design Paket (DPIA Draft, Retention, Export/Löschung, Subprozessor-Liste).
+  - P0: Safety Playbook (Exit/Safeword, Trigger-Handling, Notfall-Templates, Escalation Path).
+  - P1: UX‑Prototyp „Sanfte Begegnung“ (Entry → Szene → Exit) + kleine Pilotgruppe (30–60).
+  - P1: Guardrails/Content Policy (keine Diagnosen, keine absoluten Deutungen, keine Manipulation).
+  - P2: Light/Core Pricing & Packaging (Light kostenlos, Core ca. 39€/Monat als Hypothese) validiert.
