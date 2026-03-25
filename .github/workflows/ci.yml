@@ -2,19 +2,38 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
+
+# Zweck: Strukturprüfung für ein dokumentations- und governance-first Repo.
+# Kein Build, kein Test – das Repo enthält keinen Runtime-Code.
+# Dieser Check schlägt fehl, wenn Pflicht-Governance-Dateien fehlen oder leer sind.
 
 jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup (placeholder)
+
+      - name: Pflichtdateien prüfen
         run: |
-          echo "Set up your language/runtime here"
-      - name: Lint (placeholder)
-        run: |
-          echo "Run lint here"
-      - name: Test (placeholder)
-        run: |
-          echo "Run tests here"
+          set -e
+          FAILED=0
+          for f in \
+            README.md \
+            CODEOWNERS \
+            CONTRIBUTING.md \
+            SECURITY.md \
+            knowledge/governance/CONSTITUTION.md \
+            knowledge/governance/GOVERNANCE.md \
+            knowledge/governance/AGENT_POLICY.md \
+            knowledge/architecture/ARCHITECTURE_OVERVIEW.md \
+            knowledge/SYSTEM_INVARIANTS.md \
+            knowledge/project/PROJECT_META.md; do
+            if [ -s "$f" ]; then
+              echo "OK: $f"
+            else
+              echo "FEHLER: $f fehlt oder ist leer"
+              FAILED=1
+            fi
+          done
+          exit $FAILED
