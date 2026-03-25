@@ -19,6 +19,7 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 - [GUARDRAILS_CONTENT_POLICY](project/GUARDRAILS_CONTENT_POLICY.md) – Operative Guard-Kriterien: Input/Output-Guards, Session-Transitions, Safe-State-Mapping, Logging-Grenzen, Red-Flag-Liste
 - [KERNEL_GUARD_CONTRACTS](architecture/KERNEL_GUARD_CONTRACTS.md) – Technische Implementierungsvorlage: Zustandsmodell, Event-Contracts, Guard-Decision-Klassen, Adapter-Grenzen, fail-closed-Pfade
 - [TEXT_FIRST_RUNTIME_FLOW](architecture/TEXT_FIRST_RUNTIME_FLOW.md) – Laufzeitfluss text-first MVP: Happy Path, Payloads, Constraint-Flags, neutrale Antwortklassen, Safe-State-Pfade, Sequenzablauf
+- [PROMPT_CONSTRUCTION_RULES](architecture/PROMPT_CONSTRUCTION_RULES.md) – Prompt-Konstruktion und Redaction vor LLM-Adapter: zulässige/verbotene Slots, Redaction-Regeln, Constraint-Flag-Handling, No-LLM-Fälle, fail-closed
 
 ## UX-Canon (P1)
 
