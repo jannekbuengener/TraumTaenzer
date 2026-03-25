@@ -20,5 +20,7 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 ## Weitere Schlüsseldokumente
 
 - [PROJECT_META](project/PROJECT_META.md) – Projektdefinition, Nicht-Ziele, Risiken, P0/P1/P2
+- [CURRENT_STATUS](CURRENT_STATUS.md) – Aktueller Projektstand, offene Punkte, nächste Schritte
+- [SYSTEM_INVARIANTS](SYSTEM_INVARIANTS.md) – immer geltende Invarianten (Governance, Safety, Privacy, Architecture, Claims)
+- [SYSTEM_CONTEXT](SYSTEM.CONTEXT.md) – Umgebung, Repo-Struktur, Toolchain, Constraints
 - [ACTIVE_ROADMAP](ACTIVE_ROADMAP.md) – Now / Next / Later
-- [SYSTEM_INVARIANTS](SYSTEM_INVARIANTS.md) – immer geltende Invarianten
