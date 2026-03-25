@@ -17,6 +17,10 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 - [PRIVACY_BY_DESIGN](project/PRIVACY_BY_DESIGN.md) – Datenminimierung, Datenklassen, Retention, Löschung, Export, Logging-Grenzen (P0-Canon)
 - [ARCHITECTURE_OVERVIEW](architecture/ARCHITECTURE_OVERVIEW.md) – MVP-Architektur-Canon: Kernel, Guard Layer, Adapter-Grenzen, Event-Log, fail-closed
 
+## UX-Canon (P1)
+
+- [UX_CORE_SEQUENCE](project/UX_CORE_SEQUENCE.md) – Text-first Kernsequenz für sichere Erstbegegnung: Entry, Check-in, Szene/Reflexionskern, Exit; Tonalität, verbotene Muster, UX-Prüfcheck
+
 ## Weitere Schlüsseldokumente
 
 - [PROJECT_META](project/PROJECT_META.md) – Projektdefinition, Nicht-Ziele, Risiken, P0/P1/P2
