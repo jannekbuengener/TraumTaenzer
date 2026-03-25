@@ -16,6 +16,9 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 - [SAFETY_PLAYBOOK](project/SAFETY_PLAYBOOK.md) – Safety-Prinzipien, Exit/Safeword, Trigger-Handling, Eskalationspfade
 - [PRIVACY_BY_DESIGN](project/PRIVACY_BY_DESIGN.md) – Datenminimierung, Datenklassen, Retention, Löschung, Export, Logging-Grenzen (P0-Canon)
 - [ARCHITECTURE_OVERVIEW](architecture/ARCHITECTURE_OVERVIEW.md) – MVP-Architektur-Canon: Kernel, Guard Layer, Adapter-Grenzen, Event-Log, fail-closed
+- [KERNEL_GUARD_CONTRACTS](architecture/KERNEL_GUARD_CONTRACTS.md) – Technische Implementierungsvorlage: Zustandsmodell, Event-Contracts, Guard-Decision-Klassen, Adapter-Grenzen, fail-closed-Pfade
+- [TEXT_FIRST_RUNTIME_FLOW](architecture/TEXT_FIRST_RUNTIME_FLOW.md) – Laufzeitfluss text-first MVP: Happy Path, Payloads, Constraint-Flags, neutrale Antwortklassen, Safe-State-Pfade, Sequenzablauf
+- [PROMPT_CONSTRUCTION_RULES](architecture/PROMPT_CONSTRUCTION_RULES.md) – Prompt-Konstruktion und Redaction vor LLM-Adapter: zulässige/verbotene Slots, Redaction-Regeln, Constraint-Flag-Handling, No-LLM-Fälle, fail-closed
 
 ## UX-Canon (P1)
 
