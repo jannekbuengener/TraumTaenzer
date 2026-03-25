@@ -9,7 +9,7 @@ on:
 # Dieser Check schlägt fehl, wenn Pflicht-Governance-Dateien fehlen oder leer sind.
 
 jobs:
-  structural-check:
+  ci:
     name: Repo-Strukturprüfung
     runs-on: ubuntu-latest
     steps:
