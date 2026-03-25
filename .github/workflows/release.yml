@@ -4,17 +4,21 @@ on:
     tags:
       - 'v*'
 
+# Zweck: GitHub Release bei Governance-/Dokumentations-Meilensteinen.
+# Dieses Repo hat keinen Build-Artefakt. Der Release enthält auto-generierte
+# Changenotes aus den gemergten PRs.
+# Build-Artefakte werden ergänzt, sobald Produktcode existiert.
+
 jobs:
   release:
+    name: GitHub Release erstellen
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Build (placeholder)
-        run: |
-          echo "Build artifacts here"
-      - name: Create GitHub Release
+
+      - name: GitHub Release mit Changenotes erstellen
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
