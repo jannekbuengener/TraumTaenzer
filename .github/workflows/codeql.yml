@@ -1,25 +1,21 @@
 name: CodeQL
+# Deaktiviert: Dieses Repo enthält keinen Python- oder JavaScript-Code.
+# CodeQL wird reaktiviert, sobald Produktcode hinzukommt.
+# Manuell auslösbar via Actions-Tab für Ad-hoc-Scans.
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-  schedule:
-    - cron: '15 3 * * 1'
+  workflow_dispatch:
 
 jobs:
   analyze:
+    name: CodeQL – inaktiv bis Produktcode vorhanden
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'python', 'javascript' ]
     steps:
       - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-      - uses: github/codeql-action/analyze@v3
+      - name: Kein Code zu scannen
+        run: |
+          echo "CodeQL ist für dieses Repo deaktiviert (keine Python/JS-Dateien)."
+          echo "Reaktivieren, wenn Produktcode hinzukommt."
