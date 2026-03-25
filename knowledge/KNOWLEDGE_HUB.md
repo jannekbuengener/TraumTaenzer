@@ -18,6 +18,7 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 - [ARCHITECTURE_OVERVIEW](architecture/ARCHITECTURE_OVERVIEW.md) – MVP-Architektur-Canon: Kernel, Guard Layer, Adapter-Grenzen, Event-Log, fail-closed
 - [GUARDRAILS_CONTENT_POLICY](project/GUARDRAILS_CONTENT_POLICY.md) – Operative Guard-Kriterien: Input/Output-Guards, Session-Transitions, Safe-State-Mapping, Logging-Grenzen, Red-Flag-Liste
 - [KERNEL_GUARD_CONTRACTS](architecture/KERNEL_GUARD_CONTRACTS.md) – Technische Implementierungsvorlage: Zustandsmodell, Event-Contracts, Guard-Decision-Klassen, Adapter-Grenzen, fail-closed-Pfade
+- [TEXT_FIRST_RUNTIME_FLOW](architecture/TEXT_FIRST_RUNTIME_FLOW.md) – Laufzeitfluss text-first MVP: Happy Path, Payloads, Constraint-Flags, neutrale Antwortklassen, Safe-State-Pfade, Sequenzablauf
 
 ## UX-Canon (P1)
 
