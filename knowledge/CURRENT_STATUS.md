@@ -6,13 +6,13 @@ Zuletzt aktualisiert: 2026-03-25
 
 ## Aktueller Stand
 
-**Branch:** `docs/modus-mono-pdf`
-**PR:** #16 offen – enthält den vollständigen Canon-Grundstock und Foundation-Scope
-**Phase:** Governance und Foundation abgeschlossen; Produktarbeit (P1) steht aus
+**Branch:** `main`
+**PRs:** #16, #17, #18 gemergt – Canon-Grundstock, Foundation-Scope und CI-Gates vollständig integriert
+**Phase:** Governance und Foundation abgeschlossen; P1-Scope aktiv (Guardrails, Pilot-Readiness)
 
 ---
 
-## Was steht (auf Branch, ausstehend Merge)
+## Was steht (auf main, gemergt)
 
 ### Governance-Canon
 - `knowledge/governance/CONSTITUTION.md` – komplett, projektspezifisch
@@ -41,27 +41,20 @@ Zuletzt aktualisiert: 2026-03-25
 
 ---
 
-## Was blockiert
-
-- **PR #16 merge:** CI-Checks müssen grün sein, Owner-Review steht aus.
-- **`knowledge/SYSTEM_INVARIANTS.md`** war bis heute leer – in diesem Run gefüllt.
-
----
-
-## Was noch offen ist (nach Merge)
+## Was noch offen ist
 
 | Punkt | Priorität | Referenz |
 |---|---|---|
-| `SYSTEM_INVARIANTS.md` befüllen | erledigt in diesem Run | – |
+| Guardrails / Content Policy aus Canon ableiten | P1 – aktiv (Issue #19) | SAFETY_PLAYBOOK, CLAIMS_FRAMEWORK |
+| Pilot-Readiness für text-first MVP definieren | P1 – aktiv (Issue #21) | PROJECT_META |
 | Provider-DPAs für externe KI-/Hosting-Dienste klären | P0 vor Produktionsstart | PRIVACY_BY_DESIGN §9 |
 | Retention-Fristen gegen konkrete Infrastruktur validieren | P0 vor Produktionsstart | PRIVACY_BY_DESIGN §6 |
-| Guardrails / Content Policy aus Safety Playbook ableiten | P1 | SAFETY_PLAYBOOK |
-| UX-Prototyp „Sanfte Begegnung" (Entry → Szene → Exit) | P1 | PROJECT_META |
-| `knowledge/ACTIVE_ROADMAP.md` aktualisieren | P1 | – |
+| Red-Team-/Prompt-Tests auf Basis Guardrails | nach Issue #19 | SAFETY_PLAYBOOK |
+| AI Act Readiness Check | vor Produktionsstart | AGENT_POLICY |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
 
 ## Nächster Schritt
 
-PR #16 mergen, sobald CI grün und Owner-Review abgeschlossen. Danach beginnt P1-Scope: Guardrails, UX-Prototyp, Roadmap.
+Guardrails/Content Policy (Issue #19) und Pilot-Readiness (Issue #21) bearbeiten. Beide Artefakte sind Voraussetzung vor erstem Nutzerkontakt.

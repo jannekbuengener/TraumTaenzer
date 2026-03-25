@@ -16,11 +16,16 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 - [SAFETY_PLAYBOOK](project/SAFETY_PLAYBOOK.md) – Safety-Prinzipien, Exit/Safeword, Trigger-Handling, Eskalationspfade
 - [PRIVACY_BY_DESIGN](project/PRIVACY_BY_DESIGN.md) – Datenminimierung, Datenklassen, Retention, Löschung, Export, Logging-Grenzen (P0-Canon)
 - [ARCHITECTURE_OVERVIEW](architecture/ARCHITECTURE_OVERVIEW.md) – MVP-Architektur-Canon: Kernel, Guard Layer, Adapter-Grenzen, Event-Log, fail-closed
+- [GUARDRAILS_CONTENT_POLICY](project/GUARDRAILS_CONTENT_POLICY.md) – Operative Guard-Kriterien: Input/Output-Guards, Session-Transitions, Safe-State-Mapping, Logging-Grenzen, Red-Flag-Liste
 - [KERNEL_GUARD_CONTRACTS](architecture/KERNEL_GUARD_CONTRACTS.md) – Technische Implementierungsvorlage: Zustandsmodell, Event-Contracts, Guard-Decision-Klassen, Adapter-Grenzen, fail-closed-Pfade
 
 ## UX-Canon (P1)
 
 - [UX_CORE_SEQUENCE](project/UX_CORE_SEQUENCE.md) – Text-first Kernsequenz für sichere Erstbegegnung: Entry, Check-in, Szene/Reflexionskern, Exit; Tonalität, verbotene Muster, UX-Prüfcheck
+
+## Ops-Artefakte
+
+- [PILOT_READINESS](ops/PILOT_READINESS.md) – Go/No-Go-Entscheidungsvorlage für ersten text-first Pilot: Voraussetzungen, No-Go-Bedingungen, Beobachtungspunkte, Stop-Kriterien, Incident-Logik
 
 ## Weitere Schlüsseldokumente
 
