@@ -2,12 +2,23 @@
 
 Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 
-## Schlüsseldokumente
+## Governance-Canon
 
-- [PROJECT_META](project/PROJECT_META.md) – Projektdefinition, Nicht-Ziele, Risiken, P0/P1/P2
+- [CONSTITUTION](governance/CONSTITUTION.md) – oberste, nicht verhandelbare Regeln; Prioritäten, Domain-Canon-Bindung, Änderungsschwelle
+- [GOVERNANCE](governance/GOVERNANCE.md) – Solo-Maintainer-Entscheidungsmodell, PR-Pflicht, Evidence-Schwellen, Canon-Konfliktlogik
+- [AGENT_POLICY](governance/AGENT_POLICY.md) – was KI-Agenten dürfen und nicht dürfen; Evidence-Pflicht, Eskalationsregeln
+- [GOVERNANCE_QUICKREF](governance/GOVERNANCE_QUICKREF.md) – einseitige operative Kurzreferenz
+- [POLICY_STACK_MINI](governance/POLICY_STACK_MINI.md) – Konflikthierarchie und Auflösungslogik
+
+## Domain-Canon (P0-bindend)
+
 - [CLAIMS_FRAMEWORK](project/CLAIMS_FRAMEWORK.md) – Zulässige/unzulässige Claims, Red Flags, Guidance
 - [SAFETY_PLAYBOOK](project/SAFETY_PLAYBOOK.md) – Safety-Prinzipien, Exit/Safeword, Trigger-Handling, Eskalationspfade
 - [PRIVACY_BY_DESIGN](project/PRIVACY_BY_DESIGN.md) – Datenminimierung, Datenklassen, Retention, Löschung, Export, Logging-Grenzen (P0-Canon)
 - [ARCHITECTURE_OVERVIEW](architecture/ARCHITECTURE_OVERVIEW.md) – MVP-Architektur-Canon: Kernel, Guard Layer, Adapter-Grenzen, Event-Log, fail-closed
+
+## Weitere Schlüsseldokumente
+
+- [PROJECT_META](project/PROJECT_META.md) – Projektdefinition, Nicht-Ziele, Risiken, P0/P1/P2
 - [ACTIVE_ROADMAP](ACTIVE_ROADMAP.md) – Now / Next / Later
 - [SYSTEM_INVARIANTS](SYSTEM_INVARIANTS.md) – immer geltende Invarianten
