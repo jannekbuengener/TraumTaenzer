@@ -16,6 +16,7 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 - [SAFETY_PLAYBOOK](project/SAFETY_PLAYBOOK.md) – Safety-Prinzipien, Exit/Safeword, Trigger-Handling, Eskalationspfade
 - [PRIVACY_BY_DESIGN](project/PRIVACY_BY_DESIGN.md) – Datenminimierung, Datenklassen, Retention, Löschung, Export, Logging-Grenzen (P0-Canon)
 - [ARCHITECTURE_OVERVIEW](architecture/ARCHITECTURE_OVERVIEW.md) – MVP-Architektur-Canon: Kernel, Guard Layer, Adapter-Grenzen, Event-Log, fail-closed
+- [GUARDRAILS_CONTENT_POLICY](project/GUARDRAILS_CONTENT_POLICY.md) – Operative Guard-Kriterien: Input/Output-Guards, Session-Transitions, Safe-State-Mapping, Logging-Grenzen, Red-Flag-Liste
 
 ## UX-Canon (P1)
 
