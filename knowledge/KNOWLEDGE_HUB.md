@@ -21,6 +21,10 @@ Kurze, belegte Entscheidungen + Links (intern) zu Evidence/Logs.
 
 - [UX_CORE_SEQUENCE](project/UX_CORE_SEQUENCE.md) – Text-first Kernsequenz für sichere Erstbegegnung: Entry, Check-in, Szene/Reflexionskern, Exit; Tonalität, verbotene Muster, UX-Prüfcheck
 
+## Ops-Artefakte
+
+- [PILOT_READINESS](ops/PILOT_READINESS.md) – Go/No-Go-Entscheidungsvorlage für ersten text-first Pilot: Voraussetzungen, No-Go-Bedingungen, Beobachtungspunkte, Stop-Kriterien, Incident-Logik
+
 ## Weitere Schlüsseldokumente
 
 - [PROJECT_META](project/PROJECT_META.md) – Projektdefinition, Nicht-Ziele, Risiken, P0/P1/P2
