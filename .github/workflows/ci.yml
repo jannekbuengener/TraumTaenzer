@@ -28,7 +28,10 @@ jobs:
             knowledge/governance/AGENT_POLICY.md \
             knowledge/architecture/ARCHITECTURE_OVERVIEW.md \
             knowledge/SYSTEM_INVARIANTS.md \
-            knowledge/project/PROJECT_META.md; do
+            knowledge/project/PROJECT_META.md \
+            knowledge/project/CLAIMS_FRAMEWORK.md \
+            knowledge/project/SAFETY_PLAYBOOK.md \
+            knowledge/project/PRIVACY_BY_DESIGN.md; do
             if [ -s "$f" ]; then
               echo "OK: $f"
             else
