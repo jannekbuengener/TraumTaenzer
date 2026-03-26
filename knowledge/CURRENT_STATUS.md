@@ -63,7 +63,7 @@ Zuletzt aktualisiert: 2026-03-26
 
 | Punkt | Priorität | Referenz |
 |---|---|---|
-| Konkreten externen Providerpfad per `PROVIDER_DPA_INPUT_MATRIX.md` positiv bewerten | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §6–§8 |
+| Nach negativer Bewertung des Azure-OpenAI-Arbeitskandidaten einen live-tauglichen LLM-Pfad belastbar klären oder die Microsoft-Blocker für Retention, Subprocessor und Löschpfad schließen | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Retention-, Lösch- und Event-Storage-Enforcement gegen konkrete Infrastruktur validieren | P0 vor Live-Nutzer | DATA_LIFECYCLE §6, DEPLOYMENT_ENVELOPE §7 |
 | Red-Team-/Prompt-Tests auf Basis Guardrails + Prompt-Rules | aktiv | GUARDRAILS_CONTENT_POLICY, PROMPT_CONSTRUCTION_RULES |
 | Pseudonymisierungs-/Session-ID-Entscheid vor Produktionsstart konkretisieren | vor Produktionsstart | DATA_LIFECYCLE §8 |
@@ -73,4 +73,8 @@ Zuletzt aktualisiert: 2026-03-26
 
 ## Nächster Schritt
 
-Konkreten Providerpfad per `PROVIDER_DPA_INPUT_MATRIX.md` bewerten und parallel Retention-/Lösch-Enforcement gegen die gewählte Infrastruktur absichern. Red-Team-/Prompt-Tests sind unblocked und bilden die nächste reale Evidence-Kante.
+Auf Basis der nun dokumentierten Negativbewertung des Azure-OpenAI-Pfads
+entweder einen alternativen konkreten LLM-Pfad bewerten oder zusätzliche,
+produktnahe Microsoft-Nachweise zu Retention, Subprocessor-Lage und
+Löschpfad beschaffen. Parallel bleibt das Retention-/Lösch-Enforcement gegen
+die konkrete Infrastruktur ein P0-Block vor Live-Nutzern.
