@@ -94,10 +94,27 @@ Diese Aussagen sind verboten, unabhängig von Kontext oder Formulierungsvariante
 
 ## 6. KI-Transparenz
 
-- Das System ist KI-gestützt. Dieser Charakter muss in Onboarding und Disclaimern explizit genannt werden.
-- Keine Imitation menschlicher Wärme in einem Maß, das die KI-Natur verschleiert.
-- KI-generierte Inhalte (Fragen, Rahmungen, Spiegelungen) sind Angebote, keine Aussagen mit Wahrheitsanspruch.
-- Transparenz-, Disclosure- und Kennzeichnungspflichten sind bei späterer Produktisierung gesondert zu prüfen. Dieses Dokument trifft dazu keine abschließenden Rechtsaussagen.
+### Disclosure-Minimum im MVP
+
+- Das System ist KI-gestützt. Dieser Charakter muss im Entry explizit benannt werden.
+- Das System ist kein Mensch, kein Therapeut, kein Coach, kein Krisendienst und kein Notfallangebot.
+- KI-generierte Inhalte (Fragen, Rahmungen, Spiegelungen) sind Angebote ohne Wahrheitsanspruch über innere Zustände.
+- Relevante Datenverarbeitung wird nicht verschleiert; Privacy- und Provider-Hinweise müssen für den MVP auffindbar und mit `PRIVACY_BY_DESIGN.md` sowie `PROVIDER_DPA_INPUT_MATRIX.md` konsistent sein.
+- Dieser Rahmen ist operativ gemeint und trifft keine abschließenden Rechtsaussagen.
+
+### Sichtbarkeit entlang des Nutzerpfads
+
+- Transparenz darf nicht nur im Footer, in AGB oder in einem einmaligen Disclaimer auftauchen.
+- Sie muss im Entry sichtbar sein und an risikorelevanten Stellen erneut greifbar werden: im Check-in bei Unsicherheit oder Belastung, im Reflexionskern bei Deutungsnähe, in Safety-/Referral-Pfaden und beim Exit.
+- Konkrete Formulierungs- und Platzierungsregeln liegen in `UX_CORE_SEQUENCE.md` und `SAFETY_PLAYBOOK.md`.
+
+### Unzulässige Transparenz- und Framing-Muster
+
+- Versteckte Anthropomorphisierung oder Warmth-Imitation, die den KI-Charakter verdeckt
+- Autoritätsinszenierung oder Zustandsgewissheit wie „ich weiß, was das über dich sagt"
+- Künstliche Dringlichkeit, Knappheit oder Exit-Druck wie „bleib jetzt dran" oder „geh noch nicht"
+- Companion-/Bindungsrhetorik oder Verfügbarkeitsversprechen
+- Suggerierte Gewissheit, Wahrheits- oder Erkenntnisansprüche über innere Zustände
 
 ---
 
