@@ -63,6 +63,7 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 |---|---|---|
 | Session-Inhalte ephemer (kein Default-Speichern) | Technische Lösch-Automatisierung vollständig implementiert | Session-Inhalte werden als Default persistiert |
 | Safety-/Guard-Event-Logs enthalten nur Typ + Zeitstempel, keinen Content | Vollständig geprüfte Provider-DPAs | Content-Logging als Default |
+| Runtime-Events tragen nur opaque/pseudonyme `session_id`; keine direkte Nutzeridentität und keine stille Session↔Access-Korrelation | Vollständige Auth-/IAM-Architektur | Event-Log, Debug- oder Ops-Pfad verknüpft Runtime-Ereignisse mit Account-/Access-Daten ohne dokumentierten Minimalzweck |
 | Löschpfad konzeptuell definiert | Vollständige DPIA | Kein definierter Löschpfad |
 | Zielkomponente für Event-Storage/Logs ist konkret benannt; 90-/30-Tage-Retention, automatische Löschung und Backup-/Nebenlogik dieses Pfads sind technisch belastbar beschrieben | Vollständige Audit-/Observability-Infrastruktur | Offener Event-Storage-/Hosting-Pfad oder nur behauptetes Retention-Enforcement |
 | Pilot-Teilnehmer wissen, dass das System KI-gestützt ist und welche Daten verarbeitet werden | Vollständige Datenschutzerklärung in Endform | Keine Information der Teilnehmer über Datenverarbeitung |

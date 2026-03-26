@@ -1,6 +1,6 @@
 # PRIVACY_BY_DESIGN
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-25
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-26
 
 ---
 
@@ -48,6 +48,12 @@ Daten, die an externe Dienste (KI-Provider, Infrastruktur, Kommunikationsanbiete
 | **Governance-Artefakte** | Dieses Repo, Policies, Protokolle | Intern | Versioniert, kein Personenbezug |
 
 **Trennungsregel:** Session-Inhalte, Safety-Events und Nutzungsmetadaten werden nicht gemeinsam in einem Datensatz gespeichert. Kein Linking ohne expliziten, dokumentierten Zweck.
+
+**MVP-Entscheidung für Session-Bezug:** `session_id` ist eine opaque, zufällige
+Pseudonym-ID pro Session, kein Nutzerpseudonym über mehrere Sessions hinweg. Sie
+darf Runtime-Ereignisse derselben Session korrelieren, aber nicht still mit
+Account-/Access-Daten, E-Mail, Pilotlisten, Geräte- oder Analytics-Daten
+verknüpft werden.
 
 ---
 
@@ -98,6 +104,9 @@ Wenn Nutzungsstatistiken erhoben werden, dann nur aggregiert und ohne Nutzer-Ein
 - Erlaubt: Ereignistyp (Safeword, Exit, Abbruch), Zeitstempel, Session-ID (pseudonym).
 - Verboten: Auslösetext, Nutzerformulierungen, Inhaltskontext.
 - Zweck: systemische Qualitätssicherung, nicht Nutzerprofilierung.
+- Debugging ändert diese Grenze nicht: kein Join von `session_id` mit
+  Nutzeridentität, Kontaktlisten, Prompt-/Output-Rohdaten oder Support-Notizen
+  als Default-Pfad.
 
 **KI-Provider-Logs sind ein offener Prüfpunkt.**
 Was externe KI-Dienste aus übermittelten Prompts und Antworten loggen, unterliegt deren Bedingungen. Vor Produktionsstart: Prüfung der Datenverarbeitungsvereinbarungen und Prompt-Datenpolitik des Providers (→ Abschnitt 9).
@@ -136,6 +145,9 @@ Der Nutzer kann die Löschung seines Kontos und der zugehörigen persistierten N
 
 - Löschung muss ohne unverhältnismäßige Hürden erreichbar sein.
 - Bestätigung der Löschung an den Nutzer (technische Umsetzung noch zu definieren).
+- Pseudonyme Runtime-Events werden im MVP nicht über einen stillen
+  Account-Lookup gesucht oder gelöscht; ohne separaten, dokumentierten
+  Zuordnungspfad gilt für sie die Retention-/Löschlogik des Event-Storage.
 
 ### Automatische Löschung
 
@@ -165,6 +177,9 @@ Der Nutzer hat das Recht, seine eigenen Daten zu erhalten. Dieser Exportpfad mus
 - Account-Daten (E-Mail, Einstellungen).
 - Nutzungsdaten, die dem Nutzer zugeordnet sind und persistiert wurden.
 - Nicht Teil des Standard-Nutzerexports sind interne Betriebslogs und Safety-Event-Logs. Ob und in welchem Umfang solche Daten im Rahmen von Auskunftsrechten relevant werden, ist gesondert zu prüfen.
+- Reine Runtime-Events mit nur pseudonymer `session_id` sind im MVP kein
+  Standard-Exportpfad, solange kein separater, dokumentierter Zuordnungspfad
+  zu Account-/Access-Daten besteht.
 
 ### Format und Zugang
 

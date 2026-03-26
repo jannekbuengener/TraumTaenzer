@@ -66,7 +66,6 @@ Zuletzt aktualisiert: 2026-03-26
 | Nach negativer Bewertung des Azure-OpenAI-Arbeitskandidaten einen live-tauglichen LLM-Pfad belastbar klären oder die Microsoft-Blocker für Retention, Subprocessor und Löschpfad schließen | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Konkreten Pilot-Event-Storage-/Hosting-Pfad benennen; bis dahin bleibt Retention-, Lösch- und Event-Storage-Enforcement für reale Events live-blockiert | P0 vor Live-Nutzer | DATA_LIFECYCLE §6, DEPLOYMENT_ENVELOPE §7, PILOT_READINESS §3.4 |
 | Minimale Red-Team-/Prompt-Testbaseline ist kanonisch definiert; die Durchführung gegen reale Runtime inkl. Leak-/fail-closed-Nachweis bleibt offen | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
-| Pseudonymisierungs-/Session-ID-Entscheid vor Produktionsstart konkretisieren | vor Produktionsstart | DATA_LIFECYCLE §8 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
