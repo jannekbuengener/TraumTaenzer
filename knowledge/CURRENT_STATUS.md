@@ -1,14 +1,14 @@
 # CURRENT_STATUS – Traumtänzer
 
-Zuletzt aktualisiert: 2026-03-25
+Zuletzt aktualisiert: 2026-03-26
 
 ---
 
 ## Aktueller Stand
 
 **Branch:** `main`
-**PRs:** #16, #17, #18 gemergt – Canon-Grundstock, Foundation-Scope und CI-Gates vollständig integriert
-**Phase:** Governance und Foundation abgeschlossen; P1-Scope aktiv (Guardrails, Pilot-Readiness)
+**PRs:** Docs-/Spec- und Sync-PRs bis #42 gemergt – Canon-Grundstock, Frame-Artefakte und CI-Infra auf `main`
+**Phase:** Core-Canon und Frame-Artefakte gemergt; offen sind nur noch produktionsnahe P0-Kanten und Test-Evidenz
 
 ---
 
@@ -22,22 +22,40 @@ Zuletzt aktualisiert: 2026-03-25
 - `knowledge/governance/POLICY_STACK_MINI.md` – Konflikthierarchie
 
 ### Domain-Canon (P0)
-- `knowledge/project/CLAIMS_FRAMEWORK.md` – zulässige/unzulässige Claims, Red Flags
+- `knowledge/project/CLAIMS_FRAMEWORK.md` – zulässige/unzulässige Claims, Red Flags, Disclosure-Minimum
 - `knowledge/project/SAFETY_PLAYBOOK.md` – Exit-First, Safeword, Trigger-Handling
 - `knowledge/project/PRIVACY_BY_DESIGN.md` – Datensparsamkeit, Retention, Löschung
+- `knowledge/project/DATA_LIFECYCLE.md` – Datenklassen, Event-Typen, Retention-/Export-Rahmen
+- `knowledge/project/PROVIDER_DPA_INPUT_MATRIX.md` – Provider-Intake vor Live-Nutzer
 - `knowledge/architecture/ARCHITECTURE_OVERVIEW.md` – Kernel, Guards, Adapter-Grenzen, fail-closed
+
+### Content Policy & UX (P1 – gemergt)
+- `knowledge/project/GUARDRAILS_CONTENT_POLICY.md` – Guard-Kriterien, erlaubte/verbotene Systemverhalten (PR #23)
+- `knowledge/project/UX_CORE_SEQUENCE.md` – Entry → Check-in → Szene → Exit, Transparenz an risikorelevanten Stellen
+
+### Architecture-Specs (P1 – gemergt)
+- `knowledge/architecture/KERNEL_GUARD_CONTRACTS.md` – technische Vertragsvorlagen (PR #26)
+- `knowledge/architecture/TEXT_FIRST_RUNTIME_FLOW.md` – Happy Path, Safe-State-Übergänge (PR #28)
+- `knowledge/architecture/PROMPT_CONSTRUCTION_RULES.md` – Prompt-Sicherheit, Redaction-Regeln (PR #30)
+- `knowledge/architecture/DEPLOYMENT_ENVELOPE.md` – Mono-MVP-Topologie, Trust Boundaries, Provider-/Secrets-Grenzen
+
+### Ops (gemergt)
+- `knowledge/ops/PILOT_READINESS.md` – Go/No-Go-Kriterien, Stop-Kriterien und Incident-/Eskalationslogik für den Pilot
 
 ### Foundation
 - `README.md` – projektspezifisch, kein generisches Repo-Pack mehr
 - `CODEOWNERS` – korrekt gesetzt (@jannekbuengener)
 - `CONTRIBUTING.md` – auf Solo-Maintainer + KI-Zuarbeit zugeschnitten
 - `SECURITY.md` – realistischer Meldeweg, Scope klar
-- `knowledge/CURRENT_STATUS.md` – dieses Dokument
 - `knowledge/SYSTEM.CONTEXT.md` – reale Umgebungs- und Tool-Fakten
 - `knowledge/SYSTEM_INVARIANTS.md` – harte, bindende Invarianten aus allen Domain-Canons
 
 ### Hub
-- `knowledge/KNOWLEDGE_HUB.md` – Governance-Sektion ergänzt, Domain-Canon-Sektion retitelt
+- `knowledge/KNOWLEDGE_HUB.md` – zentraler Einstiegspunkt in alle Canon-Dokumente
+
+### CI/Infra
+- CI-Gates: CodeQL, Gitleaks, Dependency-Review, strukturelle Canon-Prüfung
+- Trivy-Action auf 0.35.0 (PR #31)
 
 ---
 
@@ -45,16 +63,14 @@ Zuletzt aktualisiert: 2026-03-25
 
 | Punkt | Priorität | Referenz |
 |---|---|---|
-| Guardrails / Content Policy aus Canon ableiten | P1 – aktiv (Issue #19) | SAFETY_PLAYBOOK, CLAIMS_FRAMEWORK |
-| Pilot-Readiness für text-first MVP definieren | P1 – aktiv (Issue #21) | PROJECT_META |
-| Provider-DPAs für externe KI-/Hosting-Dienste klären | P0 vor Produktionsstart | PRIVACY_BY_DESIGN §9 |
-| Retention-Fristen gegen konkrete Infrastruktur validieren | P0 vor Produktionsstart | PRIVACY_BY_DESIGN §6 |
-| Red-Team-/Prompt-Tests auf Basis Guardrails | nach Issue #19 | SAFETY_PLAYBOOK |
-| AI Act Readiness Check | vor Produktionsstart | AGENT_POLICY |
+| Konkreten externen Providerpfad per `PROVIDER_DPA_INPUT_MATRIX.md` positiv bewerten | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §6–§8 |
+| Retention-, Lösch- und Event-Storage-Enforcement gegen konkrete Infrastruktur validieren | P0 vor Live-Nutzer | DATA_LIFECYCLE §6, DEPLOYMENT_ENVELOPE §7 |
+| Red-Team-/Prompt-Tests auf Basis Guardrails + Prompt-Rules | aktiv | GUARDRAILS_CONTENT_POLICY, PROMPT_CONSTRUCTION_RULES |
+| Pseudonymisierungs-/Session-ID-Entscheid vor Produktionsstart konkretisieren | vor Produktionsstart | DATA_LIFECYCLE §8 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
 
 ## Nächster Schritt
 
-Guardrails/Content Policy (Issue #19) und Pilot-Readiness (Issue #21) bearbeiten. Beide Artefakte sind Voraussetzung vor erstem Nutzerkontakt.
+Konkreten Providerpfad per `PROVIDER_DPA_INPUT_MATRIX.md` bewerten und parallel Retention-/Lösch-Enforcement gegen die gewählte Infrastruktur absichern. Red-Team-/Prompt-Tests sind unblocked und bilden die nächste reale Evidence-Kante.
