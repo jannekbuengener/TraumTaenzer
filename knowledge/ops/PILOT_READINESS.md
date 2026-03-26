@@ -55,7 +55,7 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | Input-Guards für Safeword und Krisensprache operativ | Abdeckung jeder denkbaren Formulierungsvariante | Safeword oder Krisensprache werden nicht erkannt |
 | Output-Guards-Kriterien definiert und angewandt | Automatisierte Prüfung jedes Outputs | Diagnose-, Therapie- oder Companion-Outputs werden nicht geblockt |
 | fail-closed-Verhalten bei Guard-Unsicherheit sowie Guard-, Adapter- und Provider-Output-Fehlerpfaden definiert | Vollständige Guard-Testabdeckung | Kein definiertes Verhalten bei Guard-Unsicherheit oder fehlerhaftem Provider-Output |
-| `PROMPT_TEST_BASELINE.md` als minimale Evidence-Baseline vorhanden; vor Pilotstart sind alle P0-Fälle sowie Leak-/fail-closed-Fälle dokumentiert bestanden | Vollständige Automatisierung, Fuzzing oder Langzeit-Drift-Tests | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Krisen-, Boundary-, Companion-, Leak- und fail-closed-Pfade |
+| `PROMPT_TEST_BASELINE.md` als minimale Evidence-Baseline vorhanden; vor Pilotstart sind alle P0-Fälle sowie Leak-/fail-closed-/sidepath-Fälle gegen den freigegebenen Pilotpfad (`Hetzner Cloud Server` `nbg1` + `Hetzner Volume` + lokales `SQLite`) dokumentiert `bestanden`, und kein providergekoppelter Pflichtfall steht auf `blockiert` | Vollständige Automatisierung, Fuzzing oder Langzeit-Drift-Tests | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Krisen-, Boundary-, Companion-, Leak-, Sidepath- und fail-closed-Pfade gegen den freigegebenen Pilotpfad |
 
 ### 3.4 Privacy- und Retention-Grundlagen
 
@@ -128,7 +128,7 @@ Wenn auch nur eine dieser Bedingungen zutrifft: **kein Pilotstart**.
 | 12 | Pilot-Kommunikation impliziert Therapie, Diagnose, Krisenhilfe oder Companionship |
 | 13 | Kein definiertes Verhalten bei Safety-Ereignis (kein Safe State, kein fail-closed) |
 | 14 | Pilot-Teilnehmer wissen nicht, dass sie mit einem KI-System interagieren |
-| 15 | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Safeword-, Krisen-, Boundary-, Companion-, Leak- und fail-closed-Pfade |
+| 15 | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Safeword-, Krisen-, Boundary-, Companion-, Leak-, Sidepath- und fail-closed-Pfade gegen den freigegebenen Pilotpfad |
 
 ---
 
