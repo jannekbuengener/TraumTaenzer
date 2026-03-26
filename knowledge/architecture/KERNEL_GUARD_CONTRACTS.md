@@ -339,7 +339,7 @@ USER_INPUT_RECEIVED
 | Fehlerszenario | Systemverhalten |
 |---|---|
 | Guard Layer antwortet nicht / Timeout | `ERROR_FAIL_CLOSED` → `EXIT`; kein LLM-Call |
-| LLM-Adapter antwortet nicht / Fehler | Output-Guard ohne Ergebnis → `BLOCK` → `GUARD_BLOCK`, dann `EXIT` |
+| LLM-Adapter antwortet nicht / Fehler | `ERROR_FAIL_CLOSED` → `EXIT`; kein ungeprüfter Output an UI |
 | Kernel kennt Zielzustand nicht | Sofort `EXIT`; `SYSTEM_ERROR` loggen (kein Inhalt) |
 | Widersprüchliche Guard-Signale | Pessimistischstes Signal gewinnt: `EXIT` vor `PAUSED` vor `ALLOW` |
 | Event-Log-Fehler | Logging-Fehler blockiert keine Kernel-Entscheidung; Fehler intern vermerken |
