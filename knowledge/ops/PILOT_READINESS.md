@@ -156,6 +156,22 @@ Wenn eines dieser Kriterien eintritt: Pilot sofort pausieren oder stoppen.
 
 **Für das Solo-Maintainer-Setup – keine Team-Fiktion.**
 
+### Incident-Stufen für den Mono-Pilot
+
+Die folgenden drei Stufen reichen für den text-first MVP. Sie sind keine
+klinische Klassifikation, sondern eine operative Mono-Ops-Taxonomie für
+Stop-, Pause- und Nachfassentscheidungen.
+
+| Stufe | Typ | Typische Auslöser | Sofortmaßnahme | Betriebswirkung | Nachfasslogik |
+|---|---|---|---|---|---|
+| **I1 – Session-lokaler Safety-Vorfall** | Einzelne betroffene Session | Safeword, expliziter Abbruch, Distress, Krisensprache, Boundary-Fall | Betroffene Session sofort stoppen oder pausieren; externer Verweis falls nötig; nur Ereignistyp + Zeitstempel dokumentieren | Pilot kann weiterlaufen, solange kein Muster sichtbar wird | Prüfen: Einzelfall oder Muster? Bei Muster → mindestens `I2` |
+| **I2 – Guard-/System-Vorfall** | Sicherheitsrelevante Systemabweichung | Verbotener Output erreicht Nutzer, fail-closed greift nicht sauber, Exit/Safeword instabil, wiederkehrende Safety-Events ohne Begrenzung | Pilot sofort pausieren; betroffenen Pfad isolieren; Root Cause analysieren; Guard-/Kernel-Lücke schließen | Keine neuen Live-Sessions bis Prüfung und Fix erfolgt sind | Nach Behebung Guard-Check dokumentieren; erst dann Fortführung |
+| **I3 – Privacy-/Containment-Vorfall** | Daten- oder Provider-Grenze verletzt | Content-Logging, ungewollte Persistenz, reale Personendaten bei ungeklärtem Providerpfad, Löschpfad versagt | Pilot sofort stoppen; Verstoß eingrenzen; Daten löschen soweit möglich; Löschung bestätigen | Kein Neustart des Piloten bis vollständige Behebung | Root Cause schließen, Canon-/Konfigurationslücke dokumentieren, Neustart nur nach sauberer Neubewertung |
+
+**Wichtig:** Es gibt keine 24/7-Eskalationskette und keinen Team-Dispatch. Der
+Mono-Pfad ist bewusst klein: Session begrenzen, Pilot pausieren oder stoppen,
+dann nüchtern prüfen und erst nach belegter Behebung fortführen.
+
 ### Bei Safety-Event im Pilot
 
 1. Session für betroffenen Nutzer sofort stoppen (manuell falls nötig).
@@ -183,6 +199,22 @@ Wenn eines dieser Kriterien eintritt: Pilot sofort pausieren oder stoppen.
 ### Dokumentation
 
 Minimal: Datum, Ereignistyp, betroffener Bereich, Maßnahme, Status. Kein Content, keine Nutzertexte. Format: Eintrag in `knowledge/logs/sessions/` oder vergleichbarer Stelle.
+
+### Postmortem-Minimum
+
+Für `I2` und `I3` genügt im Mono-Setup ein kleines, redigiertes Feldset:
+
+- Datum / Zeit
+- Incident-Stufe (`I1`, `I2`, `I3`)
+- betroffener Bereich oder Pfad
+- Sofortmaßnahme
+- Containment-/Löschstatus
+- Restart-Entscheidung (`weiter`, `pausiert`, `gestoppt`)
+- Root Cause / Canon-Lücke in knapper, nicht-inhaltlicher Form
+
+Kein Nutzertext, kein Prompt, kein LLM-Output, kein Auslösetext. Kein
+Postmortem im Team-Format; die Funktion ist operative Nachvollziehbarkeit für
+den Solo-Maintainer, nicht Prozess-Theater.
 
 ---
 
