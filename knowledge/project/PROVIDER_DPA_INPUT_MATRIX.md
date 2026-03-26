@@ -113,7 +113,7 @@ Region- oder Datenpolitikwechsel ist die Matrix neu zu prüfen.
 | **LLM** | Azure OpenAI Service in Microsoft Foundry, `Chat Completions API` mit `gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`; ausdrücklich nicht `Responses API`, `Threads` oder `Stored completions` | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-/Betriebsmetadaten; bei Abuse-Monitoring zusätzlich selektierte Prompt-/Output-Samples | ja | offen | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
 | **LLM** | Anthropic Claude API, `POST /v1/messages` mit `claude-sonnet-4-6` unter Commercial Terms; optional `inference_geo="us"`; ausdrücklich nicht `Files API`, `Messages Batches`, Console/Workbench oder gespeicherte Chat-Produkte | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-Metadaten; bei Policy-/Misuse-Flags zusätzlich retainte Input-/Output-Artefakte und Trust-&-Safety-Klassifikationen | ja | ja | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
 | **LLM** | Amazon Bedrock Runtime, `InvokeModel` mit `anthropic.claude-sonnet-4-6` in `eu-central-1` (`Europe (Frankfurt)`), ohne Inference Profile / Cross-Region Inference; ausdrücklich nicht Agents, Knowledge Bases, Batch- oder Custom-Model-Pfade | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, AWS Request-/Betriebsmetadaten; automatisierte Abuse-Detection-Klassifikationen | ja | offen | ja | ja | ja | offen | nicht zulässig für Live-Nutzer |
-| **Hosting** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
+| **Hosting** | `Hetzner Cloud Server` in `nbg1` (`Nuremberg`, Deutschland) mit angehängtem `Hetzner Volume`; redacted Runtime-Events in lokalem `SQLite` auf dem `Volume`; keine Hetzner-Server-Backups, keine Snapshots, keine externen Replikate | Gegenüber Hetzner: Account-, Kontakt- und Abrechnungsdaten; auf dem Server selbst nur redacted Runtime-Events mit opaquer `session_id`, content-free Host-/App-Logs und technische Betriebsmetadaten; kein Session-Content | ja | ja | n. a. | ja | ja | ja | zulässig für Pilot |
 | **E-Mail** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 | **Weiterer externer Dienst** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 
@@ -281,6 +281,60 @@ Pfade, weil sie im MVP entweder verboten sind oder eigene Persistenzpfade
   ausgeschlossen oder anders geregelt sind.
 
 **Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
+
+#### D. Hetzner Cloud Server + lokaler `SQLite`-Event-Store – positiver Pilotpfad
+
+**Offizielle Quellenbasis (Stand 2026-03-26):**
+
+- Hetzner Docs: Locations (`https://docs.hetzner.com/cloud/general/locations`)
+- Hetzner Docs: Backups/Snapshots overview
+  (`https://docs.hetzner.com/cloud/servers/backups-snapshots/overview`)
+- Hetzner Docs: Enabling Backups
+  (`https://docs.hetzner.com/cloud/servers/getting-started/enabling-backups`)
+- Hetzner Docs: Taking Snapshots
+  (`https://docs.hetzner.com/cloud/servers/getting-started/taking-snapshots`)
+- Hetzner Docs: Volumes overview
+  (`https://docs.hetzner.com/cloud/volumes/overview`)
+- Hetzner Docs: Data Protection at Hetzner
+  (`https://docs.hetzner.com/general/company-and-policy/data-protection-at-hetzner`)
+- Hetzner DPA (`https://www.hetzner.com/AV/DPA_en.pdf`)
+- Hetzner approved subprocessors
+  (`https://www.hetzner.com/AV/subunternehmer.pdf`)
+
+**Belastbar geklärt:**
+
+- `Hetzner Cloud Server` in `nbg1` ist ein konkreter Hosting-Pfad in
+  Deutschland; Hetzner betreibt den Standort selbst.
+- Die Hetzner-DPA ist produktnah verfügbar und kann im Kundenkonto
+  abgeschlossen werden; sie gilt für die auf den Produkten verarbeiteten
+  personenbezogenen Daten.
+- Für EU-Serverstandorte werden Serverdaten laut Hetzner-Doku ausschließlich
+  innerhalb der EU verarbeitet; Supportdienstleistungen erfolgen ebenfalls
+  innerhalb der EU.
+- Server-Backups sind optional und müssen aktiv eingeschaltet werden;
+  Snapshots sind manuell initiierte Kopien. Beides bleibt im Pilotpfad
+  deaktiviert bzw. verboten.
+- Angehängte `Volumes` haben laut Produktdoku keine providerseitigen
+  Backups/Snapshots; Server-Backups und Snapshots umfassen angehängte
+  `Volumes` nicht.
+- Die offizielle Subunternehmerliste benennt für den EU-Pfad
+  `Hetzner Finland Oy` (Gebäudevermietung, technischer Support); US- und
+  Singapur-Subunternehmer sind nur für diese Standorte relevant.
+- Die DPA regelt Delete/Return nach Vertragsende auf Client-Anweisung; als
+  Ausnahmen bleiben nur notwendige Backup-Kopien und gesetzliche
+  Aufbewahrungspflichten. Für den gewählten Pfad werden deshalb keine
+  Server-Backups oder Snapshots verwendet.
+
+**Operativer Entscheidungsrahmen innerhalb dieses Hostingpfads:**
+
+- `zulässig für Pilot` nur mit angehängtem `Hetzner Volume` + lokalem
+  `SQLite`-Event-Store, ohne Server-Backups, ohne Snapshots und ohne externe
+  Log-/Storage-Replikate.
+- Nicht freigegeben ist der dateibasierte Event-Store auf demselben Host, weil
+  TTL- und fallbezogene Löschung dort unnötige Rewrite-/Rotations-Nebenpfade
+  öffnen würden.
+- Vor Live-Start müssen täglicher TTL-Purge + `VACUUM` aktiv sein; Support-
+  Tickets, Rescue- und VNC-Pfade dürfen keine Eventdaten aufnehmen.
 
 #### Gesamtergebnis 2026-03-26
 

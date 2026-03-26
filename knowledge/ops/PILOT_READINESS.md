@@ -70,6 +70,17 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | Kein Live-Nutzer mit externen Providern ohne ausgefüllte und positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md` | Vollständige juristische Endprüfung aller Verträge | Personenbezogene Daten fließen an einen Provider mit offener Matrix oder negativem Entscheidungsstatus |
 | Retention, Training/Service-Verbesserung, Region/Transfer und Subprocessor-Lage des konkreten Produktpfads sind geklärt | Vollständige Vertragsarchivierung im Endzustand | Ungeklärte Retention-, Training-, Region- oder Subprocessor-Lage |
 
+**Aktueller Pilotpfad (Entscheid 2026-03-26):**
+
+- Hosting: `Hetzner Cloud Server` in `nbg1`
+- Event-Storage: lokales `SQLite` auf angehängtem `Hetzner Volume`
+- Nicht freigegeben: append-only Dateipfad als Pilot-Event-Store, weil
+  TTL- und fallbezogene Löschung dort nur über Rewrite-/Rotationspfade
+  erreichbar wären
+- Zusatzbedingungen: keine Server-Backups, keine Snapshots, keine externen
+  Log-/Storage-Replikate; täglicher TTL-Purge + `VACUUM`; Host-Logs bleiben
+  content-free und max. 30 Tage
+
 ### 3.5 Kernel- und Safe-State-Disziplin
 
 | Was mindestens stehen muss | Was noch nicht perfekt sein muss | No-Go |
