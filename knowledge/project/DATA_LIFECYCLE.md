@@ -182,6 +182,28 @@ Basiert auf PRIVACY_BY_DESIGN §6–§7 und KERNEL_GUARD_CONTRACTS §9.
 Retention-Frist muss definiert und technisch erzwingbar sein, bevor Daten in
 einem Speicher landen (PRIVACY §7: „Keine Datenpersistenz ohne definierten Löschpfad").
 
+### Enforcement-Bewertung gegen die aktuelle Zielinfrastruktur (Stand 2026-03-26)
+
+**Belastbar festgelegt sind derzeit nur:**
+
+- Mono-MVP als ein Serverprozess mit in-process `Event-Log-Writer`
+- append-only, redacted, content-free Runtime-Events hinter TB-3
+- RAM-only Session-Content ohne Persistenzpfad
+
+**Nicht belastbar festgelegt sind derzeit:**
+
+- konkretes Pilot-Event-Storage-Backend (`lokale Datei` vs. `minimales DB-Backend`)
+- konkreter Hosting-Pfad, auf dem dieses Event-Storage laufen würde
+- technische Retention-Durchsetzung für reale Guard-/Safety-Events,
+  Session-Metadaten und `SYSTEM_ERROR`
+- Backup-/Replica-/Support-/Nebenlogik des später gewählten Storage-Pfads
+
+**Operativer Befund:** Für Dev ohne reale Personendaten bleibt der Canon
+ausreichend. Für Pilot oder sonstige Live-Nutzer-Nutzung ist die fehlende
+Benennung des konkreten Event-Storage-/Hosting-Pfads ein Blocker, weil damit
+90-/30-Tage-Retention, automatische Löschung und Nebenartefakte nicht
+belastbar verifiziert werden können.
+
 ---
 
 ## 7. Export-Scope für den Mono-MVP
@@ -209,11 +231,11 @@ Diese Funktion ist kein MVP-Feature — sie ist als Konzept vorgemerkt.
 
 | Nicht festgelegt | Warum offen |
 |---|---|
-| Konkretes Storage-Backend (DB, Datei, Cloud) | Provider-Agnostik; kein MVP-Bedarf für Festlegung |
+| Konkretes Storage-Backend (DB, Datei, Cloud) | Repo-weit bleibt es provider-agnostisch; vor erstem realen Event ist es aber nicht offen. Ein konkreter Pilot-Event-Storage-Pfad muss benannt sein, sonst bleibt Live-Nutzung blockiert |
 | Datenbankschema oder Tabellenstruktur | Zu früh; folgt aus Implementierungsentscheid |
 | LLM-Provider-DPA-Abschluss | Offener Prüfpunkt (PRIVACY §9); Pflicht vor Produktionsstart |
 | Account-/IAM-Architektur | Pilot mit bekannter Gruppe; keine offene Registrierung im MVP |
-| Backup- und Disaster-Recovery-Logik | Ephemerer Session-Content erzeugt kein DR-Problem; Event-Log ist low-stakes |
+| Backup- und Disaster-Recovery-Logik | Kein großes DR-Design nötig; die Backup-/Replica-/Nebenlogik des konkret gewählten Event-Storage-Pfads muss vor Live-Nutzung trotzdem benannt sein. Offen = Blocker |
 | Anonymisierungs- vs. Pseudonymisierungs-Entscheid für Session-IDs | Zur Klärung vor Produktionsstart; PRIVACY §3 nutzt „pseudonym" als Default |
 | Export-Format-Implementierung | Noch kein persistierter Nutzerinhalt; Format-Entscheid wenn nötig |
 | Subprozessor-Liste (vollständig) | Offen; zusammenzustellen bei Produktionsstart (PRIVACY §9) |

@@ -63,6 +63,7 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | Session-Inhalte ephemer (kein Default-Speichern) | Technische Lösch-Automatisierung vollständig implementiert | Session-Inhalte werden als Default persistiert |
 | Safety-/Guard-Event-Logs enthalten nur Typ + Zeitstempel, keinen Content | Vollständig geprüfte Provider-DPAs | Content-Logging als Default |
 | Löschpfad konzeptuell definiert | Vollständige DPIA | Kein definierter Löschpfad |
+| Zielkomponente für Event-Storage/Logs ist konkret benannt; 90-/30-Tage-Retention, automatische Löschung und Backup-/Nebenlogik dieses Pfads sind technisch belastbar beschrieben | Vollständige Audit-/Observability-Infrastruktur | Offener Event-Storage-/Hosting-Pfad oder nur behauptetes Retention-Enforcement |
 | Pilot-Teilnehmer wissen, dass das System KI-gestützt ist und welche Daten verarbeitet werden | Vollständige Datenschutzerklärung in Endform | Keine Information der Teilnehmer über Datenverarbeitung |
 | Kein Live-Nutzer mit externen Providern ohne ausgefüllte und positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md` | Vollständige juristische Endprüfung aller Verträge | Personenbezogene Daten fließen an einen Provider mit offener Matrix oder negativem Entscheidungsstatus |
 | Retention, Training/Service-Verbesserung, Region/Transfer und Subprocessor-Lage des konkreten Produktpfads sind geklärt | Vollständige Vertragsarchivierung im Endzustand | Ungeklärte Retention-, Training-, Region- oder Subprocessor-Lage |

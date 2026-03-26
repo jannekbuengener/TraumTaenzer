@@ -150,7 +150,7 @@ Der Nutzer kann die Löschung seines Kontos und der zugehörigen persistierten N
 ### Offene Prüfpunkte
 
 - Wie wird Löschung bei externen Providern (KI-API, Hosting) sichergestellt? → Abschnitt 9.
-- Wie werden Backup-Systeme in die Löschlogik einbezogen? → Noch zu definieren bei Infrastrukturplanung.
+- Wie werden Backup-Systeme in die Löschlogik einbezogen? → Vor Live-Nutzerbetrieb zwingend zu definieren; bis dahin Blocker.
 
 ---
 
