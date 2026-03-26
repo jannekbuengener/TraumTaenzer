@@ -7,10 +7,13 @@ Zuletzt aktualisiert: 2026-03-26
 ## Aktueller Stand
 
 **Branch:** `main`
-**PRs:** Docs-/Spec- und Sync-PRs bis #42 gemergt – Canon-Grundstock, Frame-Artefakte und CI-Infra auf `main`
-**Phase:** Core-Canon und Frame-Artefakte gemergt; geprüft sind jetzt auch
-alternative LLM-Pfade, aber der Pilot bleibt an produktionsnahen P0-Kanten und
-fehlender Live-Provider-Freigabe blockiert
+**PRs:** Docs-/Spec- und Sync-PRs bis #56 gemergt – Canon-Grundstock,
+Provider- und Infrastrukturentscheide auf `main`
+**Phase:** Core-Canon, Providerprüfung, Pilot-Infrastrukturpfad und die auf die
+konkrete Zielumgebung gespiegelt definierte MVP-Evidence-Baseline stehen; die
+dokumentierte reale Durchführung der Pflichtfälle steht aber weiterhin aus, und
+providergekoppelte Fälle bleiben zusätzlich an der offenen
+Live-Provider-Freigabe blockiert
 
 ---
 
@@ -66,7 +69,7 @@ fehlender Live-Provider-Freigabe blockiert
 | Punkt | Priorität | Referenz |
 |---|---|---|
 | Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`) und Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`) ist aktuell kein LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
-| Minimale Red-Team-/Prompt-Testbaseline ist kanonisch definiert; die Durchführung gegen reale Runtime inkl. Leak-/fail-closed-Nachweis bleibt offen | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
+| Die minimale Red-Team-/Prompt-Testbaseline ist jetzt auf den freigegebenen Pilotpfad (`Hetzner Cloud Server` in `nbg1` + `Hetzner Volume` + lokales `SQLite`) gespiegelt; dokumentierte Pflichtnachweise für Leak-/Redaction, fail-closed und fehlende Dateifallbacks sind definiert, die reale Durchführung bleibt aber für providergekoppelte Fälle ohne freigegebenen LLM-Pfad blockiert | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
@@ -75,9 +78,11 @@ fehlender Live-Provider-Freigabe blockiert
 
 Zwei P0-Blocker bleiben vor Live-Nutzern offen: Erstens ist nach belastbarer
 Prüfung von Azure OpenAI, Anthropic Claude API und Amazon Bedrock weiterhin
-kein freigabefähiger externer LLM-Providerpfad identifiziert. Zweitens fehlt
-die dokumentierte Durchführung der minimalen Red-Team-/Prompt-Testbaseline
-inklusive Leak- und fail-closed-Nachweisen. Der Infrastrukturpfad für reale
-Pilot-Events ist dagegen jetzt konkret festgelegt: `Hetzner Cloud Server` in
-`nbg1` mit angehängtem `Hetzner Volume` und lokalem `SQLite`-Event-Store.
-Ohne diese zwei Nachweise bleibt der Pilot gesperrt.
+kein freigabefähiger externer LLM-Providerpfad identifiziert. Zweitens ist die
+MVP-Evidence-Baseline jetzt zwar auf den freigegebenen Hetzner-/SQLite-
+Pilotpfad gespiegelt, aber die dokumentierte reale Durchführung der
+Pflichtfälle steht insgesamt noch aus; providergekoppelte Fälle bleiben
+zusätzlich blockiert, solange kein freigegebener externer LLM-Pfad existiert.
+Leak-/Redaction-, fail-closed- und Sidepath-Anforderungen sind damit operativ
+klarer, aber noch nicht als `bestanden` nachgewiesen. Ohne diese zwei
+Nachweise bleibt der Pilot gesperrt.
