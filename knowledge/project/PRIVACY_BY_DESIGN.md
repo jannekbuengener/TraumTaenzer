@@ -182,19 +182,28 @@ Da Session-Inhalte nicht als Default persistiert werden, gibt es für den Regelf
 
 Externe Provider werden als aktives Risiko geführt, nicht als abgeschlossen behandelt.
 
+Vor jeder Nutzung externer Provider mit realen Personendaten muss die
+`knowledge/project/PROVIDER_DPA_INPUT_MATRIX.md` für den konkret genutzten
+Produktpfad ausgefüllt werden. Diese Matrix ist die verbindliche
+Entscheidungsgrundlage für Live-Nutzer-Nutzung; ohne ausgefüllte und positiv
+bewertete Matrix bleibt der Provider auf Dev ohne reale Personendaten
+beschränkt.
+
 ### Offene Prüfpunkte (Stand 2026-03-25)
 
 | Prüfpunkt | Status | Wer muss handeln |
 |---|---|---|
-| KI-API-Provider: Datenverarbeitungsvertrag (DPA) | Offen – vor Produktionsstart zu klären | Owner / technische Umsetzung |
-| KI-API-Provider: Prompt-Retention-Policy (werden Prompts geloggt?) | Offen | Owner / technische Umsetzung |
-| Hosting/Infrastruktur: Serverstandort, DPA | Offen | Owner / technische Umsetzung |
-| E-Mail-Dienst (falls genutzt): DPA | Offen | Owner / technische Umsetzung |
-| Subprozessor-Liste (vollständig) | Offen – Zusammenstellung bei Produktionsstart | Owner |
+| KI-API-Provider: konkretes Produkt/API, DPA, Prompt-/Output-Retention | Offen – über `PROVIDER_DPA_INPUT_MATRIX.md` zu klären | Owner / technische Umsetzung |
+| Hosting/Infrastruktur: Produktpfad, Serverstandort, DPA, Löschpfad | Offen – über Matrix zu klären | Owner / technische Umsetzung |
+| E-Mail-Dienst (falls genutzt): Produktpfad, DPA, Retention, Region | Offen – über Matrix zu klären | Owner / technische Umsetzung |
+| Subprozessor-Liste und internationale Übermittlungen | Offen – pro Providerpfad über Matrix zu klären | Owner |
 
 ### Grundsatz bis zur Klärung
 
-Keine Produktionsnutzung personenbezogener Daten mit externen Providern, solange DPA und Datenpolitik nicht geprüft und dokumentiert sind.
+Keine Produktions- oder Pilotnutzung personenbezogener Daten mit externen
+Providern, solange DPA, Datenpolitik, Retention, Region und Subprocessor-Lage
+nicht über die `PROVIDER_DPA_INPUT_MATRIX.md` geprüft, dokumentiert und positiv
+bewertet sind.
 
 ### Was dieses Dokument nicht leistet
 
@@ -216,7 +225,7 @@ Vor Umsetzung jedes neuen Features, jedes neuen Datenflusses oder jedes neuen Lo
 
 4. Ist der Löschpfad für diese Daten definiert, bevor sie gespeichert werden?
 5. Ist die Retention-Frist festgelegt?
-6. Werden externe Provider einbezogen? Wenn ja: ist deren DPA geprüft?
+6. Werden externe Provider einbezogen? Wenn ja: ist die `PROVIDER_DPA_INPUT_MATRIX.md` für den konkreten Produktpfad positiv bewertet?
 
 **Fragen zu Logs:**
 
@@ -228,5 +237,5 @@ Wenn eine der folgenden Bedingungen zutrifft, darf der Flow oder das Log nicht e
 
 - Session-Inhalte würden als Default persistiert.
 - Kein Löschpfad ist definiert.
-- Externe Provider werden einbezogen ohne geprüften DPA.
+- Externe Provider werden einbezogen ohne positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md`.
 - Daten aus verschiedenen Klassen werden ohne dokumentierten Zweck verknüpft.

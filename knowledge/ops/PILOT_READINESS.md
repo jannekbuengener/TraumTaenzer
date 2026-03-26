@@ -64,7 +64,8 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | Safety-/Guard-Event-Logs enthalten nur Typ + Zeitstempel, keinen Content | Vollständig geprüfte Provider-DPAs | Content-Logging als Default |
 | Löschpfad konzeptuell definiert | Vollständige DPIA | Kein definierter Löschpfad |
 | Pilot-Teilnehmer wissen, dass das System KI-gestützt ist und welche Daten verarbeitet werden | Vollständige Datenschutzerklärung in Endform | Keine Information der Teilnehmer über Datenverarbeitung |
-| Kein Produktionseinsatz mit externen Providern ohne geprüfte DPA | Vollständige Subprozessor-Liste | Personenbezogene Daten werden an Provider ohne DPA übertragen |
+| Kein Live-Nutzer mit externen Providern ohne ausgefüllte und positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md` | Vollständige juristische Endprüfung aller Verträge | Personenbezogene Daten fließen an einen Provider mit offener Matrix oder negativem Entscheidungsstatus |
+| Retention, Training/Service-Verbesserung, Region/Transfer und Subprocessor-Lage des konkreten Produktpfads sind geklärt | Vollständige Vertragsarchivierung im Endzustand | Ungeklärte Retention-, Training-, Region- oder Subprocessor-Lage |
 
 ### 3.5 Kernel- und Safe-State-Disziplin
 
@@ -107,7 +108,7 @@ Wenn auch nur eine dieser Bedingungen zutrifft: **kein Pilotstart**.
 | 6 | Session-Inhalte werden als Default persistiert |
 | 7 | Content-Logging als Default (Nutzertexte, Trauminhalte in Logs) |
 | 8 | Kein definierter Löschpfad für persistierte Daten |
-| 9 | Personenbezogene Daten werden an externe Provider ohne geprüfte DPA übertragen |
+| 9 | Personenbezogene Daten werden an externe Provider ohne positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md` übertragen |
 | 10 | Kein Onboarding mit KI-Transparenz, Systemgrenzen und Safeword-Einführung |
 | 11 | Exit erfordert Bestätigung, Begründung oder mehrere Schritte |
 | 12 | Pilot-Kommunikation impliziert Therapie, Diagnose, Krisenhilfe oder Companionship |
@@ -198,7 +199,7 @@ Minimal: Datum, Ereignistyp, betroffener Bereich, Maßnahme, Status. Kein Conten
 | 5 | Liegt GUARDRAILS_CONTENT_POLICY als Artefakt vor (nicht nur im Prompt)? | Ja |
 | 6 | Sind Session-Inhalte ephemer – kein Default-Speichern? | Ja |
 | 7 | Enthalten Logs keinen Nutzerinhalt oder Auslösetext? | Ja |
-| 8 | Sind externe Provider (KI-API, Hosting) mit geprüfter DPA eingebunden – oder noch gar keine personenbezogenen Daten übergeben? | Ja |
+| 8 | Sind externe Provider (KI-API, Hosting, E-Mail falls genutzt) nur mit positiv bewerteter `PROVIDER_DPA_INPUT_MATRIX.md` eingebunden – oder noch gar keine personenbezogenen Daten übergeben? | Ja |
 | 9 | Enthält das Onboarding KI-Transparenz, Systemgrenzen und Safeword-Einführung? | Ja |
 | 10 | Ist das Verhalten bei Safety-Ereignis definiert (Safe State, fail-closed)? | Ja |
 | 11 | Kommuniziert der Pilot-Rahmen kein Therapie-, Diagnose- oder Companion-Versprechen? | Ja |
