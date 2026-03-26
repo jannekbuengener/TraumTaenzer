@@ -34,7 +34,6 @@ Stand: 2026-03-26 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette
 
 ## Next
 
-- Pseudonymisierungs-/Session-ID-Entscheid vor Produktionsstart konkretisieren
 - Export-/IAM-Pfad nur bei echtem Persistenzbedarf konkretisieren
 
 ---

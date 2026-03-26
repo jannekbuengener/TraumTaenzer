@@ -120,6 +120,22 @@ Sie sind **vollständig getrennt** von Runtime-Events und enthalten keinen Nutze
 **Abgrenzung:** Diese Events sind Repo-Artefakte. Sie enthalten keine Nutzerdaten,
 keine Session-IDs, keine Runtime-Ereignisse. Sie sind nicht Teil des System-Event-Logs.
 
+### 4.3 MVP-Entscheidung: Session-ID und Pseudonymisierung
+
+Die bisher nur rahmenhafte Pseudonymisierungslogik wird für den Mono-MVP wie folgt
+konkretisiert:
+
+| Punkt | Entscheidung |
+|---|---|
+| **Session-ID-Typ** | Pro Session neu erzeugte, opaque Zufalls-ID. Kein semantischer Anteil, keine Ableitung aus E-Mail, Nutzername, Einladung, Gerät, IP oder Zeitstempel. |
+| **Zweck** | Darf ausschließlich Runtime-Ereignisse derselben Session korrelieren. Kein Nutzerprofil, kein Cross-Session-Identifier. |
+| **Erlaubte Orte** | Aktive Client-/Server-Session über TB-1, Kernel-RAM, redacted Runtime-Events in Event-Storage. |
+| **Verbotene Orte** | TB-2 / LLM-Provider, Prompt-Kontext, Access-/Account-Datensätze, Analytics-/Profiling-Daten, URLs, persistente Client-Speicher, Support-/Debug-Logs mit Identität. |
+| **Access-/Account-Bezug** | Im MVP gibt es standardmäßig keinen persistenten Session↔Account-Link. Falls ein minimaler Zugangs- oder Kontaktpfad existiert, bleibt er außerhalb der Runtime und darf nicht still mit Event-Storage gejoint werden. |
+| **Erlaubte Korrelation** | Nur für einen expliziten, dokumentierten Minimalzweck in einem separaten Ops-Pfad, nicht als Default und nicht als Vorratsmapping. |
+| **Re-Entry** | `PAUSED` oder `GUARD_BLOCK` innerhalb derselben Session behalten dieselbe `session_id`. `EXIT`, `EXTERNAL_REFERRAL`, Prozess-Neustart oder neue Session erzeugen eine neue `session_id`. |
+| **Debugging** | Session-ID darf genau eine pseudonyme Runtime-Spur eingrenzen. Verboten bleibt jede Anreicherung mit E-Mail, Nutzer-ID, Einladungsdaten, IP, Prompt, Output oder Nutzertext. |
+
 ---
 
 ## 5. Redaction-vor-Persistenz — operative Entscheidungslogik
@@ -216,7 +232,7 @@ Session-Content nie persistiert wird.
 |---|---|---|
 | Session-Inhalte | Nein | Nie persistiert; kein Exportgegenstand vorhanden |
 | Safety-Event-Logs | Nicht im Standard-Export | Betriebsdaten; Auskunftsrechts-Relevanz bei Produktionsstart prüfen (PRIVACY §8) |
-| Session-Metadaten | Ggf. | Wenn persistiert: prinzipiell exportpflichtig; Format bei Implementierung zu definieren |
+| Session-Metadaten | Nicht im Standard-Export des MVP | Im MVP nur pseudonyme Betriebsmetadaten über `session_id`; kein Default-Zuordnungspfad zu Account-/Access-Daten. Etwaige Auskunftsrelevanz bei Produktionsstart gesondert prüfen |
 | Account-Daten | Ja (wenn vorhanden) | DSGVO Art. 20 Portabilität; maschinenlesbares Format (JSON) als Baseline |
 | Agent-Trust-Events | Nein | Keine Nutzerdaten; Governance-Protokolle des Projekts |
 
@@ -224,6 +240,11 @@ Session-Content nie persistiert wird.
 Wenn Nutzer Session-Inhalte auf expliziten Wunsch selbst speichern können,
 muss dieser Inhalt vollständig exportierbar und löschbar sein (PRIVACY §8).
 Diese Funktion ist kein MVP-Feature — sie ist als Konzept vorgemerkt.
+
+**Folge für Löschung:** Solange kein separater, dokumentierter Zuordnungspfad
+zwischen Account-/Access-Daten und Runtime-Events existiert, werden pseudonyme
+Runtime-Events nicht per Konto-Lookup gelöscht, sondern ausschließlich über die
+Retention- und Löschlogik des Event-Storage.
 
 ---
 
@@ -236,7 +257,7 @@ Diese Funktion ist kein MVP-Feature — sie ist als Konzept vorgemerkt.
 | LLM-Provider-DPA-Abschluss | Offener Prüfpunkt (PRIVACY §9); Pflicht vor Produktionsstart |
 | Account-/IAM-Architektur | Pilot mit bekannter Gruppe; keine offene Registrierung im MVP |
 | Backup- und Disaster-Recovery-Logik | Kein großes DR-Design nötig; die Backup-/Replica-/Nebenlogik des konkret gewählten Event-Storage-Pfads muss vor Live-Nutzung trotzdem benannt sein. Offen = Blocker |
-| Anonymisierungs- vs. Pseudonymisierungs-Entscheid für Session-IDs | Zur Klärung vor Produktionsstart; PRIVACY §3 nutzt „pseudonym" als Default |
+| Vollständige Export-/Auskunftsbehandlung pseudonymer Runtime-Events | Bleibt offen bis Produktionsstart; hängt an separater Rechts-/Ops-Bewertung und nicht an einem Default-Join |
 | Export-Format-Implementierung | Noch kein persistierter Nutzerinhalt; Format-Entscheid wenn nötig |
 | Subprozessor-Liste (vollständig) | Offen; zusammenzustellen bei Produktionsstart (PRIVACY §9) |
 
@@ -257,3 +278,4 @@ Vor jedem neuen Datenfluss, Log-Typ oder Persistenz-Entscheid:
 | 6 | Ist unklar, zu welchem der fünf Datenströme dieser Datenpunkt gehört? | Nicht persistieren bis Zuordnung geklärt |
 | 7 | Wird hier ein Safety-Signal mit einer Nutzeridentität verknüpft (statt pseudonymer Session-ID)? | Privacy-Verletzung — Verknüpfung entfernen |
 | 8 | Könnte dieser Datenpunkt mit dem Agent-Trust-Ledger verwechselt werden? | Domäne klären — Runtime-Events und Governance-Events sind getrennte Schemas |
+| 9 | Entsteht hier eine stille Session↔Account-/Access-Verknüpfung ohne dokumentierten Minimalzweck? | Privacy-Verletzung — Join entfernen oder Zweck explizit entscheiden |

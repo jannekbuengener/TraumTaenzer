@@ -75,7 +75,7 @@ addiert werden, wenn ein belegter technischer Bedarf entsteht. Nicht vorher.
 | **Hält** | Keine Session-State, keine Logs, keine Secrets |
 | **Darf nicht** | Safety-Entscheidungen treffen, Session-State halten, Safeword verarbeiten, LLM direkt ansprechen |
 | **Erhält vom Server** | Nur formatierte Ausgabe und verfügbare Aktions-Signale (z. B. EXIT_AVAILABLE) |
-| **Übergibt an Server** | Nur rohe Nutzereingabe + pseudonyme Session-ID; keine Nutzeridentität |
+| **Übergibt an Server** | Nur rohe Nutzereingabe + aktuelle opaque Session-ID der laufenden Session; keine Nutzeridentität |
 
 Der Client ist stateless. Sein Absturz verliert keine sicherheitskritischen Daten.
 
@@ -113,7 +113,7 @@ Der Server-Prozess ist die einzige Instanz mit Safety-Entscheidungsgewalt.
 | Dimension | Inhalt |
 |---|---|
 | **Was es ist** | Append-only Speicher für redacted System-Events |
-| **Enthält** | Nur: session_id (pseudonym), timestamp, event_type, Entscheidungs-/Fehler-Enums — kein Content |
+| **Enthält** | Nur: session_id (opaque pseudonym), timestamp, event_type, Entscheidungs-/Fehler-Enums — kein Content |
 | **Retention** | Guard-/Safety-Events: max. 90 Tage; System-Error-Logs: max. 30 Tage (→ KERNEL §9) |
 | **Für Pilot** | Kann lokale Datei oder minimales DB-Backend sein — kein Cloud-Service zwingend |
 
@@ -160,10 +160,15 @@ Personendaten beschränkt.
 |---|---|---|
 | **LLM-API-Key** | Server-Prozess: Umgebungsvariable oder Secret-Store | Client, Logs, Event-Storage, Repo, LLM-Prompt, Git-History |
 | **Safeword-Konfiguration** | Server-seitig in Kernel-Config | Client-Bundle, Logs, Event-Storage, LLM-Adapter-Payload |
-| **Session-IDs** | Pseudonym, RAM-only im Kernel | Nicht mit Nutzeridentität verknüpft in Storage |
+| **Session-IDs** | Opaque Zufalls-ID pro Session; transient in Client-/Kernel-Runtime und nur als pseudonymer Schlüssel im redacted Event-Storage | Account-/Access-Storage, TB-2, Prompts, URLs, persistente Client-Speicher, Debug-/Support-Logs mit Identität |
 | **Nutzeridentität** | Falls vorhanden: separater Auth-Layer, nicht im Kernel-Session-State | Event-Log (kein Inhaltsevent darf Nutzeridentität tragen), LLM-Adapter, Client-State |
 
 **Operative Regel:** Bevor ein neuer Konfigurationswert angelegt wird, Frage stellen: Kann dieser Wert in einem Log landen? Kann er in einem Prompt landen? Wenn Ja: als Secret behandeln oder nicht anlegen.
+
+**MVP-Entscheidung zur Linkage:** Es gibt standardmäßig keinen persistenten
+Session↔Account-/Access-Mapping-Pfad. Falls Pilot-Zugangsdaten oder
+Kontaktlisten überhaupt existieren, bleiben sie außerhalb der Runtime und dürfen
+nicht still mit Event-Storage oder Debug-Ausleitungen gejoint werden.
 
 Gitleaks scannt jeden PR (SYSTEM.CONTEXT §CI). Das ist die technische Durchsetzung der Secret-Disziplin im Repo. Runtime-Secrets liegen außerhalb des Repos.
 
