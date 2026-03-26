@@ -110,10 +110,90 @@ Region- oder Datenpolitikwechsel ist die Matrix neu zu prüfen.
 
 | Provider-Klasse | Konkretes Produkt / API | Welche Datenklassen passieren die Grenze? | DPA / AVV passend? | Retention geklärt? | Training / Opt-out geklärt? | Region / Transfer geklärt? | Subprocessor geklärt? | Löschpfad inkl. Support-Logs / Backups geklärt? | Entscheidungsstatus |
 |---|---|---|---|---|---|---|---|---|---|
-| **LLM** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
+| **LLM** | Azure OpenAI Service in Microsoft Foundry, `Chat Completions API` mit `gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`; ausdrücklich nicht `Responses API`, `Threads` oder `Stored completions` | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-/Betriebsmetadaten; bei Abuse-Monitoring zusätzlich selektierte Prompt-/Output-Samples | ja | offen | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
 | **Hosting** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 | **E-Mail** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 | **Weiterer externer Dienst** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
+
+---
+
+### Bewertungsnotiz 2026-03-26 – LLM-Arbeitskandidat
+
+**Arbeitsannahme für diese Bewertung:** Da das Repo bewusst provider-agnostisch
+bleibt und keinen konkreten Anbieter vorgibt, wird genau ein plausibler
+LLM-Pfad für den text-first MVP bewertet:
+`Azure OpenAI Service` in Microsoft Foundry, `Chat Completions API`,
+`gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`.
+
+**Warum genau dieser Zuschnitt:** `DEPLOYMENT_ENVELOPE.md` verbietet
+provider-seitigen Conversation-State im MVP. Deshalb wurde der stateful
+`Responses API`-/`Threads`-/`Stored completions`-Pfad nicht als Live-Kandidat
+gewertet.
+
+**Offizielle Quellenbasis (Stand 2026-03-26):**
+
+- Microsoft: Data, privacy, and security for Azure Direct Models in Microsoft
+  Foundry (`https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy`)
+- Microsoft: Deployment types for Foundry models
+  (`https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/concepts/deployment-types`)
+- Microsoft: Azure OpenAI / Foundry model availability
+  (`https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models`)
+- Microsoft: Azure Direct Models abuse monitoring
+  (`https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/abuse-monitoring`)
+- Microsoft: Products and Services Data Protection Addendum (DPA)
+  (`https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA`)
+
+**Belastbar geklärt:**
+
+- Das Produkt ist real und konkret benannt: `Azure OpenAI Service` /
+  Azure-Direct-Model-Pfad in Microsoft Foundry mit `Chat Completions API`.
+- `gpt-4o-mini (2024-07-18)` ist laut offizieller Modellverfügbarkeit für
+  `Standard` Deployment in `Sweden Central` verfügbar.
+- Microsoft dokumentiert für Azure Direct Models, dass Prompts, Outputs,
+  Embeddings und Trainingsdaten nicht an OpenAI oder andere Modellanbieter
+  weitergegeben werden.
+- Für inferencing gilt laut offizieller Datenprivacy-Doku: Modelle sind
+  stateless; Prompts und Completions werden nicht im Modell gespeichert und
+  nicht zum Training, Retraining oder zur Verbesserung der Basismodelle
+  verwendet.
+- Für `Standard`-/`Regional`-Deployments gilt laut Deployment-Type-Doku:
+  Inferencing-Daten werden in der Deployment-Region verarbeitet; für den
+  gewählten Pfad also `Sweden Central`.
+- Die Microsoft-DPA ist offiziell verfügbar, und die Datenprivacy-Doku nennt
+  sie ausdrücklich als maßgebliche DPA-Grundlage für Azure Direct Models.
+- Diese Bewertung bestätigt damit die offizielle Produktgeltung der DPA, nicht
+  automatisch die bereits vollständig nachgewiesene Vertragsumsetzung im
+  konkreten Azure-Tenant.
+
+**Explizite Blocker / No-Go-Risiken:**
+
+- **Retention nicht belastbar geschlossen:** Die offiziellen Microsoft-Quellen
+  beschreiben Default-Abuse-Monitoring und mögliche Speicherung ausgewählter
+  Prompt-/Output-Daten für Review, benennen für diesen konkreten Pfad aber in
+  der hier verifizierten Quellenbasis keine belastbare Haltedauer.
+- **Subprocessor-Lage nicht belastbar geschlossen:** Die DPA enthält allgemeine
+  Subprocessor-Regeln, aber in der hier verifizierten Quellenbasis liegt keine
+  konkret belegte, produktnahe Subprocessor-Liste speziell für diesen
+  Azure-OpenAI-Pfad vor.
+- **Löschpfad nicht belastbar geschlossen:** Die DPA enthält generelle
+  Delete-/Return-Verpflichtungen, aber kein in dieser Session belastbar
+  verifizierter produktnaher Löschpfad für Abuse-Monitoring-Artefakte,
+  Support-Zugriffe und Backup-/Replikationsreste dieses konkreten Pfads.
+- **Modified abuse monitoring ist kein Default:** Microsoft beschreibt einen
+  Antragsweg zur Modifikation des Abuse-Monitorings. Für diese Bewertung liegt
+  keine belastbare Grundlage vor, dass dieser Pfad bereits bewilligt oder für
+  den MVP operativ verfügbar wäre.
+
+**Operativer Entscheid:**
+
+- `zulässig für Dev ohne reale Personendaten`: ja
+- `zulässig für Pilot`: nein
+- **Status vor erstem Live-Nutzer: `nicht zulässig für Live-Nutzer`**
+
+Der Pfad ist damit keine Freigabegrundlage für reale Pilot-Nutzer. Die
+Negativbewertung ist kein juristisches Endurteil, sondern eine operative
+Go/No-Go-Bewertung für den MVP auf Basis der derzeit belastbar verifizierten
+Microsoft-Quellen.
 
 ---
 
