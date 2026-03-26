@@ -111,24 +111,32 @@ Region- oder Datenpolitikwechsel ist die Matrix neu zu prüfen.
 | Provider-Klasse | Konkretes Produkt / API | Welche Datenklassen passieren die Grenze? | DPA / AVV passend? | Retention geklärt? | Training / Opt-out geklärt? | Region / Transfer geklärt? | Subprocessor geklärt? | Löschpfad inkl. Support-Logs / Backups geklärt? | Entscheidungsstatus |
 |---|---|---|---|---|---|---|---|---|---|
 | **LLM** | Azure OpenAI Service in Microsoft Foundry, `Chat Completions API` mit `gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`; ausdrücklich nicht `Responses API`, `Threads` oder `Stored completions` | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-/Betriebsmetadaten; bei Abuse-Monitoring zusätzlich selektierte Prompt-/Output-Samples | ja | offen | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
+| **LLM** | Anthropic Claude API, `POST /v1/messages` mit `claude-sonnet-4-6` unter Commercial Terms; optional `inference_geo="us"`; ausdrücklich nicht `Files API`, `Messages Batches`, Console/Workbench oder gespeicherte Chat-Produkte | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-Metadaten; bei Policy-/Misuse-Flags zusätzlich retainte Input-/Output-Artefakte und Trust-&-Safety-Klassifikationen | ja | ja | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
+| **LLM** | Amazon Bedrock Runtime, `InvokeModel` mit `anthropic.claude-sonnet-4-6` in `eu-central-1` (`Europe (Frankfurt)`), ohne Inference Profile / Cross-Region Inference; ausdrücklich nicht Agents, Knowledge Bases, Batch- oder Custom-Model-Pfade | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, AWS Request-/Betriebsmetadaten; automatisierte Abuse-Detection-Klassifikationen | ja | offen | ja | ja | ja | offen | nicht zulässig für Live-Nutzer |
 | **Hosting** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 | **E-Mail** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 | **Weiterer externer Dienst** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 
 ---
 
-### Bewertungsnotiz 2026-03-26 – LLM-Arbeitskandidat
+### Bewertungsnotizen 2026-03-26 – geprüfte LLM-Pfade
 
-**Arbeitsannahme für diese Bewertung:** Da das Repo bewusst provider-agnostisch
-bleibt und keinen konkreten Anbieter vorgibt, wird genau ein plausibler
-LLM-Pfad für den text-first MVP bewertet:
-`Azure OpenAI Service` in Microsoft Foundry, `Chat Completions API`,
-`gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`.
+Diese Session bewertet drei produktgenaue, stateless text-in/text-out-Pfade
+gegen die Matrix:
 
-**Warum genau dieser Zuschnitt:** `DEPLOYMENT_ENVELOPE.md` verbietet
-provider-seitigen Conversation-State im MVP. Deshalb wurde der stateful
-`Responses API`-/`Threads`-/`Stored completions`-Pfad nicht als Live-Kandidat
-gewertet.
+- `Azure OpenAI Service` in Microsoft Foundry, `Chat Completions API`,
+  `gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`
+- `Anthropic Claude API`, `POST /v1/messages`, `claude-sonnet-4-6`
+- `Amazon Bedrock Runtime`, `InvokeModel`,
+  `anthropic.claude-sonnet-4-6`, `eu-central-1`
+
+Nicht bewertet wurden stateful oder speichernde Zusatzpfade wie `Responses API`,
+`Threads`, `Stored completions`, `Files API`, `Messages Batches`,
+Console/Workbench, Agents, Knowledge Bases oder Custom-Model-/Fine-Tuning-
+Pfade, weil sie im MVP entweder verboten sind oder eigene Persistenzpfade
+öffnen.
+
+#### A. Azure OpenAI Service – bestehender Negativbefund
 
 **Offizielle Quellenbasis (Stand 2026-03-26):**
 
@@ -145,55 +153,149 @@ gewertet.
 
 **Belastbar geklärt:**
 
-- Das Produkt ist real und konkret benannt: `Azure OpenAI Service` /
-  Azure-Direct-Model-Pfad in Microsoft Foundry mit `Chat Completions API`.
-- `gpt-4o-mini (2024-07-18)` ist laut offizieller Modellverfügbarkeit für
-  `Standard` Deployment in `Sweden Central` verfügbar.
-- Microsoft dokumentiert für Azure Direct Models, dass Prompts, Outputs,
-  Embeddings und Trainingsdaten nicht an OpenAI oder andere Modellanbieter
-  weitergegeben werden.
-- Für inferencing gilt laut offizieller Datenprivacy-Doku: Modelle sind
-  stateless; Prompts und Completions werden nicht im Modell gespeichert und
-  nicht zum Training, Retraining oder zur Verbesserung der Basismodelle
-  verwendet.
-- Für `Standard`-/`Regional`-Deployments gilt laut Deployment-Type-Doku:
-  Inferencing-Daten werden in der Deployment-Region verarbeitet; für den
-  gewählten Pfad also `Sweden Central`.
-- Die Microsoft-DPA ist offiziell verfügbar, und die Datenprivacy-Doku nennt
-  sie ausdrücklich als maßgebliche DPA-Grundlage für Azure Direct Models.
-- Diese Bewertung bestätigt damit die offizielle Produktgeltung der DPA, nicht
-  automatisch die bereits vollständig nachgewiesene Vertragsumsetzung im
-  konkreten Azure-Tenant.
+- Das Produkt ist real und konkret benannt; der bewertete Pfad ist stateless
+  und liegt innerhalb des MVP-Envelope.
+- Microsoft dokumentiert, dass Prompts, Outputs und Embeddings nicht an OpenAI
+  oder andere Modellanbieter weitergegeben und nicht zum Basismodelltraining
+  verwendet werden.
+- Für `Standard`-/`Regional`-Deployments werden Inferencing-Daten in der
+  Deployment-Region verarbeitet; für den gewählten Pfad also `Sweden Central`.
+- Die Microsoft-DPA ist offiziell verfügbar und in der Datenprivacy-Doku für
+  Azure Direct Models ausdrücklich referenziert.
 
-**Explizite Blocker / No-Go-Risiken:**
+**Blocker / No-Go-Risiken:**
 
-- **Retention nicht belastbar geschlossen:** Die offiziellen Microsoft-Quellen
-  beschreiben Default-Abuse-Monitoring und mögliche Speicherung ausgewählter
-  Prompt-/Output-Daten für Review, benennen für diesen konkreten Pfad aber in
-  der hier verifizierten Quellenbasis keine belastbare Haltedauer.
-- **Subprocessor-Lage nicht belastbar geschlossen:** Die DPA enthält allgemeine
-  Subprocessor-Regeln, aber in der hier verifizierten Quellenbasis liegt keine
-  konkret belegte, produktnahe Subprocessor-Liste speziell für diesen
-  Azure-OpenAI-Pfad vor.
-- **Löschpfad nicht belastbar geschlossen:** Die DPA enthält generelle
-  Delete-/Return-Verpflichtungen, aber kein in dieser Session belastbar
-  verifizierter produktnaher Löschpfad für Abuse-Monitoring-Artefakte,
-  Support-Zugriffe und Backup-/Replikationsreste dieses konkreten Pfads.
-- **Modified abuse monitoring ist kein Default:** Microsoft beschreibt einen
-  Antragsweg zur Modifikation des Abuse-Monitorings. Für diese Bewertung liegt
-  keine belastbare Grundlage vor, dass dieser Pfad bereits bewilligt oder für
-  den MVP operativ verfügbar wäre.
+- Retention für den konkreten Abuse-Monitoring-Pfad bleibt in der hier
+  verifizierten Quellenbasis offen.
+- Produktnahe Subprocessor-Liste für genau diesen Pfad bleibt offen.
+- Produktnaher Löschpfad für Abuse-Monitoring-Artefakte, Support-Zugriffe und
+  Backup-/Replikationsreste bleibt offen.
+- Modified abuse monitoring ist kein Default und für den MVP nicht belastbar
+  nachgewiesen.
 
-**Operativer Entscheid:**
+**Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
 
-- `zulässig für Dev ohne reale Personendaten`: ja
-- `zulässig für Pilot`: nein
-- **Status vor erstem Live-Nutzer: `nicht zulässig für Live-Nutzer`**
+#### B. Anthropic Claude API – direkter API-Arbeitskandidat
 
-Der Pfad ist damit keine Freigabegrundlage für reale Pilot-Nutzer. Die
-Negativbewertung ist kein juristisches Endurteil, sondern eine operative
-Go/No-Go-Bewertung für den MVP auf Basis der derzeit belastbar verifizierten
-Microsoft-Quellen.
+**Offizielle Quellenbasis (Stand 2026-03-26):**
+
+- Anthropic: Messages API (`https://platform.claude.com/docs/en/api/messages.md`)
+- Anthropic: Models overview
+  (`https://platform.claude.com/docs/en/about-claude/models/overview.md`)
+- Anthropic: Commercial Terms of Service
+  (`https://www.anthropic.com/legal/commercial-terms`)
+- Anthropic: Data Processing Addendum
+  (`https://www.anthropic.com/legal/data-processing-addendum`)
+- Anthropic: Privacy Policy (`https://www.anthropic.com/legal/privacy`)
+- Anthropic: Supported regions
+  (`https://platform.claude.com/docs/en/api/supported-regions.md`)
+- Anthropic: Data residency
+  (`https://platform.claude.com/docs/en/build-with-claude/data-residency.md`)
+- Anthropic: Zero Data Retention
+  (`https://platform.claude.com/docs/en/build-with-claude/zero-data-retention.md`)
+- Anthropic Privacy Center: How long do you store my organization's data?
+  (`https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data`)
+
+**Belastbar geklärt:**
+
+- `POST /v1/messages` ist ein realer, stateless API-Pfad; Mehrturn-Kontext wird
+  im Request übergeben, nicht als externer Thread-State erzwungen.
+- Die Commercial Terms gelten ausdrücklich für Anthropic API keys und Services;
+  der DPA ist darin per Referenz eingebunden und gilt für die Services.
+- Unter Commercial Terms darf Anthropic Customer Content aus den Services nicht
+  zum Modelltraining verwenden.
+- Für API-Nutzer gilt laut Privacy Center eine Standard-Retention von 30 Tagen
+  für Inputs/Outputs; bei Usage-Policy-Verstößen können Inputs/Outputs bis zu
+  2 Jahre und Trust-&-Safety-Klassifikationen bis zu 7 Jahre gehalten werden.
+- `inference_geo` erlaubt nur `global` oder `us`; Workspace-Geo ist derzeit nur
+  `us`. Für Transfers außerhalb EEA/UK nennt Anthropic Adequacy und SCCs als
+  Rechtsgrundlagen.
+- ZDR ist für `/v1/messages` grundsätzlich als separater Arrangement-Pfad
+  beschrieben, gilt aber nicht automatisch und behält Gesetz-/Misuse-
+  Ausnahmen bei.
+
+**Blocker / No-Go-Risiken:**
+
+- Die öffentliche Subprocessor-Liste ist offiziell verlinkt, die konkrete
+  Subprocessor-/Rollenlage für diesen Pfad war in dieser Session aus den
+  offiziellen Quellen aber nicht belastbar extrahierbar und bleibt operativ
+  offen.
+- Der Löschpfad ist für den Standardpfad nur teilweise geschlossen:
+  30-Tage-Backend-Löschung und DPA-Delete/Return sind dokumentiert, aber
+  Support-/Nebenartefakte sowie die genaue Side-Path-Logik für Missbrauchs-,
+  Rechts- und Backup-Ausnahmen bleiben nicht produktnah genug belegt.
+- Ohne bereits aktiviertes ZDR-Arrangement bleibt der Standardpfad mit 30-Tage-
+  Retention plus Misuse-Ausnahmen der operative Default.
+
+**Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
+
+#### C. Amazon Bedrock Runtime – Cloud-vermittelter API-Arbeitskandidat
+
+**Offizielle Quellenbasis (Stand 2026-03-26):**
+
+- AWS: Amazon Bedrock data protection
+  (`https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html`)
+- AWS: Amazon Bedrock abuse detection
+  (`https://docs.aws.amazon.com/bedrock/latest/userguide/abuse-detection.html`)
+- AWS: Amazon Bedrock FAQs (`https://aws.amazon.com/bedrock/faqs/`)
+- AWS: Model support by AWS Region in Amazon Bedrock
+  (`https://docs.aws.amazon.com/bedrock/latest/userguide/models-regions.html`)
+- AWS: AWS Service Terms (`https://aws.amazon.com/service-terms/`)
+- AWS: GDPR Center (`https://aws.amazon.com/compliance/gdpr-center/`)
+- AWS: AWS GDPR DPA PDF
+  (`https://d1.awsstatic.com/legal/aws-gdpr/AWS_GDPR_DPA.pdf`)
+- AWS: AWS Sub-processors (`https://aws.amazon.com/compliance/sub-processors/`)
+
+**Belastbar geklärt:**
+
+- `InvokeModel` auf Amazon Bedrock ist ein realer, stateless API-Pfad; das
+  konkrete Modell `anthropic.claude-sonnet-4-6` ist laut Regionsmatrix in
+  `Europe (Frankfurt)` verfügbar.
+- AWS dokumentiert, dass Amazon Bedrock Prompts und Completions nicht speichert
+  oder loggt, nicht zum Training von AWS-Modellen verwendet und nicht an
+  Dritte verteilt; Modellanbieter haben keinen Zugriff auf Prompts,
+  Completions oder Bedrock-Logs.
+- Die Abuse-Detection-Doku beschreibt vollautomatische Klassifikation ohne
+  Human Review; Benutzer-Inputs und Modell-Outputs werden laut dieser Doku
+  nicht gespeichert und nicht mit Drittanbietern geteilt, nur anonymisierte
+  Klassifikator-Metriken können geteilt werden.
+- FAQ und DPA-/GDPR-Doku schließen die Produktgeltung von AWS-Vertrags- und
+  Transfermechanismen grundsätzlich für AWS-Services; die AWS-Subprocessor-
+  Seite ist öffentlich und regions-/serviceabhängig.
+- Die FAQ sagt, dass von Bedrock verarbeitetes Customer Content verschlüsselt
+  und at rest in der gewählten AWS-Region gespeichert wird; für den hier
+  betrachteten Pfad wäre das `eu-central-1`.
+
+**Blocker / No-Go-Risiken:**
+
+- Die offiziellen Quellen lassen für diesen exakten Runtime-Pfad offen, wie
+  provider-seitige Request-Metadaten, Service-Control-Logs, Support-Artefakte
+  und Backups gehalten und gelöscht werden.
+- Zwischen „doesn't store or log your prompts and completions“ und „content is
+  encrypted and stored at rest in the AWS Region“ bleibt die konkrete
+  Speicher-/Backup-Semantik für verarbeitete Inhalte nicht präzise genug
+  geschlossen.
+- Die Service Terms halten produktseitig Abuse-Detection- und
+  Cross-Region-Inference-Mechaniken im Scope; für den MVP liegt keine
+  account-spezifische Evidenz vor, dass alle Nebenpfade operativ sauber
+  ausgeschlossen oder anders geregelt sind.
+
+**Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
+
+#### Gesamtergebnis 2026-03-26
+
+Von den in dieser Session belastbar geprüften LLM-Pfaden ist **kein** Pfad
+`zulässig für Pilot`.
+
+- `zulässig für Dev ohne reale Personendaten`: ja, für alle drei Pfade
+- `zulässig für Pilot`: nein, für alle drei Pfade
+- **Status vor erstem Live-Nutzer: derzeit kein freigabefähiger externer
+  LLM-Providerpfad**
+
+Das ist keine juristische Endabnahme, sondern eine operative Go/No-Go-Bewertung
+für den MVP. Solange ein konkreter Produktpfad seine Subprocessor-, Löschpfad-
+und Side-Artifact-Lage nicht belastbar schließt, bleibt der Pilot mit
+Live-Nutzern gesperrt.
 
 ---
 

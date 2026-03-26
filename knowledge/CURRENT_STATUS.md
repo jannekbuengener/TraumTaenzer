@@ -8,7 +8,9 @@ Zuletzt aktualisiert: 2026-03-26
 
 **Branch:** `main`
 **PRs:** Docs-/Spec- und Sync-PRs bis #42 gemergt – Canon-Grundstock, Frame-Artefakte und CI-Infra auf `main`
-**Phase:** Core-Canon und Frame-Artefakte gemergt; offen sind nur noch produktionsnahe P0-Kanten und Test-Evidenz
+**Phase:** Core-Canon und Frame-Artefakte gemergt; geprüft sind jetzt auch
+alternative LLM-Pfade, aber der Pilot bleibt an produktionsnahen P0-Kanten und
+fehlender Live-Provider-Freigabe blockiert
 
 ---
 
@@ -63,7 +65,7 @@ Zuletzt aktualisiert: 2026-03-26
 
 | Punkt | Priorität | Referenz |
 |---|---|---|
-| Nach negativer Bewertung des Azure-OpenAI-Arbeitskandidaten einen live-tauglichen LLM-Pfad belastbar klären oder die Microsoft-Blocker für Retention, Subprocessor und Löschpfad schließen | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
+| Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`) und Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`) ist aktuell kein LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Konkreten Pilot-Event-Storage-/Hosting-Pfad benennen; bis dahin bleibt Retention-, Lösch- und Event-Storage-Enforcement für reale Events live-blockiert | P0 vor Live-Nutzer | DATA_LIFECYCLE §6, DEPLOYMENT_ENVELOPE §7, PILOT_READINESS §3.4 |
 | Minimale Red-Team-/Prompt-Testbaseline ist kanonisch definiert; die Durchführung gegen reale Runtime inkl. Leak-/fail-closed-Nachweis bleibt offen | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
@@ -72,10 +74,11 @@ Zuletzt aktualisiert: 2026-03-26
 
 ## Nächster Schritt
 
-Drei P0-Blocker bleiben vor Live-Nutzern offen: Erstens ein konkret
-freigabefähiger LLM-Providerpfad. Zweitens ein konkret benannter
-Pilot-Event-Storage-/Hosting-Pfad, auf dem 90-/30-Tage-Retention,
-automatische Löschung und Backup-/Nebenlogik technisch belegbar durchgesetzt
-werden können. Drittens die dokumentierte Durchführung der minimalen
-Red-Team-/Prompt-Testbaseline inklusive Leak- und fail-closed-Nachweisen.
-Ohne diese drei Nachweise bleibt der Pilot gesperrt.
+Drei P0-Blocker bleiben vor Live-Nutzern offen: Erstens ist nach belastbarer
+Prüfung von Azure OpenAI, Anthropic Claude API und Amazon Bedrock weiterhin
+kein freigabefähiger externer LLM-Providerpfad identifiziert. Zweitens fehlt
+ein konkret benannter Pilot-Event-Storage-/Hosting-Pfad, auf dem 90-/30-Tage-
+Retention, automatische Löschung und Backup-/Nebenlogik technisch belegbar
+durchgesetzt werden können. Drittens fehlt die dokumentierte Durchführung der
+minimalen Red-Team-/Prompt-Testbaseline inklusive Leak- und fail-closed-
+Nachweisen. Ohne diese drei Nachweise bleibt der Pilot gesperrt.
