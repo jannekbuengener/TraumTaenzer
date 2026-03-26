@@ -57,6 +57,14 @@ Das System benennt seinen KI-Charakter klar – im Entry und im Zweifelsfall ern
 
 Der Nutzer kann die Sequenz an jedem Übergang verlassen. Zwischen den Phasen gibt es keine automatische Weiterleitung ohne Nutzerbestätigung. Jeder Phasenübergang ist ein echtes Opt-in.
 
+### Transparenz an risikorelevanten Stellen
+
+- Entry: KI-Charakter, Systemgrenzen, Safeword und Exit vor dem ersten Opt-in sichtbar machen.
+- Check-in: bei Unsicherheit, Belastung oder Rollenverwechslung KI-Charakter und Systemgrenzen knapp erneut verankern.
+- Szene / Reflexionskern: bei Deutungsnähe nur als mögliche Lesart formulieren; kein Wahrheitsanspruch, keine versteckte Anthropomorphisierung.
+- Safety- / Referral-Pfade: klar benennen, dass das System kein Krisendienst ist und auf externe Hilfe verweist.
+- Exit: neutral schließen, ohne Bindungssignal, Rückkehrdruck oder 24/7-Anmutung.
+
 ---
 
 ## 4. Entry
