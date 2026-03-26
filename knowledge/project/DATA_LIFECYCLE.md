@@ -188,9 +188,9 @@ Basiert auf PRIVACY_BY_DESIGN §6–§7 und KERNEL_GUARD_CONTRACTS §9.
 |---|---|---|---|
 | Session-Inhalte | Keine Persistenz | n.a. | n.a. (nie persistiert) |
 | Constraint Flags | Session-Ende | Session-Ende oder EXIT/EXTERNAL_REFERRAL | In-Memory, automatisch |
-| Safety-Event-Logs (`INPUT_GUARD_RESULT`, `OUTPUT_GUARD_RESULT`, `SAFE_STATE_TRANSITION`) | Max. 90 Tage | Ablauf der Frist | Automatische Löschung; noch zu implementieren |
-| Session-Metadaten (`SESSION_STARTED`, `SESSION_ENDED`) | Max. 90 Tage | Ablauf der Frist | Automatische Löschung; noch zu implementieren |
-| System-Fehler-Logs (`SYSTEM_ERROR`) | Max. 30 Tage | Ablauf der Frist | Automatische Löschung; noch zu implementieren |
+| Safety-Event-Logs (`INPUT_GUARD_RESULT`, `OUTPUT_GUARD_RESULT`, `SAFE_STATE_TRANSITION`) | Max. 90 Tage | Ablauf der Frist | Täglicher TTL-Purge im lokalen `SQLite`-Event-Store auf dem Pilot-Volume; vor Pilotstart aktiv + nachgewiesen |
+| Session-Metadaten (`SESSION_STARTED`, `SESSION_ENDED`) | Max. 90 Tage | Ablauf der Frist | Täglicher TTL-Purge im lokalen `SQLite`-Event-Store auf dem Pilot-Volume; vor Pilotstart aktiv + nachgewiesen |
+| System-Fehler-Logs (`SYSTEM_ERROR`) | Max. 30 Tage | Ablauf der Frist | Täglicher TTL-Purge im lokalen `SQLite`-Event-Store; content-free Host-/App-Logs separat max. 30 Tage |
 | Account-Daten (falls vorhanden) | Solange Konto aktiv + 30 Tage nach Kündigung | Nutzerkündigung oder manuelle Löschung | Noch nicht implementiert |
 | Agent-Trust-Events | Unbegrenzt (Governance) | Explizite Governance-Entscheidung nötig | Repo-Git-History |
 
@@ -200,25 +200,48 @@ einem Speicher landen (PRIVACY §7: „Keine Datenpersistenz ohne definierten L�
 
 ### Enforcement-Bewertung gegen die aktuelle Zielinfrastruktur (Stand 2026-03-26)
 
-**Belastbar festgelegt sind derzeit nur:**
+**Belastbar festgelegt sind derzeit:**
 
-- Mono-MVP als ein Serverprozess mit in-process `Event-Log-Writer`
-- append-only, redacted, content-free Runtime-Events hinter TB-3
+- Mono-MVP als ein Serverprozess auf `Hetzner Cloud Server` in `nbg1`
+  (`Nuremberg`, Deutschland)
+- in-process `Event-Log-Writer`
+- redacted, content-free Runtime-Events in lokalem `SQLite`-Event-Store auf
+  einem angehängten `Hetzner Volume`
 - RAM-only Session-Content ohne Persistenzpfad
+- keine Hetzner-Server-Backups und keine Snapshots im Pilotpfad; das Event-
+  `Volume` selbst hat laut Produktdoku keine providerseitigen Backups oder
+  Snapshots
+- keine externe Log- oder Storage-Replikation; content-free Host-/App-Logs
+  bleiben lokal und unterliegen separat der 30-Tage-Rotation
 
-**Nicht belastbar festgelegt sind derzeit:**
+**Nicht als Pilotpfad gewählt wird:**
 
-- konkretes Pilot-Event-Storage-Backend (`lokale Datei` vs. `minimales DB-Backend`)
-- konkreter Hosting-Pfad, auf dem dieses Event-Storage laufen würde
-- technische Retention-Durchsetzung für reale Guard-/Safety-Events,
-  Session-Metadaten und `SYSTEM_ERROR`
-- Backup-/Replica-/Support-/Nebenlogik des später gewählten Storage-Pfads
+- append-only Event-Storage als lokale Datei auf demselben Host, weil
+  90-/30-Tage-Retention und fallbezogene Löschung über `session_id` dann nur
+  über Dateirewrites/Rotationen erreichbar wären und unnötige Nebenartefakte
+  erzeugen
+
+**Operativer Lösch- und Retention-Pfad:**
+
+- täglicher TTL-Purge im lokalen `SQLite`-Store:
+  `SYSTEM_ERROR` > 30 Tage, alle übrigen Runtime-Events > 90 Tage
+- `VACUUM` nach TTL- und Ad-hoc-Löschungen, damit gelöschte Datensätze nicht
+  als freie Seiten liegen bleiben
+- fallbezogene Löschung über `session_id` nur für redacted Runtime-Events;
+  Session-Content bleibt ohnehin ephemer
+- Server-Backups bleiben deaktiviert; manuelle Snapshots sind im Pilot verboten;
+  das Event-`Volume` erhält keine providerseitigen Backups/Snapshots
+- Support-/Nebenpfade dürfen keine Eventdaten tragen: keine Event-Exporte in
+  Tickets, Rescue/VNC nur als Break-Glass; bei EU-Standort verarbeitet Hetzner
+  Serverdaten laut DPA/Subunternehmerlage innerhalb der EU, Support erfolgt
+  ebenfalls innerhalb der EU
 
 **Operativer Befund:** Für Dev ohne reale Personendaten bleibt der Canon
-ausreichend. Für Pilot oder sonstige Live-Nutzer-Nutzung ist die fehlende
-Benennung des konkreten Event-Storage-/Hosting-Pfads ein Blocker, weil damit
-90-/30-Tage-Retention, automatische Löschung und Nebenartefakte nicht
-belastbar verifiziert werden können.
+ausreichend. Für Pilot ist der Infrastrukturpfad jetzt belastbar benannt:
+`Hetzner Cloud Server` in `nbg1` mit angehängtem `Hetzner Volume` und lokalem
+`SQLite`-Event-Store. Offen bleibt nicht mehr die Zielkomponente selbst,
+sondern nur die saubere Aktivierung und Evidenz des beschriebenen TTL-/
+Löschpfads vor Pilotstart.
 
 ---
 
@@ -252,11 +275,11 @@ Retention- und Löschlogik des Event-Storage.
 
 | Nicht festgelegt | Warum offen |
 |---|---|
-| Konkretes Storage-Backend (DB, Datei, Cloud) | Repo-weit bleibt es provider-agnostisch; vor erstem realen Event ist es aber nicht offen. Ein konkreter Pilot-Event-Storage-Pfad muss benannt sein, sonst bleibt Live-Nutzung blockiert |
+| Konkretes Storage-Backend außerhalb des Pilotpfads | Für reale Pilot-Events festgelegt auf lokales `SQLite` auf angehängtem `Hetzner Volume`; repo-weit bleiben spätere Alternativen offen |
 | Datenbankschema oder Tabellenstruktur | Zu früh; folgt aus Implementierungsentscheid |
 | LLM-Provider-DPA-Abschluss | Offener Prüfpunkt (PRIVACY §9); Pflicht vor Produktionsstart |
 | Account-/IAM-Architektur | Pilot mit bekannter Gruppe; keine offene Registrierung im MVP |
-| Backup- und Disaster-Recovery-Logik | Kein großes DR-Design nötig; die Backup-/Replica-/Nebenlogik des konkret gewählten Event-Storage-Pfads muss vor Live-Nutzung trotzdem benannt sein. Offen = Blocker |
+| Backup- und Disaster-Recovery-Logik jenseits des Pilotpfads | Für den Pilot gilt bewusst: keine Server-Backups, keine Snapshots, keine Volume-Backups und keine Replikate. Weitergehende DR-Designs bleiben offen; jede Abweichung öffnet den Blocker neu |
 | Vollständige Export-/Auskunftsbehandlung pseudonymer Runtime-Events | Bleibt offen bis Produktionsstart; hängt an separater Rechts-/Ops-Bewertung und nicht an einem Default-Join |
 | Export-Format-Implementierung | Noch kein persistierter Nutzerinhalt; Format-Entscheid wenn nötig |
 | Subprozessor-Liste (vollständig) | Offen; zusammenzustellen bei Produktionsstart (PRIVACY §9) |

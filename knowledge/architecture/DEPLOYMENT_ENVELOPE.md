@@ -218,7 +218,7 @@ Die Topologie bleibt in allen drei Umgebungen identisch. Was sich unterscheidet:
 | **LLM-Provider** | Mock, lokales Modell oder kostenpflichtiger API-Test ohne reale Nutzerdaten | Echter externer Provider | Echter Provider |
 | **DPA-Status** | Nicht erforderlich (keine realen Personendaten) | Erforderlich vor erstem Nutzerkontakt; `PROVIDER_DPA_INPUT_MATRIX.md` ausgefüllt und positiv bewertet | Erforderlich und geprüft; Matrix weiterhin aktuell |
 | **Secret-Management** | Lokale `.env`-Datei (nie committen; Gitleaks fängt Fehler) | Env var in isolierter Pilot-Umgebung; kein Sharing mit Dev | Secret-Store; Rotation dokumentiert |
-| **Event-Storage** | Lokale Datei, kein Retention-Enforcement nötig | Konkreter, benannter Storage-Pfad; 90-/30-Tage-Retention technisch erzwingbar; Backup-/Nebenlogik des gewählten Pfads dokumentiert | Retention automatisiert und auditierbar |
+| **Event-Storage** | Lokale Datei oder lokales `SQLite` ohne reale Personendaten | `Hetzner Cloud Server` in `nbg1` + angehängtes `Hetzner Volume` mit lokalem `SQLite`-Event-Store; 90-/30-Tage-Retention via täglichem TTL-Purge + `VACUUM`; keine Server-Backups/Snapshots, keine Volume-Backups | Retention automatisiert und auditierbar |
 | **Nutzerdaten** | Keine echten Personendaten | Kleine bekannte Pilotgruppe; explizit informiert (PILOT_READINESS §3.7) | Geregelter Onboarding-Flow |
 | **Session-Content** | Ephemer (wie immer) | Ephemer; zusätzliche Prüfung, dass kein Content in Logs landet | Ephemer; technisch erzwungen |
 | **Guard-Verhalten** | Identisch zu Pilot/Prod — Guard-Logik hat keine Umgebungs-Modi | Identisch | Identisch |
@@ -228,14 +228,17 @@ Die Topologie bleibt in allen drei Umgebungen identisch. Was sich unterscheidet:
 
 ### Aktuelle Zielinfrastruktur-Bewertung (Stand 2026-03-26)
 
-Belastbar festgelegt sind für den text-first MVP derzeit nur der
-Mono-Serverprozess, der in-process `Event-Log-Writer` und die TB-3-Grenze zu
-einem redacted Event-Storage. Nicht belastbar festgelegt sind dagegen das
-konkrete Pilot-Hosting und das konkrete Event-Storage-Backend.
+Belastbar festgelegt ist für den text-first MVP jetzt ein kleiner Pilotpfad:
+ein Mono-Serverprozess auf `Hetzner Cloud Server` in `nbg1`, redacted
+Runtime-Events in lokalem `SQLite` auf einem angehängten `Hetzner Volume`.
+Nicht gewählt wird die dateibasierte Event-Ablage auf demselben Host, weil
+TTL- und fallbezogene Löschung dort unnötig rewrite-/rotationsträchtig wären.
 
-Damit ist vor Live-Nutzern aktuell **kein positiver Enforcement-Pfad** für
-Retention und Löschung belegbar. Provider-Agnostik bleibt Architekturprinzip,
-ist aber keine Ausrede, den Pilot mit offenem Storage-Pfad zu starten.
+Für den gewählten Pfad gilt: keine Server-Backups, keine manuellen Snapshots,
+keine externen Replikate; das `Volume` selbst hat laut Produktdoku keine
+providerseitigen Backups. Damit ist der Infrastruktur-Entscheid selbst nicht
+mehr offen. Offen bleibt nur die operative Evidenz, dass der beschriebene
+TTL-/Löschpfad vor Pilotstart aktiv ist.
 
 ### Umgebungswechsel-Checkliste (Pilot-Start)
 
@@ -243,9 +246,9 @@ Vor erstem realen Nutzerkontakt — zusätzlich zu PILOT_READINESS §3:
 
 - [ ] `PROVIDER_DPA_INPUT_MATRIX.md` für den konkret genutzten Providerpfad ausgefüllt und positiv bewertet
 - [ ] Secrets nicht in `.env` im Repo-Verzeichnis, sondern in isolierter Pilot-Config
-- [ ] Konkreter Pilot-Event-Storage-Pfad benannt (Datei oder DB-Produkt + Host)
-- [ ] Event-Storage-Retention-Enforcement aktiv (90 Tage Guard-Events, 30 Tage Errors)
-- [ ] Backup-/Replica-/Support-/Nebenlogik des gewählten Event-Storage-Pfads dokumentiert oder nachweislich nicht vorhanden
+- [ ] Pilot läuft auf dem freigegebenen Pfad (`Hetzner Cloud Server` `nbg1` + `Hetzner Volume` + lokales `SQLite`)
+- [ ] Event-Storage-Retention-Enforcement aktiv (`TTL-Purge` + `VACUUM`; 90 Tage Guard-Events, 30 Tage Errors)
+- [ ] Keine Server-Backups, keine Snapshots, keine externen Replikate; Rescue/VNC-/Support-Nebenlogik dokumentiert
 - [ ] Kein Nutzerinhalt-Logging durch manuellen Smoke-Test bestätigt
 - [ ] Fail-Closed-Pfad bei Provider-Ausfall manuell getestet
 - [ ] Session-Content-Ephemerität bestätigt: Prozess-Neustart löscht Session-State
