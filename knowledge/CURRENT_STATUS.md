@@ -65,7 +65,7 @@ Zuletzt aktualisiert: 2026-03-26
 |---|---|---|
 | Nach negativer Bewertung des Azure-OpenAI-Arbeitskandidaten einen live-tauglichen LLM-Pfad belastbar klären oder die Microsoft-Blocker für Retention, Subprocessor und Löschpfad schließen | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Konkreten Pilot-Event-Storage-/Hosting-Pfad benennen; bis dahin bleibt Retention-, Lösch- und Event-Storage-Enforcement für reale Events live-blockiert | P0 vor Live-Nutzer | DATA_LIFECYCLE §6, DEPLOYMENT_ENVELOPE §7, PILOT_READINESS §3.4 |
-| Red-Team-/Prompt-Tests auf Basis Guardrails + Prompt-Rules | aktiv | GUARDRAILS_CONTENT_POLICY, PROMPT_CONSTRUCTION_RULES |
+| Minimale Red-Team-/Prompt-Testbaseline ist kanonisch definiert; die Durchführung gegen reale Runtime inkl. Leak-/fail-closed-Nachweis bleibt offen | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
 | Pseudonymisierungs-/Session-ID-Entscheid vor Produktionsstart konkretisieren | vor Produktionsstart | DATA_LIFECYCLE §8 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
@@ -73,8 +73,10 @@ Zuletzt aktualisiert: 2026-03-26
 
 ## Nächster Schritt
 
-Zwei P0-Blocker bleiben vor Live-Nutzern offen: Erstens ein konkret
+Drei P0-Blocker bleiben vor Live-Nutzern offen: Erstens ein konkret
 freigabefähiger LLM-Providerpfad. Zweitens ein konkret benannter
 Pilot-Event-Storage-/Hosting-Pfad, auf dem 90-/30-Tage-Retention,
 automatische Löschung und Backup-/Nebenlogik technisch belegbar durchgesetzt
-werden können. Ohne diese beiden Nachweise bleibt der Pilot gesperrt.
+werden können. Drittens die dokumentierte Durchführung der minimalen
+Red-Team-/Prompt-Testbaseline inklusive Leak- und fail-closed-Nachweisen.
+Ohne diese drei Nachweise bleibt der Pilot gesperrt.

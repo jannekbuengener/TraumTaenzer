@@ -1,6 +1,6 @@
 # PILOT_READINESS
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-25
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-26
 
 Basis: CLAIMS_FRAMEWORK, SAFETY_PLAYBOOK, PRIVACY_BY_DESIGN, ARCHITECTURE_OVERVIEW,
 UX_CORE_SEQUENCE, GUARDRAILS_CONTENT_POLICY, SYSTEM_INVARIANTS
@@ -54,7 +54,8 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | GUARDRAILS_CONTENT_POLICY als Artefakt vorhanden | Vollständige Keyword-/Regex-Implementierung aller Muster | Guardrails nur im Prompt, kein Regelwerk oder Artefakt |
 | Input-Guards für Safeword und Krisensprache operativ | Abdeckung jeder denkbaren Formulierungsvariante | Safeword oder Krisensprache werden nicht erkannt |
 | Output-Guards-Kriterien definiert und angewandt | Automatisierte Prüfung jedes Outputs | Diagnose-, Therapie- oder Companion-Outputs werden nicht geblockt |
-| fail-closed-Verhalten bei unklarem Guard-Signal definiert | Vollständige Guard-Testabdeckung | Kein definiertes Verhalten bei Guard-Unsicherheit |
+| fail-closed-Verhalten bei Guard-Unsicherheit sowie Guard-, Adapter- und Provider-Output-Fehlerpfaden definiert | Vollständige Guard-Testabdeckung | Kein definiertes Verhalten bei Guard-Unsicherheit oder fehlerhaftem Provider-Output |
+| `PROMPT_TEST_BASELINE.md` als minimale Evidence-Baseline vorhanden; vor Pilotstart sind alle P0-Fälle sowie Leak-/fail-closed-Fälle dokumentiert bestanden | Vollständige Automatisierung, Fuzzing oder Langzeit-Drift-Tests | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Krisen-, Boundary-, Companion-, Leak- und fail-closed-Pfade |
 
 ### 3.4 Privacy- und Retention-Grundlagen
 
@@ -115,6 +116,7 @@ Wenn auch nur eine dieser Bedingungen zutrifft: **kein Pilotstart**.
 | 12 | Pilot-Kommunikation impliziert Therapie, Diagnose, Krisenhilfe oder Companionship |
 | 13 | Kein definiertes Verhalten bei Safety-Ereignis (kein Safe State, kein fail-closed) |
 | 14 | Pilot-Teilnehmer wissen nicht, dass sie mit einem KI-System interagieren |
+| 15 | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Safeword-, Krisen-, Boundary-, Companion-, Leak- und fail-closed-Pfade |
 
 ---
 
