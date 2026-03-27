@@ -88,7 +88,8 @@ führen:
 | Feld | Mindestinhalt |
 |---|---|
 | **Runtime-Konfiguration** | `Hetzner Cloud Server` `nbg1`, angehängtes `Hetzner Volume`, lokales `SQLite`, keine Dateifallbacks |
-| **Teststatus** | Genau einer von: `bestanden`, `nicht bestanden`, `blockiert` |
+| **Teststatus** | Genau einer von: `bestanden`, `nicht bestanden`, `blockiert`, `Vorbedingung fehlt` |
+| **Durchführungsreife** | Gibt an, ob alle Vorbedingungen für reale Ausführung vorliegen: ausführbare Runtime, definierte Start-/Stop-/Health-/Log-Inspektionspfade, reale Artefakte; bei LLM-gekoppelten Fällen zusätzlich freigegebener externer LLM-Pfad (TB-2-Gate) |
 | **Leak-/Redaction-Nachweis** | Sichtprüfung der `SQLite`-Events und der Host-Logs: kein Nutzertext, kein LLM-Output, kein Raw-Payload, keine direkte Nutzeridentität |
 | **Fail-Closed-Nachweis** | belegter Safe-State-Übergang, vordefinierte Kernel-Antwort, kein ungeprüfter Output an UI |
 | **Nebenpfade** | expliziter Check, dass kein append-only Dateistore, kein Debug-Dump und kein zusätzlicher Content-Pfad außerhalb des `SQLite`-Stores aktiv ist |
@@ -105,6 +106,20 @@ Abweichung vom erwarteten Verhalten auftritt.
 LLM-/Adapterpfad benötigt, der wegen des offenen Provider-Gates aktuell nicht
 zulässig gefahren werden kann. `blockiert` ist vor Live-Nutzern kein
 kosmetischer Reststatus, sondern ein echter Go/No-Go-Blocker.
+
+`Vorbedingung fehlt` gilt für Fälle, die nicht an ein externes LLM-Gate
+gebunden sind, aber mangels ausführbarer Runtime, fehlender
+Start-/Stop-/Health-/Log-Inspektionspfade oder ohne reale Artefakte nicht
+real durchgeführt werden können. `Vorbedingung fehlt` ist kein Sonderstatus
+für `bestanden`; die Vorbedingungen müssen erst geschlossen werden.
+
+**Triage für den Ergebnisstatus:**
+
+| Fall-Typ | Fehlende Vorbedingung | Korrekter Status |
+|---|---|---|
+| Providergekoppelt | Externes LLM-Gate offen | `blockiert` |
+| Lokal / nicht providergekoppelt | Runtime-, Deploy- oder Runbook-Artefakte fehlen | `Vorbedingung fehlt` |
+| Beliebig | Alle Vorbedingungen erfüllt, Fall tatsächlich ausgeführt, Befund wie erwartet | `bestanden` oder `nicht bestanden` |
 
 ---
 
@@ -449,6 +464,11 @@ Solange kein freigegebener externer LLM-Providerpfad vorliegt, bleiben
 providergekoppelte Durchläufe auf der realen Zielumgebung bei `blockiert`. Das
 ist kein Dokumentationsmangel, sondern ein harter Pilot-Blocker nach
 PILOT_READINESS §3.3 und SYSTEM_INVARIANTS P-4.
+
+Solange weder ausführbare Runtime noch Deploy-Artefakte vorliegen, sind auch
+nicht-providergekoppelte Fälle nicht `bestanden`; der ehrliche Status ist
+`Vorbedingung fehlt`. Ein benannter Hetzner-/SQLite-Pilotpfad allein ist kein
+Nachweis – dafür braucht es tatsächlich ausgeführte Fälle mit realen Artefakten.
 
 Die übrigen oben gelisteten Nicht-Abdeckungen sind dokumentiert und für den
 initialen Pilotstart kein eigener Blocker (→ PILOT_READINESS §3.3: „Was noch
