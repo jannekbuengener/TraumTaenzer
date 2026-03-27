@@ -235,7 +235,51 @@ in `bestanden` oder `nicht bestanden` überführt werden.
 | `DEPLOYMENT_ENVELOPE.md` §2–§7 | Topologie, Trust Boundaries, Fail-Closed im Deployment-Kontext |
 | `KERNEL_GUARD_CONTRACTS.md` §3–§10 | Guard-Entscheidungsklassen, Safe States, Fail-Closed-Logik |
 | `TEXT_FIRST_RUNTIME_FLOW.md` §2–§8 | Happy Path, Safe-State-Übergänge, Session-Lifecycle |
-| `PROMPT_TEST_BASELINE.md` §3–§5 | Testmatrix, Ergebnisstatus, Triage-Logik |
+| `PROMPT_TEST_BASELINE.md` §3–§5 | Testmatrix, Ergebnisstatus, Triage-Logik, Harness-Fallgruppen (§3.2) |
 | `PILOT_READINESS.md` §3.3–§3.4 | Go/No-Go-Kriterien inkl. `Vorbedingung fehlt`-Klärung |
 | `PROVIDER_DPA_INPUT_MATRIX.md` §7–§8 | Provider-Gate (TB-2); bleibt offen bis freigabefähiger LLM-Pfad |
 | `DATA_LIFECYCLE.md` §4–§7 | Retention-Logik, erlaubte Event-Felder |
+| `harness/README.md` | Harness-Übersicht, Ausführung, Testfall-Abdeckungstabelle |
+
+---
+
+## 9. Lokaler Harness-Betrieb
+
+Das lokale Harness (`harness/`) ist ein eigenständiger Ausführungskontext für
+nicht-provider-gekoppelte Baseline-Fälle. Es ist **kein deployed Prozess, kein
+Pilot-Scope und kein Ersatz für den Hetzner-/SQLite-Pilotpfad**.
+
+**Zweck:** Deterministische, reproduzierbare Prüfung von Guard-Logik,
+Kernel-Transitionen und Fail-Closed-Verhalten ohne externen LLM-Provider,
+ohne Deployment und ohne echte Nutzer.
+
+**Was damit prüfbar ist:**
+
+| Prüfpunkt | Harness-Tool | Erwartetes Ergebnis |
+|---|---|---|
+| Guard-Entscheidungsklassen (BLOCK_EXIT, BLOCK_REFER, BLOCK_PAUSE, BLOCK_BOUNDARY, RESTRICT_OUTPUT) | `run_session.py` | korrekte Enum-Entscheide; SQLite-Events |
+| Output-Guard-Blocking (TRUTH_CLAIM, DIAGNOSIS, COMPANION, EFFICACY_CLAIM, DEEPENING_ON_DISTRESS) | `run_session.py` | Stub-Output blockiert; state → GUARD_BLOCK |
+| Kernel-Safe-State-Transitionen und Re-Entry-Schutz | `run_session.py` | korrekte SAFE_STATE_TRANSITION-Events |
+| Fail-Closed bei Guard-Fehler (T18) | `run_session.py --scenario T18` | state → EXIT; SYSTEM_ERROR im Event-Log |
+| Fail-Closed bei Malformed Output (T19) | `run_session.py --scenario T19` | state → EXIT; SYSTEM_ERROR im Event-Log |
+| Kein Content im Event-Store (Schema-Check) | `inspect_events.py --check-only` | Exit-Code 0; keine Freitext-Spalten |
+| Harness-Startbarkeit und Grundverhalten | `smoke_check.py` | Exit-Code 0; 7/7 Checks |
+
+**Artefakte pro Harness-Lauf:**
+- `harness/data/events.db` (gitignored): content-freie SQLite-Events; session_id Pseudonym,
+  Timestamp, Enums — kein Nutzertext, kein LLM-Output
+- Smoke-Check-Protokoll: stdout + Exit-Code
+- Szenarien-Laufprotokoll: stdout + Exit-Code pro Szenario
+
+**Grenzen — kein Ersatz für:**
+- Hetzner-Deployment, Volume-gebundene SQLite-Datei und Host-Log-Inspektion (§3.4–§3.5)
+- Reales LLM-Provider-Antwortverhalten: T10, T12 ALLOW-Pfade, T16 LLM-Output-Pfad, T20 real (→ `blockiert`)
+- Sidepath-/WAL-/Retention-Nachweis auf Produktionsinfrastruktur: T21 vollständig (→ `Vorbedingung fehlt`)
+- Prozess-Lifecycle-Garantien auf Zielsystem: Start/Stop/Health/SIGTERM (§3.1–§3.3)
+
+**No-Go — lokaler Harness ist kein Pilot-Nachweis:**
+Harness-Laufartefakte zählen nicht als Pilot-bestanden-Nachweis im Sinne von
+`PROMPT_TEST_BASELINE §3.1` und `PILOT_READINESS §3.3`. Für Pilotfreigabe sind
+ausschließlich Nachweise gegen den freigegebenen Pilotpfad (Hetzner Cloud Server
+`nbg1` + Hetzner Volume + SQLite) zulässig. Die Fallgruppen-Zuordnung ist in
+`PROMPT_TEST_BASELINE §3.2` dokumentiert.

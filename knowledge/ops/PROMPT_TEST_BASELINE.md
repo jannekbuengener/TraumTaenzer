@@ -126,6 +126,48 @@ für `bestanden`; die Vorbedingungen müssen erst geschlossen werden.
 | Lokal / nicht providergekoppelt | Runtime-, Deploy- oder Runbook-Artefakte fehlen | `Vorbedingung fehlt` |
 | Beliebig | Alle Vorbedingungen erfüllt, Fall tatsächlich ausgeführt, Befund wie erwartet | `bestanden` oder `nicht bestanden` |
 
+### 3.2 Lokaler Harness-Modus
+
+Das lokale Harness (`harness/`) erlaubt deterministische Läufe ausgewählter
+nicht-provider-gekoppelter Baseline-Fälle ohne Deployment, ohne externen
+LLM-Provider und ohne echte Nutzer. Die entstehenden Laufartefakte sind
+**kein Ersatz für Pilot-Evidence auf dem Hetzner-/SQLite-Pfad**,
+begründen keinen Pilot-bestanden-Status und ersetzen keine Hetzner-/Host-Log-Nachweise.
+
+**Fallgruppen im lokalen Harness-Modus:**
+
+| Gruppe | Baseline-Fälle | Harness-Abdeckung |
+|---|---|---|
+| **A — vollständig lokal** | T02, T06, T07, T08, T09, T13, T14, T15, T18, T19 | Guard-Logik, Kernel-Transitionen und Stub-Adapter vollständig abgedeckt; kein Real-LLM benötigt |
+| **B — lokal für Guard-/Kernel-Logik; LLM-Output-Pfad nicht abgedeckt** | T01 (Guard-Verhalten; Phase ENTRY statt REFLECTION), T03 (BLOCK_PAUSE/BLOCK_REFER-Pfade), T04, T05, T11 (Guard-Muster; kein eigenes Szenario), T12 (BLOCK-Pfade), T16 (Input-Guard-Seite), T17 (SQLite-Schema), T20 (Adapter-Exception lokal), T21 (SQLite-Schema lokal) | Input-Guard-Entscheid und Kernel-Safe-State lokal testbar; Fälle mit ALLOW-Entscheid und realem LLM-Output nicht vollständig prüfbar |
+| **C — blockiert (provider-gekoppelt)** | T10, T12 (ALLOW-Pfade mit LLM-Antwort), T16 (LLM-Output-Pfad), T20 (Transport-/Provider-Fehler real) | kein freigegebener LLM-Pfad (TB-2-Gate offen); kein Harness-Ersatz |
+| **D — Vorbedingung fehlt (Deployment-abhängig)** | T17 (Host-Log-Artefakte), T21 (Hetzner-Volume-Sidepath-Nachweis) | Hetzner-Deployment nicht vorhanden; lokal nicht belegbar |
+
+**Hinweis zur Szenario-Nummerierung in `harness/run_session.py`:**
+Die T-Bezeichnungen der Harness-Szenarien sind Orientierungsmarker und
+entsprechen nicht in allen Fällen den Baseline-Testnummern:
+- Harness T03 = Dissoziation/BLOCK_PAUSE (entspricht BLOCK_PAUSE-Pfad in Baseline T03 und Eingabe 3 in Baseline T12)
+- Harness T04 = Distress-Zähler-Eskalation (entspricht Teilen von Baseline T12; nicht Baseline T04 Diagnose-Anfrage)
+- Harness T05 = Boundary-Erkennung (entspricht Baseline T04/T05; nicht eigenständiger Baseline-Fall T05 allein)
+- Harness T11 = Deepening-on-Distress (entspricht Baseline T13 sub-case; **nicht** Baseline T11 Rollenspiel-Bypass)
+- Harness T21 = GUARD_BLOCK-Retry (kein direktes Baseline-Äquivalent; Baseline T21 ist der Hetzner-Sidepath-Check)
+
+**Lokale Laufartefakte** (in `harness/data/events.db`, gitignored):
+- `SESSION_STARTED` / `SESSION_ENDED` mit pseudonymer `session_id`
+- `INPUT_GUARD_RESULT`: decision-Enum, guard_category-Enum — kein Nutzertext
+- `OUTPUT_GUARD_RESULT`: decision-Enum, violation_type-Enum — kein LLM-Output-Text
+- `SAFE_STATE_TRANSITION`: from_state, to_state, trigger_event — kein Content
+- `SYSTEM_ERROR`: error_code, component — kein Content
+- Smoke-Check-Exit-Code (`harness/smoke_check.py`: 0 = 7/7 Checks bestanden)
+- Szenarien-Exit-Code (`harness/run_session.py`: 0 = alle Szenarien ohne Exception)
+
+**Was lokale Harness-Laufartefakte nicht belegen:**
+- keinen Hetzner-/Volume-/Host-Log-Nachweis
+- keine deployed-Prozessgarantien (Lifecycle, SIGTERM, WAL-Cleanup)
+- keine Aussage über reales LLM-Provider-Verhalten (T10, T12 ALLOW, T16, T20 real)
+- keinen Sidepath-/Retention-Nachweis auf Produktionsinfrastruktur (T21 vollständig)
+- keinen Pilot-bestanden-Status und keine Pilot-Freigabe
+
 ---
 
 ## 4. Testmatrix
