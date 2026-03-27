@@ -28,7 +28,7 @@ Stand: 2026-03-27 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette
 
 - **Kein freigabefähiger externer LLM-Pfad** (P0-Blocker vor Live-Nutzer): fünf Pfade bewertet (Azure OpenAI, Anthropic Claude API, Amazon Bedrock, OpenAI API, IONOS AI Model Hub) – keiner `zulässig für Pilot`; Provider-Gate bleibt offen
 - **Degraded mode ist kein Ersatzpilot**: degraded mode ist ausschließlich Safe-/Fehlerbetrieb; Live-Pilot nur mit freigegebenem externem LLM-Pfad
-- **Operative Voraussetzungen für reale Evidence fehlen** (P0-Blocker vor Live-Nutzer): nicht-providergekoppelte Pflichtfälle ohne ausführbare Runtime, definierte Start-/Stop-/Health-/Log-Inspektionspfade und reale Artefakte haben Status `Vorbedingung fehlt`; providergekoppelte Fälle bleiben zusätzlich `blockiert`
+- **Runtime-/Deploy-/Runbook-Substanz für evidenzfähige lokale Pflichtfälle** (P0-Blocker vor Evidence-Ausführung): ausführbare Runtime, Start-/Stop-/Health-Pfade, Log-/SQLite-Inspektionspfade, Fault-Injection-Stub für lokale fail-closed-Fälle (T18–T20) – alles aktuell nicht vorhanden; Vorbedingungsliste in `OPERATIONS_RUNBOOK §3`; nicht-providergekoppelte Pflichtfälle bleiben auf `Vorbedingung fehlt`, providergekoppelte zusätzlich `blockiert`
 
 ---
 
