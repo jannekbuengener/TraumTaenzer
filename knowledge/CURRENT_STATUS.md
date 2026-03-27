@@ -1,6 +1,6 @@
 # CURRENT_STATUS – Traumtänzer
 
-Zuletzt aktualisiert: 2026-03-26
+Zuletzt aktualisiert: 2026-03-27
 
 ---
 
@@ -9,11 +9,15 @@ Zuletzt aktualisiert: 2026-03-26
 **Branch:** `main`
 **PRs:** Docs-/Spec- und Sync-PRs bis #56 gemergt – Canon-Grundstock,
 Provider- und Infrastrukturentscheide auf `main`
-**Phase:** Core-Canon, Providerprüfung, Pilot-Infrastrukturpfad und die auf die
+**Phase:** Core-Canon, Providerprüfung (fünf externe LLM-Pfade bewertet:
+Azure OpenAI, Anthropic Claude API, Amazon Bedrock, OpenAI API, IONOS AI
+Model Hub – keiner freigabefähig), Pilot-Infrastrukturpfad und die auf die
 konkrete Zielumgebung gespiegelt definierte MVP-Evidence-Baseline stehen; die
-dokumentierte reale Durchführung der Pflichtfälle steht aber weiterhin aus, und
-providergekoppelte Fälle bleiben zusätzlich an der offenen
-Live-Provider-Freigabe blockiert
+dokumentierte reale Durchführung der Pflichtfälle steht insgesamt aus –
+nicht-providergekoppelte Fälle mangels Runtime-/Deploy-/Runbook-Substanz
+als `Vorbedingung fehlt`, providergekoppelte Fälle durch das offene
+Provider-Gate `blockiert`; degraded mode ist kein Pilot-Scope, sondern
+nur Safe-/Fehlerbetrieb
 
 ---
 
@@ -68,8 +72,9 @@ Live-Provider-Freigabe blockiert
 
 | Punkt | Priorität | Referenz |
 |---|---|---|
-| Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`) und Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`) ist aktuell kein LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
-| Die minimale Red-Team-/Prompt-Testbaseline ist jetzt auf den freigegebenen Pilotpfad (`Hetzner Cloud Server` in `nbg1` + `Hetzner Volume` + lokales `SQLite`) gespiegelt; dokumentierte Pflichtnachweise für Leak-/Redaction, fail-closed und fehlende Dateifallbacks sind definiert, die reale Durchführung bleibt aber für providergekoppelte Fälle ohne freigegebenen LLM-Pfad blockiert | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
+| Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`), Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`), OpenAI API (`eu.api.openai.com`, `POST /v1/chat/completions`) und IONOS AI Model Hub (`POST /v1/chat/completions`) ist aktuell kein externer LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
+| Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert, aber die reale Durchführung steht insgesamt aus: providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad), nicht-providergekoppelte Fälle ohne Runtime-/Deploy-/Runbook-Artefakte haben Status `Vorbedingung fehlt`; degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
+| Lokales Harness (`harness/`) vorhanden: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check und Szenarien-Runner; damit nicht-provider-gekoppelte Testfälle lokal ausführbar; Hetzner-deploybare Runtime fehlt weiterhin; konkrete Hetzner-Vorbedingungen in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung (Hetzner-Pfad) | OPERATIONS_RUNBOOK §3–§7 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
@@ -77,12 +82,15 @@ Live-Provider-Freigabe blockiert
 ## Nächster Schritt
 
 Zwei P0-Blocker bleiben vor Live-Nutzern offen: Erstens ist nach belastbarer
-Prüfung von Azure OpenAI, Anthropic Claude API und Amazon Bedrock weiterhin
-kein freigabefähiger externer LLM-Providerpfad identifiziert. Zweitens ist die
-MVP-Evidence-Baseline jetzt zwar auf den freigegebenen Hetzner-/SQLite-
-Pilotpfad gespiegelt, aber die dokumentierte reale Durchführung der
-Pflichtfälle steht insgesamt noch aus; providergekoppelte Fälle bleiben
-zusätzlich blockiert, solange kein freigegebener externer LLM-Pfad existiert.
-Leak-/Redaction-, fail-closed- und Sidepath-Anforderungen sind damit operativ
-klarer, aber noch nicht als `bestanden` nachgewiesen. Ohne diese zwei
-Nachweise bleibt der Pilot gesperrt.
+Prüfung von fünf externen LLM-Pfaden (Azure OpenAI, Anthropic Claude API,
+Amazon Bedrock, OpenAI API, IONOS AI Model Hub) weiterhin kein
+freigabefähiger externer LLM-Providerpfad identifiziert; degraded mode ist
+kein Ersatzpilot, sondern nur Safe-/Fehlerbetrieb. Zweitens stehen die
+Pflichtfälle der MVP-Evidence-Baseline operativ nicht als `bestanden` fest:
+providergekoppelte Fälle sind durch das offene Provider-Gate `blockiert`;
+nicht-providergekoppelte Fälle auf dem Hetzner-Pfad haben Status
+`Vorbedingung fehlt`. Das lokale Harness (`harness/`) schließt den
+letzteren Punkt für nicht-provider-gekoppelte Fälle in der lokalen
+Ausführungsumgebung – Hetzner-deploybare Runtime fehlt weiterhin.
+Bis der Provider-Blocker und die Hetzner-Runtime-Vorbedingungen geschlossen
+sind, bleibt der Pilot gesperrt.

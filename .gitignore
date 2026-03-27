@@ -21,3 +21,8 @@ node_modules/
 # Build
 build/
 dist/
+
+# Harness event store (local evidence artefacts — never committed)
+harness/data/*.db
+harness/data/*.db-wal
+harness/data/*.db-shm
