@@ -28,7 +28,7 @@ Stand: 2026-03-27 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette
 
 - **Kein freigabefähiger externer LLM-Pfad** (P0-Blocker vor Live-Nutzer): fünf Pfade bewertet (Azure OpenAI, Anthropic Claude API, Amazon Bedrock, OpenAI API, IONOS AI Model Hub) – keiner `zulässig für Pilot`; Provider-Gate bleibt offen
 - **Degraded mode ist kein Ersatzpilot**: degraded mode ist ausschließlich Safe-/Fehlerbetrieb; Live-Pilot nur mit freigegebenem externem LLM-Pfad
-- **Runtime-/Deploy-/Runbook-Substanz für evidenzfähige lokale Pflichtfälle** (P0-Blocker vor Evidence-Ausführung): ausführbare Runtime, Start-/Stop-/Health-Pfade, Log-/SQLite-Inspektionspfade, Fault-Injection-Stub für lokale fail-closed-Fälle (T18–T20) – alles aktuell nicht vorhanden; Vorbedingungsliste in `OPERATIONS_RUNBOOK §3`; nicht-providergekoppelte Pflichtfälle bleiben auf `Vorbedingung fehlt`, providergekoppelte zusätzlich `blockiert`
+- **Lokales Harness vorhanden** (`harness/`): Kernel-Zustandsmaschine, deterministische Guards, content-freier SQLite-Event-Store, Stub-Adapter, Fault-Injection, Smoke-Check und Szenarien-Runner implementiert; nicht-provider-gekoppelte Testfälle lokal ausführbar; Hetzner-deploybare Runtime fehlt weiterhin; Vorbedingungsliste für Hetzner-Pfad in `OPERATIONS_RUNBOOK §3`; provider-gekoppelte Pflichtfälle bleiben `blockiert`
 
 ---
 

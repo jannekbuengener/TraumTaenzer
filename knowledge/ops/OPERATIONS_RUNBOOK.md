@@ -31,21 +31,28 @@ Es beantwortet:
 
 ## 2. Aktueller Status
 
-**Operative Bereitschaft:** nicht vorhanden
+**Hetzner-deploybare Runtime:** nicht vorhanden
+**Lokale Harness-Runtime:** vorhanden (`harness/` — Python stdlib, kein Deployment, kein Provider)
 
-Die Runtime, die Deploy-Prozedur und die Runbook-Substanz, die dieses Dokument
-beschreibt, existieren im Repo noch nicht als ausführbare Artefakte. Der
-Pilotpfad (Hetzner/SQLite) ist infrastrukturell und datenschutzrechtlich
+Der Pilotpfad (Hetzner/SQLite) ist infrastrukturell und datenschutzrechtlich
 freigegeben (PROVIDER_DPA_INPUT_MATRIX §7, DEPLOYMENT_ENVELOPE §7), aber
 nicht deployed und nicht ausführbar.
 
-Konsequenz für PROMPT_TEST_BASELINE:
-- alle Testfälle, die nicht an ein externes LLM-Gate gebunden sind: Status
-  `Vorbedingung fehlt` – kein `bestanden`, kein `nicht bestanden`
-- LLM-gekoppelte Testfälle: Status `blockiert` (offenes Provider-Gate)
+Das lokale Harness (`harness/`) implementiert den kanonischen Kernel, die
+deterministischen Guards, einen content-freien SQLite-Event-Store und
+Fault-Injection-Stubs. Es ermöglicht lokale Evidence-Läufe für
+nicht-provider-gekoppelte Testfälle, ist aber kein Ersatz für den
+Hetzner-Pilotpfad und kein degraded-Mode-Pilot.
 
-Erst wenn alle Punkte aus §3 geschlossen sind, darf ein Testlauf beginnen und
-ein Ergebnisstatus ungleich `Vorbedingung fehlt` eingetragen werden.
+Konsequenz für PROMPT_TEST_BASELINE:
+- Nicht-provider-gekoppelte Testfälle mit lokalem Harness: Status `ausführbar`;
+  nach tatsächlichem Lauf: `bestanden` oder `nicht bestanden`
+- Nicht-provider-gekoppelte Testfälle ohne Runtime-Artefakte (Hetzner-Pfad):
+  Status `Vorbedingung fehlt`
+- LLM-gekoppelte Testfälle (TB-2): Status `blockiert` (offenes Provider-Gate)
+
+Die §3-Punkte beziehen sich auf den Hetzner-Pilotpfad. Für lokale
+Harness-Läufe gilt §3.3/§3.8 als lokal erfüllt (smoke_check.py, fault_injection.py).
 
 ---
 
@@ -130,12 +137,14 @@ externen LLM-Provider geprüft werden, sobald die Runtime existiert:
 | Malformed Provider-Output (T19) | Der LLM-Adapter-Stub liefert leeren String, invalides JSON oder Teil-Response | Kein Output an UI; `ERROR_FAIL_CLOSED` → `EXIT`; kein Raw-Payload im Log |
 | Adapter-/Transport-Fehler (T20) | Der LLM-Adapter-Stub signalisiert Timeout, DNS-Fehler oder 5xx | `ERROR_FAIL_CLOSED` → `EXIT`; kein stiller Retry; kein Content-Log |
 
-**Voraussetzung für diese Fault-Injection:** Eine stub-fähige Adapter-Schnittstelle
-muss im Prozess steuerbar sein, ohne den Kernel oder die Guards zu verändern.
-Diese Schnittstelle existiert noch nicht; ihre Spezifikation folgt aus
-KERNEL_GUARD_CONTRACTS §10 und DEPLOYMENT_ENVELOPE §6.
+**Lokale Fault-Injection:** Die stub-fähige Adapter-Schnittstelle ist im lokalen
+Harness implementiert (`harness/fault_injection.py`, `harness/llm_adapter.py`,
+`harness/kernel.py`). T18–T20 lokal sind über `run_session.py` ausführbar.
 
-LLM-abhängige Testfälle (T01–T17, T21 vollständig) bleiben `blockiert`, bis
+Die T18–T20-Fälle im Hetzner-Deployment-Kontext (d. h. mit deploytem Prozess)
+bleiben `Vorbedingung fehlt`, bis §3.1–§3.7 geschlossen sind.
+
+LLM-abhängige Testfälle (T01–T17 vollständig, T21 real) bleiben `blockiert`, bis
 ein freigabefähiger Provider-Pfad existiert (TB-2-Gate; PROVIDER_DPA_INPUT_MATRIX).
 
 ---
@@ -207,7 +216,7 @@ starten; Befund dokumentieren; Vorbedingung schließen.
 | Konkrete Startbefehle | Runtime existiert nicht; kein deployedbarer Serverprozess | §3.1–§3.3 vollständig auf `Vorbedingung fehlt` |
 | Konkrete Dateipfade auf Hetzner Volume | Kein aktiver Deploy | §3.5 vollständig auf `Vorbedingung fehlt` |
 | TTL-Purge-Verifikation | Kein laufender Prozess, kein aktiver SQLite-Store | §3.5 vollständig auf `Vorbedingung fehlt` |
-| Fault-Injection-Stub | Keine implementierte Adapter-Schnittstelle | T18–T20 auf `Vorbedingung fehlt`; T18–T20 werden nicht zu `blockiert`, weil kein Provider-Gate der Blocker ist |
+| Fault-Injection-Stub (Hetzner-Deployment) | Kein deployebarer Prozess; lokales Harness ist kein Deployment | T18–T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
 | LLM-gekoppelte Testfälle (T01–T17) | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | Status `blockiert` per PROMPT_TEST_BASELINE §3.1; T21 teilweise ebenfalls `blockiert` |
 | Automatisierte Testausführung | Kein CI-/Testframework vorhanden | Alle Läufe sind manuelle Review-Sessions |
 | Retention-Automatisierung auditieren | Kein laufender TTL-Purge-Job | Muss vor Pilot-Start als aktiv nachgewiesen werden |

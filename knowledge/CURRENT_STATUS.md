@@ -74,7 +74,7 @@ nur Safe-/Fehlerbetrieb
 |---|---|---|
 | Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`), Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`), OpenAI API (`eu.api.openai.com`, `POST /v1/chat/completions`) und IONOS AI Model Hub (`POST /v1/chat/completions`) ist aktuell kein externer LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert, aber die reale Durchführung steht insgesamt aus: providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad), nicht-providergekoppelte Fälle ohne Runtime-/Deploy-/Runbook-Artefakte haben Status `Vorbedingung fehlt`; degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
-| Runtime-/Deploy-/Runbook-Substanz für evidenzfähige lokale Pflichtfälle: ausführbare Runtime, Start-/Stop-/Health-Pfade, Log-/SQLite-Inspektionspfade, Fault-Injection-Stub für lokale fail-closed-Fälle (T18–T20) – alles aktuell nicht vorhanden; konkrete Vorbedingungsliste in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung | OPERATIONS_RUNBOOK §3–§7 |
+| Lokales Harness (`harness/`) vorhanden: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check und Szenarien-Runner; damit nicht-provider-gekoppelte Testfälle lokal ausführbar; Hetzner-deploybare Runtime fehlt weiterhin; konkrete Hetzner-Vorbedingungen in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung (Hetzner-Pfad) | OPERATIONS_RUNBOOK §3–§7 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
@@ -88,6 +88,9 @@ freigabefähiger externer LLM-Providerpfad identifiziert; degraded mode ist
 kein Ersatzpilot, sondern nur Safe-/Fehlerbetrieb. Zweitens stehen die
 Pflichtfälle der MVP-Evidence-Baseline operativ nicht als `bestanden` fest:
 providergekoppelte Fälle sind durch das offene Provider-Gate `blockiert`;
-nicht-providergekoppelte Fälle ohne Runtime-/Deploy-/Runbook-Artefakte
-haben Status `Vorbedingung fehlt`. Bis diese beiden Blocker geschlossen
+nicht-providergekoppelte Fälle auf dem Hetzner-Pfad haben Status
+`Vorbedingung fehlt`. Das lokale Harness (`harness/`) schließt den
+letzteren Punkt für nicht-provider-gekoppelte Fälle in der lokalen
+Ausführungsumgebung – Hetzner-deploybare Runtime fehlt weiterhin.
+Bis der Provider-Blocker und die Hetzner-Runtime-Vorbedingungen geschlossen
 sind, bleibt der Pilot gesperrt.
