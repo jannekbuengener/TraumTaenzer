@@ -82,6 +82,11 @@ Für reale Pilotfreigabe zählen nur Nachweise gegen genau diesen Pfad. Dev-Läu
 mit lokalem Dateistore, Mock-Hosting oder anderen Storage-Zielen sind kein
 Ersatz.
 
+Die konkreten Vorbedingungen, Inspektionsschritte und Abbruchkriterien für
+einen evidenzfähigen Lauf auf diesem Pfad sind in `OPERATIONS_RUNBOOK §3–§6`
+beschrieben. Solange diese Vorbedingungen nicht geschlossen sind, gilt für
+alle lokal/nicht-providergekoppelten Fälle Status `Vorbedingung fehlt`.
+
 Jeder dokumentierte Baseline-Durchlauf muss mindestens die folgenden Felder
 führen:
 
