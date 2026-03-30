@@ -113,6 +113,8 @@ Region- oder Datenpolitikwechsel ist die Matrix neu zu prüfen.
 | **LLM** | Azure OpenAI Service in Microsoft Foundry, `Chat Completions API` mit `gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`; ausdrücklich nicht `Responses API`, `Threads` oder `Stored completions` | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-/Betriebsmetadaten; bei Abuse-Monitoring zusätzlich selektierte Prompt-/Output-Samples | ja | offen | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
 | **LLM** | Anthropic Claude API, `POST /v1/messages` mit `claude-sonnet-4-6` unter Commercial Terms; optional `inference_geo="us"`; ausdrücklich nicht `Files API`, `Messages Batches`, Console/Workbench oder gespeicherte Chat-Produkte | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-Metadaten; bei Policy-/Misuse-Flags zusätzlich retainte Input-/Output-Artefakte und Trust-&-Safety-Klassifikationen | ja | ja | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
 | **LLM** | Amazon Bedrock Runtime, `InvokeModel` mit `anthropic.claude-sonnet-4-6` in `eu-central-1` (`Europe (Frankfurt)`), ohne Inference Profile / Cross-Region Inference; ausdrücklich nicht Agents, Knowledge Bases, Batch- oder Custom-Model-Pfade | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, AWS Request-/Betriebsmetadaten; automatisierte Abuse-Detection-Klassifikationen | ja | offen | ja | ja | ja | offen | nicht zulässig für Live-Nutzer |
+| **LLM** | OpenAI API, nur `eu.api.openai.com`, stateless text-in/text-out, nur `POST /v1/chat/completions`; ausdrücklich ausgeschlossen: Responses mit Store-/Application-State-Kanten, Threads, Assistants, Vector Stores, Files, Batches, Tools, Web Search, Prompt Caching, Audio-/Bild-/Datei-Pfade | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-Metadaten; bei Abuse-Monitoring selektierte Prompt-/Output-Samples | offen | offen | ja | ja / offen | offen | offen | nicht zulässig für Live-Nutzer |
+| **LLM** | IONOS AI Model Hub, Basis-Host `https://openai.inference.de-txl.ionos.com`, enger MVP-Pfad `GET /v1/models` + `POST /v1/chat/completions`, text-only, stateless; ausdrücklich ausgeschlossen: Document Collections, Vector DB, RAG, Embeddings, Tool Calling, Bild-/OCR-Pfade, native collections/documents/query-Pfade, Console-/Support-/Debug-Nutzung als Produktbestandteil | Redacted Prompt-Kontext mit potentiell hochsensiblen Reflexionsinhalten, transienter Modell-Output, Request-/Betriebsmetadaten | offen | offen | ja | ja | offen | offen | nicht zulässig für Live-Nutzer |
 | **Hosting** | `Hetzner Cloud Server` in `nbg1` (`Nuremberg`, Deutschland) mit angehängtem `Hetzner Volume`; redacted Runtime-Events in lokalem `SQLite` auf dem `Volume`; keine Hetzner-Server-Backups, keine Snapshots, keine externen Replikate | Gegenüber Hetzner: Account-, Kontakt- und Abrechnungsdaten; auf dem Server selbst nur redacted Runtime-Events mit opaquer `session_id`, content-free Host-/App-Logs und technische Betriebsmetadaten; kein Session-Content | ja | ja | n. a. | ja | ja | ja | zulässig für Pilot |
 | **E-Mail** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | n. a. / ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
 | **Weiterer externer Dienst** | eintragen | eintragen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | ja / nein / offen | eintragen |
@@ -121,8 +123,11 @@ Region- oder Datenpolitikwechsel ist die Matrix neu zu prüfen.
 
 ### Bewertungsnotizen 2026-03-26 – geprüfte LLM-Pfade
 
-Diese Session bewertet drei produktgenaue, stateless text-in/text-out-Pfade
-gegen die Matrix:
+Der folgende Block dokumentiert den Erststand vom 2026-03-26 mit drei
+produktgenauen, stateless text-in/text-out-Pfaden gegen die Matrix; die
+ergänzten Pfade vom 2026-03-27 folgen weiter unten. Das Gesamtergebnis
+steht am Ende dieses Abschnitts und umfasst alle fünf geprüften externen
+LLM-Pfade.
 
 - `Azure OpenAI Service` in Microsoft Foundry, `Chat Completions API`,
   `gpt-4o-mini (2024-07-18)`, `Standard` Deployment in `Sweden Central`
@@ -336,13 +341,97 @@ Pfade, weil sie im MVP entweder verboten sind oder eigene Persistenzpfade
 - Vor Live-Start müssen täglicher TTL-Purge + `VACUUM` aktiv sein; Support-
   Tickets, Rescue- und VNC-Pfade dürfen keine Eventdaten aufnehmen.
 
-#### Gesamtergebnis 2026-03-26
+---
 
-Von den in dieser Session belastbar geprüften LLM-Pfaden ist **kein** Pfad
-`zulässig für Pilot`.
+### Bewertungsnotizen 2026-03-27 – ergänzte LLM-Pfade
 
-- `zulässig für Dev ohne reale Personendaten`: ja, für alle drei Pfade
-- `zulässig für Pilot`: nein, für alle drei Pfade
+Zwei weitere produktgenaue, stateless text-in/text-out-Pfade wurden gegen
+die Matrix bewertet:
+
+- `OpenAI API`, nur `eu.api.openai.com`, `POST /v1/chat/completions`
+- `IONOS AI Model Hub`, Basis-Host `https://openai.inference.de-txl.ionos.com`,
+  `POST /v1/chat/completions`
+
+Ausdrücklich nicht bewertet wurden: bei OpenAI API – Responses mit
+Store-/Application-State-Kanten, Threads, Assistants, Vector Stores, Files,
+Batches, Tools, Web Search, Prompt Caching, Audio-/Bild-/Datei-Pfade; bei
+IONOS AI Model Hub – Document Collections, Vector DB, RAG, Embeddings,
+Tool Calling, Bild-/OCR-Pfade, native collections/documents/query-Pfade,
+Console-/Support-/Debug-Nutzung als Produktbestandteil.
+
+#### E. OpenAI API – `eu.api.openai.com` Pfad
+
+**Offizielle Quellenbasis (Stand 2026-03-27; Issue #59):**
+
+- OpenAI: API-Referenz, Chat Completions
+- OpenAI: Enterprise Privacy und API Data Processing Addendum
+- OpenAI: EU-API-Endpunkt- und Data-Residency-Dokumentation
+
+**Belastbar geklärt:**
+
+- `eu.api.openai.com` ist als europäischer API-Endpunkt dokumentiert.
+- OpenAI dokumentiert für API-Kunden, dass Eingaben und Ausgaben nicht
+  für Basismodelltraining verwendet werden; kein Training als Default
+  für den bewerteten `POST /v1/chat/completions`-Pfad belastbar.
+- Ein Data Processing Addendum (DPA) für API-Kunden ist dokumentiert
+  verfügbar.
+
+**Blocker / No-Go-Risiken:**
+
+- EU Residency für Europa (`eu.api.openai.com`) ist an ein
+  approval-/sales-gesteuertes MAM-Arrangement oder ZDR gebunden; ohne
+  diesen Sonderpfad gilt nicht garantiert EU-Only-Verarbeitung, und
+  der Default-Abuse-Monitoring-Retention-Pfad ist nicht beschränkt.
+- Retention für Abuse-Monitoring-Pfade bleibt in der verifizierten
+  Quellenbasis offen.
+- Die produktnahe Subprocessor-Liste für diesen Pfad bleibt offen.
+- Der Löschpfad für Abuse-Monitoring-Artefakte, Support-Zugriffe und
+  Backup-/Replikationsreste bleibt offen.
+- DPA-Abdeckung für den EU-Residency-Pfad ohne aktives MAM/ZDR ist
+  nicht belastbar geschlossen.
+
+**Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
+
+#### F. IONOS AI Model Hub – `openai.inference.de-txl.ionos.com` Pfad
+
+**Offizielle Quellenbasis (Stand 2026-03-27; Issue #58):**
+
+- IONOS: AI Model Hub Produktdokumentation und Inferenz-Endpunkt
+  (`https://openai.inference.de-txl.ionos.com`)
+- IONOS: Datenschutz- und DPA-Dokumentation für Cloud-Dienste
+
+**Belastbar geklärt:**
+
+- Basis-Host `https://openai.inference.de-txl.ionos.com` und der enge
+  MVP-Pfad `GET /v1/models` + `POST /v1/chat/completions` sind als
+  text-only, stateless dokumentiert.
+- DE-Hosting in `de-txl` (Berlin, Deutschland) ist positiv; EU-Residency
+  für den Kerndatenpfad damit belastbar.
+- IONOS äußert sich zu keinem Training mit Kundendaten
+  (no-training-nahe Aussagen positiv; operative Vertragsverankerung offen).
+- Als DE-Provider betreibt IONOS ein DPA-Framework für Hosting-Kunden.
+
+**Blocker / No-Go-Risiken:**
+
+- Service-Log-Retention: wie lange Betriebslogs und Request-Metadaten
+  auf Infrastrukturebene gehalten werden, ist nicht produktnah belegt.
+- Feldlage in Service-/Support-/Debug-Artefakten: ob und wie Prompt-
+  oder Output-Fragmente in Support- oder Debug-Infrastruktur landen
+  können, ist nicht belastbar geschlossen.
+- Löschpfad für Nebenartefakte (Service-Logs, Betriebsartefakte) ist
+  nicht produktnah definiert.
+- AI-spezifische Subprocessor-Lage: welche Drittanbieter in die
+  KI-Inferenz-Infrastruktur eingebunden sind, bleibt offen.
+
+**Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
+
+#### Gesamtergebnis (Stand 2026-03-27)
+
+Von den insgesamt fünf belastbar geprüften externen LLM-Pfaden ist **kein**
+Pfad `zulässig für Pilot`.
+
+- `zulässig für Dev ohne reale Personendaten`: ja, für alle fünf Pfade
+- `zulässig für Pilot`: nein, für alle fünf Pfade
 - **Status vor erstem Live-Nutzer: derzeit kein freigabefähiger externer
   LLM-Providerpfad**
 
