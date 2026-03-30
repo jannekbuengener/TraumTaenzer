@@ -4,7 +4,7 @@ Runtime Tooling — start / stop / health / inspect
 Minimal operational paths for the bootstrap runtime server.
 
 Commands:
-  start       Launch runtime_server in background and verify /health
+  start       Launch runtime_server in background with explicit workdir and verify /health
   stop        Request clean shutdown and verify process exit
   health      Check /health reachability
   inspect-db  Inspect explicit SQLite DB path
@@ -54,6 +54,24 @@ def _configure_cli_logging() -> None:
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
+
+
+def _absolute_existing_dir_arg(value: str) -> Path:
+    path = _absolute_path_arg(value)
+    if not path.exists():
+        raise argparse.ArgumentTypeError("Directory must exist.")
+    if not path.is_dir():
+        raise argparse.ArgumentTypeError("Path must point to a directory.")
+    return path
+
+
+def _runtime_env(app_root: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        str(app_root) if not existing else f"{app_root}{os.pathsep}{existing}"
+    )
+    return env
 
 
 def _pid_alive(pid: int) -> bool:
@@ -197,6 +215,9 @@ def cmd_start(args: argparse.Namespace) -> int:
     if len({args.db, args.log, args.pid_file}) != 3:
         raise RuntimeError("--db, --log and --pid-file must be different paths.")
 
+    app_root = _repo_root().resolve(strict=False)
+    workdir = args.workdir.resolve(strict=False)
+
     if args.pid_file.exists():
         meta = _read_pid_meta(args.pid_file)
         existing_host = str(meta.get("host", args.host))
@@ -206,7 +227,8 @@ def cmd_start(args: argparse.Namespace) -> int:
         args.pid_file.unlink()
 
     kwargs: dict[str, Any] = {
-        "cwd": str(_repo_root()),
+        "cwd": str(workdir),
+        "env": _runtime_env(app_root),
         "stdin": subprocess.DEVNULL,
         "stdout": subprocess.DEVNULL,
         "stderr": subprocess.DEVNULL,
@@ -234,6 +256,8 @@ def cmd_start(args: argparse.Namespace) -> int:
         "port": args.port,
         "db_path": str(args.db),
         "log_path": str(args.log),
+        "app_root": str(app_root),
+        "workdir": str(workdir),
         "stub_mode": "NONE" if args.stub_mode is None else args.stub_mode.value,
     }
     _write_pid_meta(args.pid_file, meta)
@@ -246,6 +270,8 @@ def cmd_stop(args: argparse.Namespace) -> int:
     pid = int(meta.get("pid", 0))
     host = str(meta.get("host", "127.0.0.1"))
     port = int(meta.get("port", 0))
+    app_root = meta.get("app_root")
+    workdir = meta.get("workdir")
     db_path = _absolute_path_arg(str(meta.get("db_path", "")))
 
     if not pid:
@@ -254,7 +280,12 @@ def cmd_stop(args: argparse.Namespace) -> int:
     if not _health_available(host, port):
         if args.pid_file.exists():
             args.pid_file.unlink()
-        print(json.dumps({"status": "already_stopped", "pid": pid}, ensure_ascii=True))
+        payload: dict[str, Any] = {"status": "already_stopped", "pid": pid}
+        if isinstance(app_root, str):
+            payload["app_root"] = app_root
+        if isinstance(workdir, str):
+            payload["workdir"] = workdir
+        print(json.dumps(payload, ensure_ascii=True))
         return 0
 
     shutdown_requested = False
@@ -283,7 +314,12 @@ def cmd_stop(args: argparse.Namespace) -> int:
     if wal_violations:
         raise RuntimeError(f"WAL/SHM files remain after clean stop: {wal_violations}")
 
-    print(json.dumps({"status": "stopped", "pid": pid, "db_path": str(db_path)}, ensure_ascii=True))
+    payload = {"status": "stopped", "pid": pid, "db_path": str(db_path)}
+    if isinstance(app_root, str):
+        payload["app_root"] = app_root
+    if isinstance(workdir, str):
+        payload["workdir"] = workdir
+    print(json.dumps(payload, ensure_ascii=True))
     return 0
 
 
@@ -401,10 +437,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Traumtänzer Runtime Tooling")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    start = subparsers.add_parser("start", help="Start runtime server in background")
+    start = subparsers.add_parser(
+        "start",
+        help="Start runtime server in background with explicit workdir",
+    )
     start.add_argument("--db", required=True, type=_absolute_path_arg, help="Absolute SQLite DB path.")
     start.add_argument("--log", required=True, type=_absolute_path_arg, help="Absolute runtime log path.")
     start.add_argument("--pid-file", required=True, type=_absolute_path_arg, help="Absolute PID metadata path.")
+    start.add_argument(
+        "--workdir",
+        required=True,
+        type=_absolute_existing_dir_arg,
+        help="Absolute existing workdir for the launched runtime; required and used as process cwd.",
+    )
     start.add_argument("--host", default="127.0.0.1", help="Bind host (default: 127.0.0.1).")
     start.add_argument("--port", type=_port_arg, default=8080, help="Bind port (default: 8080).")
     start.add_argument("--stub-mode", default="NONE", type=_stub_mode_arg, metavar="MODE")
@@ -439,7 +484,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Scan target directory and workdir for shadow stores / sidepaths",
     )
     inspect_sidepaths.add_argument("--db", required=True, type=_absolute_path_arg, help="Absolute SQLite DB path.")
-    inspect_sidepaths.add_argument("--workdir", required=True, type=_absolute_path_arg, help="Absolute workdir root to scan.")
+    inspect_sidepaths.add_argument(
+        "--workdir",
+        required=True,
+        type=_absolute_existing_dir_arg,
+        help="Absolute workdir root to scan; must match the explicit workdir used for start.",
+    )
     inspect_sidepaths.add_argument("--log", type=_absolute_path_arg, help="Optional absolute runtime log path to allow.")
     inspect_sidepaths.add_argument("--pid-file", type=_absolute_path_arg, help="Optional absolute pid metadata path to allow.")
     inspect_sidepaths.set_defaults(func=cmd_inspect_sidepaths)

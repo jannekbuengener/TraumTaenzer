@@ -332,7 +332,7 @@ def print_summary(conn: sqlite3.Connection, session_prefix: str | None = None) -
             "SELECT event_type, timestamp FROM events WHERE session_id = ? ORDER BY id DESC LIMIT 1",
             (sid,),
         ).fetchone()
-        last_type, last_ts = last if last else ("—", "—")
+        last_type, last_ts = last if last else ("-", "-")
         print(f"  {sid[:20]:<22} {count:>4} events  last={last_type} @ {last_ts[:19]}")
 
     if len(sessions) > 20:
@@ -367,7 +367,7 @@ def print_session_detail(conn: sqlite3.Connection, session_prefix: str) -> None:
         if vtype:
             details.append(f"violation={vtype}")
         if frm or to:
-            details.append(f"{frm}→{to}")
+            details.append(f"{frm}->{to}")
         if trigger:
             details.append(f"trigger={trigger}")
         if end_type:
