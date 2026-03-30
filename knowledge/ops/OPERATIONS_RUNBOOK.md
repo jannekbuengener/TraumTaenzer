@@ -1,6 +1,6 @@
 # OPERATIONS_RUNBOOK
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-27
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-30
 
 Basis: DEPLOYMENT_ENVELOPE §2–§9, KERNEL_GUARD_CONTRACTS §3–§10,
 TEXT_FIRST_RUNTIME_FLOW §2–§8, PILOT_READINESS §3.3–§3.4,
@@ -31,18 +31,21 @@ Es beantwortet:
 
 ## 2. Aktueller Status
 
-**Hetzner-deploybare Runtime:** nicht vorhanden
-**Lokale Harness-Runtime:** vorhanden (`harness/` — Python stdlib, kein Deployment, kein Provider)
+**Bootstrap-Runtime-Pfad im Repo:** vorhanden (`harness/runtime_server.py`, `harness/runtime_tools.py`, `harness/inspect_events.py`, `harness/event_store.py`)
+**Hetzner-Zielpfadbindung und reale Evidence:** offen
 
 Der Pilotpfad (Hetzner/SQLite) ist infrastrukturell und datenschutzrechtlich
-freigegeben (PROVIDER_DPA_INPUT_MATRIX §7, DEPLOYMENT_ENVELOPE §7), aber
-nicht deployed und nicht ausführbar.
+freigegeben (PROVIDER_DPA_INPUT_MATRIX §7, DEPLOYMENT_ENVELOPE §7), aber die
+kanonische Bindung auf echte Hetzner-Zielpfade und der erste evidenzfähige Lauf
+sind noch nicht dokumentiert.
 
 Das lokale Harness (`harness/`) implementiert den kanonischen Kernel, die
 deterministischen Guards, einen content-freien SQLite-Event-Store und
-Fault-Injection-Stubs. Es ermöglicht lokale Evidence-Läufe für
-nicht-provider-gekoppelte Testfälle, ist aber kein Ersatz für den
-Hetzner-Pilotpfad und kein degraded-Mode-Pilot.
+Fault-Injection-Stubs. Zusätzlich existiert auf `main` ein minimaler
+Bootstrap-Serverprozess mit `/health` sowie Start-/Stop-/Inspect-Tooling auf
+Basis expliziter absoluter Pfade. Diese Substanz ist die operative Basis für
+den nächsten P0-Block, aber kein Ersatz für den Hetzner-Pilotpfad und kein
+degraded-Mode-Pilot.
 
 Konsequenz für PROMPT_TEST_BASELINE:
 - Nicht-provider-gekoppelte Testfälle mit lokalem Harness: Status `ausführbar`;
@@ -52,7 +55,61 @@ Konsequenz für PROMPT_TEST_BASELINE:
 - LLM-gekoppelte Testfälle (TB-2): Status `blockiert` (offenes Provider-Gate)
 
 Die §3-Punkte beziehen sich auf den Hetzner-Pilotpfad. Für lokale
-Harness-Läufe gilt §3.3/§3.8 als lokal erfüllt (smoke_check.py, fault_injection.py).
+Harness-Läufe gilt §3.3/§3.8 als lokal erfüllt (smoke_check.py,
+runtime_server.py, runtime_tools.py, fault_injection.py).
+
+### 2.1 Nächster P0-Block: Hetzner Bootstrap Path Contract + First Evidence Recipe
+
+Der nächste echte P0-Block bindet den vorhandenen Bootstrap-Pfad aus
+`harness/runtime_server.py` und `harness/runtime_tools.py` an genau einen
+realen Hetzner-Zielpfad. Konkrete Zielwerte werden hier nicht erfunden; vor dem
+ersten evidenzfähigen Lauf müssen nur die folgenden Felder kanonisch feststehen:
+
+| Feld | Minimalregel |
+|---|---|
+| `app_root` | Repo-Checkout bzw. Startwurzel des Prozesses auf dem Zielhost; der Bootstrap-Code wird von hier geladen |
+| `workdir` | explizites Arbeitsverzeichnis des Prozesses; muss beim Start gesetzt werden, ist Pflicht-Scanroot für `inspect-sidepaths` und darf nicht implizit aus `app_root` oder dem aufrufenden Shell-Kontext abgeleitet werden |
+| `volume_mount` | Root des gemounteten Hetzner Volumes |
+| `db_path` | absolute SQLite-Datei unter `volume_mount`; kein Fallback |
+| `log_path` | absoluter Host-/App-Log-Pfad; kein impliziter Workdir-Fallback |
+| `pid_file` | absoluter PID-/Metadatenpfad für `runtime_tools` |
+| `bind_host` | explizite Bind-Adresse des Runtime-Prozesses |
+| `bind_port` | expliziter Bind-Port des Runtime-Prozesses |
+
+Die erste evidenzfähige Sequenz ist genau:
+1. `start`
+2. `health`
+3. kurzer Session-Smoke
+4. `inspect-db`
+5. `inspect-log`
+6. `inspect-sidepaths`
+7. `stop`
+
+Command-first-Referenz aus `app_root`; der Laufprozess selbst arbeitet mit
+explizitem `workdir`:
+
+```bash
+python -m harness.runtime_tools start --db <db_path> --log <log_path> --pid-file <pid_file> --workdir <workdir> --host <bind_host> --port <bind_port>
+python -m harness.runtime_tools health --host <bind_host> --port <bind_port>
+curl -sS -X POST "http://<bind_host>:<bind_port>/v1/sessions" -H "Content-Type: application/json" -d "{}"
+curl -sS -X POST "http://<bind_host>:<bind_port>/v1/turns" -H "Content-Type: application/json" -d '{"session_id":"<session_id>","user_text":"ja"}'
+curl -sS -X POST "http://<bind_host>:<bind_port>/v1/turns" -H "Content-Type: application/json" -d '{"session_id":"<session_id>","user_text":"ja"}'
+python -m harness.runtime_tools inspect-db --db <db_path>
+python -m harness.runtime_tools inspect-log --log <log_path>
+python -m harness.runtime_tools inspect-sidepaths --db <db_path> --log <log_path> --pid-file <pid_file> --workdir <workdir>
+python -m harness.runtime_tools stop --pid-file <pid_file>
+```
+
+Der bei `start` gesetzte `--workdir`-Wert ist derselbe Scanroot, der bei
+`inspect-sidepaths` wiederverwendet werden muss.
+
+Der Session-Smoke ist erst dann ausreichend, wenn der zweite Opt-in-Turn den
+vorhandenen no-adapter-Pfad kontrolliert fail-closed
+(`NO_ADAPTER_CONFIGURED`) durchläuft.
+
+Dieser P0-Block ist erst geschlossen, wenn genau die vier Artefaktklassen aus
+§4 vorliegen: SQLite-Auszug, Host-Log-Ausschnitt, Sidepath-Check,
+Teststatus-Eintrag.
 
 ---
 
@@ -129,7 +186,8 @@ Für jede Testdurchführung muss nach dem Lauf prüfbar sein:
 ### 3.8 Fault-Injection-Punkte für lokale fail-closed-Fälle
 
 Die folgenden fail-closed-Fälle aus PROMPT_TEST_BASELINE (T18–T20) können ohne
-externen LLM-Provider geprüft werden, sobald die Runtime existiert:
+externen LLM-Provider lokal über den vorhandenen Harness-/Bootstrap-Pfad
+geprüft werden:
 
 | Fault-Injection | Was injiziert wird | Erwartetes Verhalten |
 |---|---|---|
@@ -213,10 +271,10 @@ starten; Befund dokumentieren; Vorbedingung schließen.
 
 | Lücke | Ursache | Konsequenz |
 |---|---|---|
-| Konkrete Startbefehle | Runtime existiert nicht; kein deployedbarer Serverprozess | §3.1–§3.3 vollständig auf `Vorbedingung fehlt` |
-| Konkrete Dateipfade auf Hetzner Volume | Kein aktiver Deploy | §3.5 vollständig auf `Vorbedingung fehlt` |
-| TTL-Purge-Verifikation | Kein laufender Prozess, kein aktiver SQLite-Store | §3.5 vollständig auf `Vorbedingung fehlt` |
-| Fault-Injection-Stub (Hetzner-Deployment) | Kein deployebarer Prozess; lokales Harness ist kein Deployment | T18–T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
+| Kanonischer Hetzner Path Contract | Bootstrap-Serverprozess und Operator-Tooling trennen repo-seitig jetzt explizit zwischen Codepfad (`app_root`) und Laufpfad (`workdir`), aber die konkreten Zielwerte für `app_root`, `workdir`, `volume_mount`, `db_path`, `log_path`, `pid_file`, `bind_host` und `bind_port` sind auf Hetzner noch nicht festgezogen | §3.1–§3.5 auf Hetzner weiterhin `Vorbedingung fehlt` |
+| Konkrete Dateipfade auf Hetzner Volume | Kein aktiver Deploy und kein belegter `volume_mount`-/`db_path`-Wert | §3.5 vollständig auf `Vorbedingung fehlt` |
+| TTL-Purge-Verifikation | Kein laufender Hetzner-Prozess und kein aktiver Ziel-Store | §3.5 vollständig auf `Vorbedingung fehlt` |
+| Fault-Injection-Stub (Hetzner-Deployment) | Bootstrap-Prozess lokal vorhanden, aber kein an Hetzner gebundener Lauf; lokales Harness ist kein Deployment | T18–T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
 | LLM-gekoppelte Testfälle (T01–T17) | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | Status `blockiert` per PROMPT_TEST_BASELINE §3.1; T21 teilweise ebenfalls `blockiert` |
 | Automatisierte Testausführung | Kein CI-/Testframework vorhanden | Alle Läufe sind manuelle Review-Sessions |
 | Retention-Automatisierung auditieren | Kein laufender TTL-Purge-Job | Muss vor Pilot-Start als aktiv nachgewiesen werden |

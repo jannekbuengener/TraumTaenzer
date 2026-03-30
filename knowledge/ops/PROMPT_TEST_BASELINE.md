@@ -1,6 +1,6 @@
 # PROMPT_TEST_BASELINE
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-26
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-30
 
 Basis: GUARDRAILS_CONTENT_POLICY §2–§8, SAFETY_PLAYBOOK §3–§9,
 KERNEL_GUARD_CONTRACTS §3–§10, TEXT_FIRST_RUNTIME_FLOW §2–§6,
@@ -84,15 +84,17 @@ Ersatz.
 
 Die konkreten Vorbedingungen, Inspektionsschritte und Abbruchkriterien für
 einen evidenzfähigen Lauf auf diesem Pfad sind in `OPERATIONS_RUNBOOK §3–§6`
-beschrieben. Solange diese Vorbedingungen nicht geschlossen sind, gilt für
-alle lokal/nicht-providergekoppelten Fälle Status `Vorbedingung fehlt`.
+beschrieben. Solange diese Vorbedingungen für den Hetzner-Pilotpfad nicht
+geschlossen sind, bleiben dort nicht-providergekoppelte Fälle auf
+`Vorbedingung fehlt`; lokale Harness-/Bootstrap-Läufe ändern diesen
+Pilotstatus nicht.
 
 Jeder dokumentierte Baseline-Durchlauf muss mindestens die folgenden Felder
 führen:
 
 | Feld | Mindestinhalt |
 |---|---|
-| **Runtime-Konfiguration** | `Hetzner Cloud Server` `nbg1`, angehängtes `Hetzner Volume`, lokales `SQLite`, keine Dateifallbacks |
+| **Runtime-Konfiguration** | `Hetzner Cloud Server` `nbg1`, angehängtes `Hetzner Volume`, lokales `SQLite`, keine Dateifallbacks; Path-Contract-Felder `app_root`, `workdir`, `volume_mount`, `db_path`, `log_path`, `pid_file`, `bind_host`, `bind_port` festgezogen |
 | **Teststatus** | Genau einer von: `bestanden`, `nicht bestanden`, `blockiert`, `Vorbedingung fehlt` |
 | **Durchführungsreife** | Gibt an, ob alle Vorbedingungen für reale Ausführung vorliegen: ausführbare Runtime, definierte Start-/Stop-/Health-/Log-Inspektionspfade, reale Artefakte; bei LLM-gekoppelten Fällen zusätzlich freigegebener externer LLM-Pfad (TB-2-Gate) |
 | **Leak-/Redaction-Nachweis** | Sichtprüfung der `SQLite`-Events und der Host-Logs: kein Nutzertext, kein LLM-Output, kein Raw-Payload, keine direkte Nutzeridentität |

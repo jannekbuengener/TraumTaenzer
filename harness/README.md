@@ -97,6 +97,7 @@ python -m harness.runtime_tools start \
   --db /absolute/path/events.db \
   --log /absolute/path/runtime.log \
   --pid-file /absolute/path/runtime.pid \
+  --workdir /absolute/path/workdir \
   --host 127.0.0.1 \
   --port 8080
 
@@ -122,8 +123,10 @@ python -m harness.runtime_tools stop --pid-file /absolute/path/runtime.pid
 
 Grenzen:
 - auch dieses Tooling ist kein Hetzner-Nachweis
+- `start` verlangt ein explizites absolutes `--workdir`; kein Fallback auf Repo-Root oder zufälligen Startkontext
+- `app_root` bleibt der Repo-Checkout mit `harness/`; `start` schreibt `app_root` und `workdir` in die PID-Metadaten
 - `inspect-db` und `inspect-log` akzeptieren nur explizite absolute Pfade
-- `inspect-sidepaths` scannt nur die explizit benannten Roots; keine impliziten Fallback-Pfade
+- `inspect-sidepaths` scannt nur die explizit benannten Roots; dieselbe `workdir`-Bindung muss aus `start` übernommen werden; keine impliziten Fallback-Pfade
 - das Stop-Tooling nutzt nur lokale Kontrollpfade; keine Remote-Orchestrierung
 
 ---
