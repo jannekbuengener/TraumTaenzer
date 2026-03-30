@@ -31,21 +31,28 @@ Es beantwortet:
 
 ## 2. Aktueller Status
 
-**Operative Bereitschaft:** nicht vorhanden
+**Hetzner-deploybare Runtime:** nicht vorhanden
+**Lokale Harness-Runtime:** vorhanden (`harness/` — Python stdlib, kein Deployment, kein Provider)
 
-Die Runtime, die Deploy-Prozedur und die Runbook-Substanz, die dieses Dokument
-beschreibt, existieren im Repo noch nicht als ausführbare Artefakte. Der
-Pilotpfad (Hetzner/SQLite) ist infrastrukturell und datenschutzrechtlich
+Der Pilotpfad (Hetzner/SQLite) ist infrastrukturell und datenschutzrechtlich
 freigegeben (PROVIDER_DPA_INPUT_MATRIX §7, DEPLOYMENT_ENVELOPE §7), aber
 nicht deployed und nicht ausführbar.
 
-Konsequenz für PROMPT_TEST_BASELINE:
-- alle Testfälle, die nicht an ein externes LLM-Gate gebunden sind: Status
-  `Vorbedingung fehlt` – kein `bestanden`, kein `nicht bestanden`
-- LLM-gekoppelte Testfälle: Status `blockiert` (offenes Provider-Gate)
+Das lokale Harness (`harness/`) implementiert den kanonischen Kernel, die
+deterministischen Guards, einen content-freien SQLite-Event-Store und
+Fault-Injection-Stubs. Es ermöglicht lokale Evidence-Läufe für
+nicht-provider-gekoppelte Testfälle, ist aber kein Ersatz für den
+Hetzner-Pilotpfad und kein degraded-Mode-Pilot.
 
-Erst wenn alle Punkte aus §3 geschlossen sind, darf ein Testlauf beginnen und
-ein Ergebnisstatus ungleich `Vorbedingung fehlt` eingetragen werden.
+Konsequenz für PROMPT_TEST_BASELINE:
+- Nicht-provider-gekoppelte Testfälle mit lokalem Harness: Status `ausführbar`;
+  nach tatsächlichem Lauf: `bestanden` oder `nicht bestanden`
+- Nicht-provider-gekoppelte Testfälle ohne Runtime-Artefakte (Hetzner-Pfad):
+  Status `Vorbedingung fehlt`
+- LLM-gekoppelte Testfälle (TB-2): Status `blockiert` (offenes Provider-Gate)
+
+Die §3-Punkte beziehen sich auf den Hetzner-Pilotpfad. Für lokale
+Harness-Läufe gilt §3.3/§3.8 als lokal erfüllt (smoke_check.py, fault_injection.py).
 
 ---
 
@@ -130,12 +137,14 @@ externen LLM-Provider geprüft werden, sobald die Runtime existiert:
 | Malformed Provider-Output (T19) | Der LLM-Adapter-Stub liefert leeren String, invalides JSON oder Teil-Response | Kein Output an UI; `ERROR_FAIL_CLOSED` → `EXIT`; kein Raw-Payload im Log |
 | Adapter-/Transport-Fehler (T20) | Der LLM-Adapter-Stub signalisiert Timeout, DNS-Fehler oder 5xx | `ERROR_FAIL_CLOSED` → `EXIT`; kein stiller Retry; kein Content-Log |
 
-**Voraussetzung für diese Fault-Injection:** Eine stub-fähige Adapter-Schnittstelle
-muss im Prozess steuerbar sein, ohne den Kernel oder die Guards zu verändern.
-Diese Schnittstelle existiert noch nicht; ihre Spezifikation folgt aus
-KERNEL_GUARD_CONTRACTS §10 und DEPLOYMENT_ENVELOPE §6.
+**Lokale Fault-Injection:** Die stub-fähige Adapter-Schnittstelle ist im lokalen
+Harness implementiert (`harness/fault_injection.py`, `harness/llm_adapter.py`,
+`harness/kernel.py`). T18–T20 lokal sind über `run_session.py` ausführbar.
 
-LLM-abhängige Testfälle (T01–T17, T21 vollständig) bleiben `blockiert`, bis
+Die T18–T20-Fälle im Hetzner-Deployment-Kontext (d. h. mit deploytem Prozess)
+bleiben `Vorbedingung fehlt`, bis §3.1–§3.7 geschlossen sind.
+
+LLM-abhängige Testfälle (T01–T17 vollständig, T21 real) bleiben `blockiert`, bis
 ein freigabefähiger Provider-Pfad existiert (TB-2-Gate; PROVIDER_DPA_INPUT_MATRIX).
 
 ---
@@ -207,7 +216,7 @@ starten; Befund dokumentieren; Vorbedingung schließen.
 | Konkrete Startbefehle | Runtime existiert nicht; kein deployedbarer Serverprozess | §3.1–§3.3 vollständig auf `Vorbedingung fehlt` |
 | Konkrete Dateipfade auf Hetzner Volume | Kein aktiver Deploy | §3.5 vollständig auf `Vorbedingung fehlt` |
 | TTL-Purge-Verifikation | Kein laufender Prozess, kein aktiver SQLite-Store | §3.5 vollständig auf `Vorbedingung fehlt` |
-| Fault-Injection-Stub | Keine implementierte Adapter-Schnittstelle | T18–T20 auf `Vorbedingung fehlt`; T18–T20 werden nicht zu `blockiert`, weil kein Provider-Gate der Blocker ist |
+| Fault-Injection-Stub (Hetzner-Deployment) | Kein deployebarer Prozess; lokales Harness ist kein Deployment | T18–T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
 | LLM-gekoppelte Testfälle (T01–T17) | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | Status `blockiert` per PROMPT_TEST_BASELINE §3.1; T21 teilweise ebenfalls `blockiert` |
 | Automatisierte Testausführung | Kein CI-/Testframework vorhanden | Alle Läufe sind manuelle Review-Sessions |
 | Retention-Automatisierung auditieren | Kein laufender TTL-Purge-Job | Muss vor Pilot-Start als aktiv nachgewiesen werden |
@@ -226,7 +235,51 @@ in `bestanden` oder `nicht bestanden` überführt werden.
 | `DEPLOYMENT_ENVELOPE.md` §2–§7 | Topologie, Trust Boundaries, Fail-Closed im Deployment-Kontext |
 | `KERNEL_GUARD_CONTRACTS.md` §3–§10 | Guard-Entscheidungsklassen, Safe States, Fail-Closed-Logik |
 | `TEXT_FIRST_RUNTIME_FLOW.md` §2–§8 | Happy Path, Safe-State-Übergänge, Session-Lifecycle |
-| `PROMPT_TEST_BASELINE.md` §3–§5 | Testmatrix, Ergebnisstatus, Triage-Logik |
+| `PROMPT_TEST_BASELINE.md` §3–§5 | Testmatrix, Ergebnisstatus, Triage-Logik, Harness-Fallgruppen (§3.2) |
 | `PILOT_READINESS.md` §3.3–§3.4 | Go/No-Go-Kriterien inkl. `Vorbedingung fehlt`-Klärung |
 | `PROVIDER_DPA_INPUT_MATRIX.md` §7–§8 | Provider-Gate (TB-2); bleibt offen bis freigabefähiger LLM-Pfad |
 | `DATA_LIFECYCLE.md` §4–§7 | Retention-Logik, erlaubte Event-Felder |
+| `harness/README.md` | Harness-Übersicht, Ausführung, Testfall-Abdeckungstabelle |
+
+---
+
+## 9. Lokaler Harness-Betrieb
+
+Das lokale Harness (`harness/`) ist ein eigenständiger Ausführungskontext für
+nicht-provider-gekoppelte Baseline-Fälle. Es ist **kein deployed Prozess, kein
+Pilot-Scope und kein Ersatz für den Hetzner-/SQLite-Pilotpfad**.
+
+**Zweck:** Deterministische, reproduzierbare Prüfung von Guard-Logik,
+Kernel-Transitionen und Fail-Closed-Verhalten ohne externen LLM-Provider,
+ohne Deployment und ohne echte Nutzer.
+
+**Was damit prüfbar ist:**
+
+| Prüfpunkt | Harness-Tool | Erwartetes Ergebnis |
+|---|---|---|
+| Guard-Entscheidungsklassen (BLOCK_EXIT, BLOCK_REFER, BLOCK_PAUSE, BLOCK_BOUNDARY, RESTRICT_OUTPUT) | `run_session.py` | korrekte Enum-Entscheide; SQLite-Events |
+| Output-Guard-Blocking (TRUTH_CLAIM, DIAGNOSIS, COMPANION, EFFICACY_CLAIM, DEEPENING_ON_DISTRESS) | `run_session.py` | Stub-Output blockiert; state → GUARD_BLOCK |
+| Kernel-Safe-State-Transitionen und Re-Entry-Schutz | `run_session.py` | korrekte SAFE_STATE_TRANSITION-Events |
+| Fail-Closed bei Guard-Fehler (T18) | `run_session.py --scenario T18` | state → EXIT; SYSTEM_ERROR im Event-Log |
+| Fail-Closed bei Malformed Output (T19) | `run_session.py --scenario T19` | state → EXIT; SYSTEM_ERROR im Event-Log |
+| Kein Content im Event-Store (Schema-Check) | `inspect_events.py --check-only` | Exit-Code 0; keine Freitext-Spalten |
+| Harness-Startbarkeit und Grundverhalten | `smoke_check.py` | Exit-Code 0; 7/7 Checks |
+
+**Artefakte pro Harness-Lauf:**
+- `harness/data/events.db` (gitignored): content-freie SQLite-Events; session_id Pseudonym,
+  Timestamp, Enums — kein Nutzertext, kein LLM-Output
+- Smoke-Check-Protokoll: stdout + Exit-Code
+- Szenarien-Laufprotokoll: stdout + Exit-Code pro Szenario
+
+**Grenzen — kein Ersatz für:**
+- Hetzner-Deployment, Volume-gebundene SQLite-Datei und Host-Log-Inspektion (§3.4–§3.5)
+- Reales LLM-Provider-Antwortverhalten: T10, T12 ALLOW-Pfade, T16 LLM-Output-Pfad, T20 real (→ `blockiert`)
+- Sidepath-/WAL-/Retention-Nachweis auf Produktionsinfrastruktur: T21 vollständig (→ `Vorbedingung fehlt`)
+- Prozess-Lifecycle-Garantien auf Zielsystem: Start/Stop/Health/SIGTERM (§3.1–§3.3)
+
+**No-Go — lokaler Harness ist kein Pilot-Nachweis:**
+Harness-Laufartefakte zählen nicht als Pilot-bestanden-Nachweis im Sinne von
+`PROMPT_TEST_BASELINE §3.1` und `PILOT_READINESS §3.3`. Für Pilotfreigabe sind
+ausschließlich Nachweise gegen den freigegebenen Pilotpfad (Hetzner Cloud Server
+`nbg1` + Hetzner Volume + SQLite) zulässig. Die Fallgruppen-Zuordnung ist in
+`PROMPT_TEST_BASELINE §3.2` dokumentiert.

@@ -12,8 +12,9 @@ Ein dokumentations- und governance-first Repository. Es enthält:
 - **Governance-Dokumente** (CONSTITUTION, GOVERNANCE, AGENT_POLICY)
 - **Domain-Canons** (Claims, Safety, Privacy, Architecture)
 - **Projektwissen** (Status, Roadmap, Systemkontext, Invarianten)
+- **Lokales Evidence-Harness** (`harness/`): deterministische Guard-/Kernel-Läufe für nicht-provider-gekoppelte Baseline-Fälle; kein Deployment, kein LLM-Provider, kein Pilot-Scope
 
-Es gibt keinen Runtime-Code, kein Build-System, kein Deployment. Die CI-Pipeline setzt Hygiene-Gates (CodeQL, Gitleaks, Dependency Review), keine Produktchecks.
+Es gibt kein Build-System und kein Deployment. Die CI-Pipeline setzt Hygiene-Gates (CodeQL, Gitleaks, Dependency Review), keine Produktchecks.
 
 ---
 

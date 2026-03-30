@@ -73,8 +73,8 @@ nur Safe-/Fehlerbetrieb
 | Punkt | Priorität | Referenz |
 |---|---|---|
 | Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`), Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`), OpenAI API (`eu.api.openai.com`, `POST /v1/chat/completions`) und IONOS AI Model Hub (`POST /v1/chat/completions`) ist aktuell kein externer LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
-| Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert, aber die reale Durchführung steht insgesamt aus: providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad), nicht-providergekoppelte Fälle ohne Runtime-/Deploy-/Runbook-Artefakte haben Status `Vorbedingung fehlt`; degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE, PILOT_READINESS §3.3 |
-| Runtime-/Deploy-/Runbook-Substanz für evidenzfähige lokale Pflichtfälle: ausführbare Runtime, Start-/Stop-/Health-Pfade, Log-/SQLite-Inspektionspfade, Fault-Injection-Stub für lokale fail-closed-Fälle (T18–T20) – alles aktuell nicht vorhanden; konkrete Vorbedingungsliste in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung | OPERATIONS_RUNBOOK §3–§7 |
+| Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert; providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad); auf dem Hetzner-Pilotpfad verbleiben nicht-providergekoppelte Fälle auf `Vorbedingung fehlt`; im lokalen Harness sind bestimmte Fälle (Gruppen A/B) prüfbar (→ PROMPT_TEST_BASELINE §3.2); degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE §3.1–§3.2, PILOT_READINESS §3.3 |
+| Lokales Harness (`harness/`) vorhanden: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check und Szenarien-Runner; Fallgruppen-Mapping gegen Baseline in PROMPT_TEST_BASELINE §3.2 dokumentiert; Hetzner-deploybare Runtime fehlt weiterhin; lokale Harness-Artefakte sind kein Pilot-Nachweis; konkrete Hetzner-Vorbedingungen in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung (Hetzner-Pfad) | PROMPT_TEST_BASELINE §3.2, OPERATIONS_RUNBOOK §3–§9 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
@@ -86,8 +86,12 @@ Prüfung von fünf externen LLM-Pfaden (Azure OpenAI, Anthropic Claude API,
 Amazon Bedrock, OpenAI API, IONOS AI Model Hub) weiterhin kein
 freigabefähiger externer LLM-Providerpfad identifiziert; degraded mode ist
 kein Ersatzpilot, sondern nur Safe-/Fehlerbetrieb. Zweitens stehen die
-Pflichtfälle der MVP-Evidence-Baseline operativ nicht als `bestanden` fest:
-providergekoppelte Fälle sind durch das offene Provider-Gate `blockiert`;
-nicht-providergekoppelte Fälle ohne Runtime-/Deploy-/Runbook-Artefakte
-haben Status `Vorbedingung fehlt`. Bis diese beiden Blocker geschlossen
-sind, bleibt der Pilot gesperrt.
+Pflichtfälle der MVP-Evidence-Baseline auf dem Hetzner-Pilotpfad nicht als
+`bestanden` fest: providergekoppelte Fälle sind durch das offene
+Provider-Gate `blockiert`; nicht-providergekoppelte Fälle auf dem
+Hetzner-Pfad haben Status `Vorbedingung fehlt`. Das lokale Harness
+(`harness/`) macht bestimmte nicht-provider-gekoppelte Fälle (Gruppe A/B,
+→ PROMPT_TEST_BASELINE §3.2) lokal prüfbar, ersetzt aber keinen
+Pilot-Nachweis und stellt keine Hetzner-Runtime bereit. Bis der
+Provider-Blocker und die Hetzner-Runtime-Vorbedingungen geschlossen sind,
+bleibt der Pilot gesperrt.
