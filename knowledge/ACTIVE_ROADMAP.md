@@ -1,6 +1,6 @@
 # ACTIVE_ROADMAP
 
-Stand: 2026-03-26 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette bis PR #42)
+Stand: 2026-03-27 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette bis PR #42)
 
 ---
 
@@ -26,15 +26,16 @@ Stand: 2026-03-26 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette
 
 ## Now
 
-- **Konkreten Providerpfad per `PROVIDER_DPA_INPUT_MATRIX.md` positiv bewerten** (P0 vor Live-Nutzer)
-- **Retention-, Lösch- und Event-Storage-Enforcement** gegen konkrete Infrastruktur validieren (P0 vor Live-Nutzer)
-- **Red-Team-/Prompt-Tests** auf Basis der Guardrails-, Prompt- und Pilot-Artefakte
+- **Kein freigabefähiger externer LLM-Pfad** (P0-Blocker vor Live-Nutzer): fünf Pfade bewertet (Azure OpenAI, Anthropic Claude API, Amazon Bedrock, OpenAI API, IONOS AI Model Hub) – keiner `zulässig für Pilot`; Provider-Gate bleibt offen
+- **Degraded mode ist kein Ersatzpilot**: degraded mode ist ausschließlich Safe-/Fehlerbetrieb; Live-Pilot nur mit freigegebenem externem LLM-Pfad
+- **Runtime-/Deploy-/Runbook-Substanz für evidenzfähige lokale Pflichtfälle** (P0-Blocker vor Evidence-Ausführung): ausführbare Runtime, Start-/Stop-/Health-Pfade, Log-/SQLite-Inspektionspfade, Fault-Injection-Stub für lokale fail-closed-Fälle (T18–T20) – alles aktuell nicht vorhanden; Vorbedingungsliste in `OPERATIONS_RUNBOOK §3`; nicht-providergekoppelte Pflichtfälle bleiben auf `Vorbedingung fehlt`, providergekoppelte zusätzlich `blockiert`
 
 ---
 
 ## Next
 
 - Export-/IAM-Pfad nur bei echtem Persistenzbedarf konkretisieren
+- Non-LLM-MVP nur falls separat entschieden: eigener Scope, kein Fallback des aktuellen Piloten und keine Voraussetzung für Pilotfreigabe im aktuellen Rahmen
 
 ---
 
