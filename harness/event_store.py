@@ -92,7 +92,8 @@ class EventStore:
         }
         for key, val in kwargs.items():
             if key in _ALLOWED_FIELDS and val is not None:
-                row[key] = str(val)
+                # Persist canonical enum values instead of Enum repr strings.
+                row[key] = str(val.value) if hasattr(val, "value") else str(val)
 
         cols = ", ".join(row.keys())
         placeholders = ", ".join(["?"] * len(row))

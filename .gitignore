@@ -26,3 +26,4 @@ dist/
 harness/data/*.db
 harness/data/*.db-wal
 harness/data/*.db-shm
+harness/data/*.pid

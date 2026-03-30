@@ -64,6 +64,68 @@ python -m harness.inspect_events --session harness-abc123
 Alle Skripte schreiben in `harness/data/events.db` (gitignored).
 Exit-Code 0 = ohne Ausnahme abgeschlossen; 1 = mindestens ein Fehler.
 
+### Minimaler Runtime-Entrypoint
+
+Für den kleinsten deploybaren Mono-Prozess gibt es zusätzlich:
+
+```bash
+python -m harness.runtime_server \
+  --db /absolute/path/events.db \
+  --log /absolute/path/runtime.log \
+  --host 127.0.0.1 \
+  --port 8080
+```
+
+Eigenschaften:
+- `--db` ist Pflicht und muss absolut sein; kein Fallback auf `harness/data/events.db`
+- `--log` ist Pflicht und muss absolut sein; kein Fallback ins Workdir
+- Reachability: `GET /health`
+- Session-Start: `POST /v1/sessions`
+- Turn-Verarbeitung: `POST /v1/turns`
+- Stop-Pfad: `Ctrl+C` / `SIGTERM` -> sauberer Shutdown mit `EventStore.close()`
+- Default ohne Adapter: fehlender Provider fuehrt im Reflexionspfad kontrolliert zu fail-closed (`NO_ADAPTER_CONFIGURED`)
+
+Auch dieser Entrypoint ist noch kein Hetzner-Nachweis und keine Pilot-Evidence.
+
+### Reproduzierbare Runtime-Tooling-Pfade
+
+Für Start / Stop / Health / Inspect gibt es zusätzlich:
+
+```bash
+# Start im Hintergrund, schreibt PID-Metadaten an expliziten Pfad
+python -m harness.runtime_tools start \
+  --db /absolute/path/events.db \
+  --log /absolute/path/runtime.log \
+  --pid-file /absolute/path/runtime.pid \
+  --host 127.0.0.1 \
+  --port 8080
+
+# Reachability prüfen
+python -m harness.runtime_tools health --host 127.0.0.1 --port 8080
+
+# SQLite-Store gegen expliziten Pfad prüfen
+python -m harness.runtime_tools inspect-db --db /absolute/path/events.db --check-only
+
+# Runtime-Log gegen expliziten Pfad prüfen
+python -m harness.runtime_tools inspect-log --log /absolute/path/runtime.log --check-only
+
+# Sidepath- / Shadow-Store-Scan für Zielverzeichnis + Workdir
+python -m harness.runtime_tools inspect-sidepaths \
+  --db /absolute/path/events.db \
+  --log /absolute/path/runtime.log \
+  --pid-file /absolute/path/runtime.pid \
+  --workdir /absolute/path/workdir
+
+# Sauber stoppen; prüft danach auch auf verbleibende -wal / -shm Dateien
+python -m harness.runtime_tools stop --pid-file /absolute/path/runtime.pid
+```
+
+Grenzen:
+- auch dieses Tooling ist kein Hetzner-Nachweis
+- `inspect-db` und `inspect-log` akzeptieren nur explizite absolute Pfade
+- `inspect-sidepaths` scannt nur die explizit benannten Roots; keine impliziten Fallback-Pfade
+- das Stop-Tooling nutzt nur lokale Kontrollpfade; keine Remote-Orchestrierung
+
 ---
 
 ## Testfall-Abdeckung
@@ -91,6 +153,12 @@ Exit-Code 0 = ohne Ausnahme abgeschlossen; 1 = mindestens ein Fehler.
 | T19 | Malformed Output → fail-closed → EXIT        | Fault-Injection      | ausführbar         |
 | T20 | Adapter-Exception → fail-closed → EXIT       | Fault-Injection lok. | ausführbar (lokal) |
 | T21 | GUARD_BLOCK → User-Retry → REFLECTION        | Stub-Adapter         | ausführbar         |
+
+Wichtig: Die Harness-Szenario-IDs sind kein 1:1-Abbild aller
+Baseline-IDs. Insbesondere ist Harness-`T21` nicht identisch mit
+Baseline-`T21` aus `knowledge/ops/PROMPT_TEST_BASELINE.md`
+(Hetzner-/SQLite-Sidepath-Check). Die kanonische Zuordnung steht in
+`PROMPT_TEST_BASELINE.md` §3.2.
 
 Providergekoppelte Fälle (T10, T12) bleiben `blockiert` bis TB-2 freigegeben ist.
 
