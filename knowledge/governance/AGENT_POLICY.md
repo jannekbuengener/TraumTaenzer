@@ -1,6 +1,6 @@
 # AGENT_POLICY – Traumtänzer
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-25
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 ---
 
@@ -56,6 +56,17 @@ Agenten liefern Zuarbeit. Der Owner entscheidet. Kein Merge, kein produktrelevan
 **Kein Weichreden, was hart geregelt ist.**
 Wenn Canon eine Grenze setzt, formuliert der Agent keine Umgehung und keine Ausnahme. Er benennt die Grenze und eskaliert, wenn nötig.
 
+**Kanonisch definierter interner Testmodus nur innerhalb enger Grenzen.**
+Wenn `GOVERNANCE.md` und `PRIVACY_BY_DESIGN.md` einen provider-neutralen
+maintainer-only internen Testmodus kanonisch definieren, dürfen Agenten ihn
+benennen, dokumentieren und innerhalb dieser Grenzen anwenden. Das ist keine
+allgemeine Test-Ausnahme.
+
+- Verboten bleiben jede Ausweitung zu Pilot oder Live-Nutzung.
+- Verboten bleibt jede Interpretation als Provider-Go.
+- Verboten bleiben Drittrohmaterial, Content-Logging und Spiegelung in Repo,
+  Tickets, Logs, Screenshots, Testfixtures oder anderen Side-Artefakten.
+
 ---
 
 ## 5. Evidence-Pflicht
@@ -79,6 +90,7 @@ Agenten eskalieren an den Owner, wenn:
 
 - ein Canon-Konflikt nicht eindeutig auflösbar ist
 - eine Anfrage Safety- oder Privacy-Grenzen berührt
+- eine Anfrage den kanonisch definierten internen Testmodus über seine engen Grenzen hinaus ausweiten würde
 - eine Änderung Auswirkungen über den aktuellen Scope hinaus hat
 - die korrekte Vorgehensweise unklar ist
 
