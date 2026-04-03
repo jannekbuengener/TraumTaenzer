@@ -1,6 +1,6 @@
 # GOVERNANCE – Traumtänzer
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-25
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 ---
 
@@ -61,7 +61,28 @@ Evidence Pack bedeutet: was wurde geprüft, warum ist die Entscheidung sicher, w
 
 ---
 
-## 5. Canon-Konflikte
+## 5. Befristeter maintainer-only interner Testmodus
+
+Ein provider-neutraler maintainer-only interner Testmodus ist nur als enge,
+befristete Canon-Regel zulässig. Er gilt nur auf einem kontrollierten
+Systempfad, nur für maintainer-only interne Läufe und erzeugt nur interne
+System-Evidence. Er ist kein Pilot-Go, kein Live-Go und kein Provider-Go.
+
+Einführung, Verlängerung und Aufhebung dieses Modus erfolgen ausschließlich via
+PR auf `main` mit Evidence Pack und explizitem Befristungs- oder Review-Hinweis.
+Informelle Session-Absprachen ersetzen diese Canon-Entscheidung nicht.
+
+Jeder Lauf in diesem Modus braucht minimale, content-freie Traceability im
+zugehörigen Issue oder PR:
+
+- Zweck
+- erwarteter Erkenntnisgewinn
+- kurzer Befund
+- Löschhinweis
+
+---
+
+## 6. Canon-Konflikte
 
 Wenn zwei Canon-Dokumente widersprüchliche Regeln enthalten:
 
@@ -74,7 +95,7 @@ Kein Merge „weil es sich okay anfühlt". Kein Merge, der einen Konflikt verdec
 
 ---
 
-## 6. Sauberer Session-Abschluss
+## 7. Sauberer Session-Abschluss
 
 Eine Arbeits-Session mit KI-Agenten gilt als abgeschlossen, wenn:
 
@@ -88,7 +109,7 @@ Eine Arbeits-Session mit KI-Agenten gilt als abgeschlossen, wenn:
 
 ---
 
-## 7. Branch-Strategie
+## 8. Branch-Strategie
 
 - `main` – geschützt, PR-only, CI-Pflicht
 - Feature-/Docs-Branches: `docs/`, `feat/`, `fix/` – kurzlebig, kleiner Scope
@@ -96,7 +117,7 @@ Eine Arbeits-Session mit KI-Agenten gilt als abgeschlossen, wenn:
 
 ---
 
-## 8. Was nicht erfunden wird
+## 9. Was nicht erfunden wird
 
 - keine Review-Gremien, die nicht existieren
 - keine Approval-Chains ohne reale Personen dahinter

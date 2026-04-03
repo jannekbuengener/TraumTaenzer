@@ -1,6 +1,6 @@
 # PRIVACY_BY_DESIGN
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-26
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 ---
 
@@ -68,6 +68,23 @@ Nichts wird persistiert, solange kein konkreter, minimaler Zweck vorliegt. Im Zw
 - Session-Inhalte (Nutzereingaben, KI-Antworten in der Session) sind ephemer: sie existieren nur während der aktiven Session.
 - Nach Session-Ende: kein automatisches Persistieren von Inhalten.
 - Wenn Nutzer eine Speicherung wünscht (z. B. eigenes Journal): explizites Opt-in erforderlich, technische Umsetzung noch zu definieren.
+
+### Enger maintainer-only interner Testmodus
+
+Der provider-neutrale maintainer-only interne Testmodus ist kein allgemeiner
+Privacy-Override, sondern ein eng begrenzter Sonderpfad für interne Systemtests
+auf einem kontrollierten Systempfad. Die Privacy-Defaults dieses Dokuments
+bleiben für alle anderen Pfade unverändert.
+
+- Nur maintainer-only; keine Pilot- oder Live-Nutzung.
+- Nur kontrollierter Systempfad; keine Nebenpfade, keine Schattenablage, kein Schattenbetrieb.
+- Eigenes Material des Maintainers ist zulässig.
+- Material mit Drittbezug darf nur vorab abstrahiert, entschärft oder entfernt genutzt werden; kein Drittrohmaterial.
+- Lokale Rohablage ist nur eng begrenzt zulässig, wenn sie für den konkreten Testlauf notwendig ist; maximale Haltedauer: 7 Tage.
+- Für solche lokal abgelegten Rohinhalte besteht explizite Löschpflicht; stilles Liegenlassen ist kein zulässiger Default.
+- Verboten ist jede Spiegelung in Repo, Tickets, Logs, Screenshots, Testfixtures, Beispieldaten oder sonstigen Nebenartefakten.
+- Die pro Lauf geforderte Traceability bleibt content-frei und enthält keinen Rohinhalt.
+- Der Modus erzeugt nur interne System-Evidence; er begründet weder Pilot-Go noch Live-Go noch Provider-Freigabe.
 
 ### Logs
 

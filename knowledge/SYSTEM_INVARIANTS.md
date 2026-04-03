@@ -1,6 +1,6 @@
 # SYSTEM_INVARIANTS – Traumtänzer
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-25
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 Invarianten gelten immer. Sie sind nicht verhandelbar und werden nicht durch Operative Defaults oder Session-Absprachen außer Kraft gesetzt. Bei Konflikt mit einer Invariante gilt: Canon prüfen, nicht Invariante ignorieren.
 
@@ -48,6 +48,11 @@ Technische Logs enthalten keine Nutzertexte, keine Session-Inhalte, keine Auslö
 
 **P-4: Kein Provider-Einsatz ohne geprüften DPA.**
 Keine Produktionsnutzung personenbezogener Daten mit externen Diensten, solange Datenverarbeitungsvertrag nicht geprüft und dokumentiert ist.
+
+Der kanonisch definierte provider-neutrale maintainer-only interne Testmodus
+öffnet diese Invarianten nicht. Er ist kein Pilotpfad, kein Live-Pfad und kein
+Provider-Go; Detailregeln zu Scope, Containment und Traceability stehen in
+`GOVERNANCE.md` und `PRIVACY_BY_DESIGN.md`.
 
 ---
 
