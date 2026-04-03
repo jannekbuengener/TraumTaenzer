@@ -1,6 +1,6 @@
 # CURRENT_STATUS – Traumtänzer
 
-Zuletzt aktualisiert: 2026-03-30
+Zuletzt aktualisiert: 2026-04-03
 
 ---
 
@@ -80,7 +80,7 @@ Non-LLM-Ersatzpilot ist im aktuellen MVP-Scope nicht entschieden
 | Punkt | Priorität | Referenz |
 |---|---|---|
 | Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`), Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`), OpenAI API (`eu.api.openai.com`, `POST /v1/chat/completions`) und IONOS AI Model Hub (`POST /v1/chat/completions`) ist aktuell kein externer LLM-Pfad freigabefähig; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
-| Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert; providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad); auf dem Hetzner-Pilotpfad verbleiben nicht-providergekoppelte Fälle auf `Vorbedingung fehlt`; im lokalen Harness sind bestimmte Fälle (Gruppen A/B) prüfbar (→ PROMPT_TEST_BASELINE §3.2); degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE §3.1–§3.2, PILOT_READINESS §3.3 |
+| Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert; auf dem realen Hetzner-Pilotpfad ist noch kein Pflichtfall `bestanden` oder `nicht bestanden`: nicht-providergekoppelte Fälle bleiben mangels festgezogenem Zielpfad und erstem Artefaktlauf `Vorbedingung fehlt`, providergekoppelt bleiben T10, T12 ALLOW-Pfade, T16 realer LLM-Output-Pfad und T20 realer Provider-/Transportfehler `blockiert`; im lokalen Harness sind bestimmte Fälle (Gruppen A/B) prüfbar (→ PROMPT_TEST_BASELINE §3.2–§3.3); degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE §3.1–§3.3, PILOT_READINESS §3.3 |
 | Lokaler Bootstrap-Runtime-Pfad (`harness/runtime_server.py`, `harness/runtime_tools.py`) auf `main` vorhanden: Start / Stop / Health / kurzer Session-Smoke / DB-/Log-/Sidepath-Inspect lokal mit expliziten absoluten Pfaden und explizitem `workdir`-Scanroot möglich; offene Lücke ist jetzt `Hetzner Bootstrap Path Contract + First Evidence Recipe`, nicht weiterer Runtime-Neubau; lokale Harness-Artefakte bleiben kein Pilot-Nachweis | P0 vor Evidence-Ausführung (Hetzner-Pfad) | PROMPT_TEST_BASELINE §3.2, OPERATIONS_RUNBOOK §2.1, §3–§9 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
@@ -94,20 +94,22 @@ Amazon Bedrock, OpenAI API, IONOS AI Model Hub) weiterhin kein
 freigabefähiger externer LLM-Providerpfad identifiziert; degraded mode ist
 kein Ersatzpilot, sondern nur Safe-/Fehlerbetrieb; ein Non-LLM-Ersatzpilot
 ist im aktuellen MVP-Scope nicht entschieden. Zweitens stehen die
-Pflichtfälle der MVP-Evidence-Baseline auf dem Hetzner-Pilotpfad nicht als
-`bestanden` fest: providergekoppelte Fälle sind durch das offene
-Provider-Gate `blockiert`; nicht-providergekoppelte Fälle auf dem
-Hetzner-Pfad haben Status `Vorbedingung fehlt`. Das lokale Harness
-(`harness/`) macht bestimmte nicht-provider-gekoppelte Fälle (Gruppe A/B,
-→ PROMPT_TEST_BASELINE §3.2) lokal prüfbar. Der nächste echte P0-Block ist
-jetzt `Hetzner Bootstrap Path Contract + First Evidence Recipe`: der
-vorhandene Bootstrap-Runtime-Pfad (`harness/runtime_server.py` +
+Pflichtfälle der MVP-Evidence-Baseline auf dem Hetzner-Pilotpfad weiterhin
+nicht als `bestanden` oder `nicht bestanden` fest: nicht-providergekoppelte
+Fälle bleiben ohne festgezogenen Zielpfad und ersten Artefaktlauf
+`Vorbedingung fehlt`; providergekoppelt bleiben T10, T12 ALLOW-Pfade, T16
+reale LLM-Output-Pfade und T20 reale Provider-/Transportfehler `blockiert`.
+Das lokale Harness (`harness/`) macht bestimmte nicht-provider-gekoppelte
+Fälle (Gruppe A/B, → PROMPT_TEST_BASELINE §3.2) repo-seitig prüfbar, ersetzt
+aber keinen Hetzner-Nachweis. Der nächste echte P0-Block ist deshalb weiter
+`Hetzner Bootstrap Path Contract + First Evidence Recipe`: der vorhandene
+Bootstrap-Runtime-Pfad (`harness/runtime_server.py` +
 `harness/runtime_tools.py`) muss an genau einen echten Hetzner-Zielpfad
 gebunden werden, inklusive `app_root`, `workdir`, `volume_mount`, `db_path`,
 `log_path`, `pid_file`, `bind_host` und `bind_port`, und genau in der
 Sequenz `start -> health -> kurzer Session-Smoke -> inspect-db ->
 inspect-log -> inspect-sidepaths -> stop` gefahren werden. Repo-seitig ist
-der `workdir`-Contract jetzt durch den Bootstrap-Startpfad explizit
-vorbereitet; offen bleiben die echten Hetzner-Zielwerte und der erste
-Artefaktlauf. Bis die vier Artefaktklassen aus `OPERATIONS_RUNBOOK §4` für
-diesen Lauf vorliegen, bleibt der Pilot gesperrt.
+die lokale Bootstrap-Sequenz mit explizitem `workdir` vorbereitet; offen
+bleiben die echten Hetzner-Zielwerte und der erste Artefaktlauf. Bis die
+vier Artefaktklassen aus `OPERATIONS_RUNBOOK §4` für diesen Lauf vorliegen,
+bleibt der Pilot gesperrt.

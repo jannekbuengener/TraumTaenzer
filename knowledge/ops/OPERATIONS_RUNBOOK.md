@@ -1,6 +1,6 @@
 # OPERATIONS_RUNBOOK
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-30
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 Basis: DEPLOYMENT_ENVELOPE §2–§9, KERNEL_GUARD_CONTRACTS §3–§10,
 TEXT_FIRST_RUNTIME_FLOW §2–§8, PILOT_READINESS §3.3–§3.4,
@@ -199,11 +199,14 @@ geprüft werden:
 Harness implementiert (`harness/fault_injection.py`, `harness/llm_adapter.py`,
 `harness/kernel.py`). T18–T20 lokal sind über `run_session.py` ausführbar.
 
-Die T18–T20-Fälle im Hetzner-Deployment-Kontext (d. h. mit deploytem Prozess)
-bleiben `Vorbedingung fehlt`, bis §3.1–§3.7 geschlossen sind.
+Auf dem realen Hetzner-Deployment bleiben T18, T19 und die lokale
+Stub-Variante von T20 zunächst `Vorbedingung fehlt`, bis §3.1–§3.7
+geschlossen sind und ein erster evidenzfähiger Lauf gegen den echten
+Zielpfad vorliegt.
 
-LLM-abhängige Testfälle (T01–T17 vollständig, T21 real) bleiben `blockiert`, bis
-ein freigabefähiger Provider-Pfad existiert (TB-2-Gate; PROVIDER_DPA_INPUT_MATRIX).
+Provider-gekoppelt und damit unabhängig davon `blockiert` bleiben bis zum
+TB-2-Gate: T10, die ALLOW-Pfade von T12, der reale LLM-Output-Pfad von T16
+und T20 als echter Provider-/Transportfehler.
 
 ---
 
@@ -274,8 +277,9 @@ starten; Befund dokumentieren; Vorbedingung schließen.
 | Kanonischer Hetzner Path Contract | Bootstrap-Serverprozess und Operator-Tooling trennen repo-seitig jetzt explizit zwischen Codepfad (`app_root`) und Laufpfad (`workdir`), aber die konkreten Zielwerte für `app_root`, `workdir`, `volume_mount`, `db_path`, `log_path`, `pid_file`, `bind_host` und `bind_port` sind auf Hetzner noch nicht festgezogen | §3.1–§3.5 auf Hetzner weiterhin `Vorbedingung fehlt` |
 | Konkrete Dateipfade auf Hetzner Volume | Kein aktiver Deploy und kein belegter `volume_mount`-/`db_path`-Wert | §3.5 vollständig auf `Vorbedingung fehlt` |
 | TTL-Purge-Verifikation | Kein laufender Hetzner-Prozess und kein aktiver Ziel-Store | §3.5 vollständig auf `Vorbedingung fehlt` |
-| Fault-Injection-Stub (Hetzner-Deployment) | Bootstrap-Prozess lokal vorhanden, aber kein an Hetzner gebundener Lauf; lokales Harness ist kein Deployment | T18–T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
-| LLM-gekoppelte Testfälle (T01–T17) | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | Status `blockiert` per PROMPT_TEST_BASELINE §3.1; T21 teilweise ebenfalls `blockiert` |
+| Fault-Injection-Stub (Hetzner-Deployment) | Bootstrap-Prozess lokal vorhanden, aber kein an Hetzner gebundener Lauf; lokales Harness ist kein Deployment | T18, T19 und die lokale Stub-Variante von T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
+| Nicht-provider-gekoppelte Pflichtfälle auf realem Hetzner-Pfad | Kein festgezogener Zielpfad und kein erster Artefaktlauf gegen Hetzner/SQLite | T01-T09, T11, T13-T19 und T21 bleiben `Vorbedingung fehlt`; zusätzlich die nicht-provider-gekoppelten Teilpfade aus T12, T16 und T20 |
+| Provider-gekoppelte Pflichtfälle | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | T10, T12 ALLOW-Pfade, T16 realer LLM-Output-Pfad und T20 realer Provider-/Transportfehler bleiben `blockiert` |
 | Automatisierte Testausführung | Kein CI-/Testframework vorhanden | Alle Läufe sind manuelle Review-Sessions |
 | Retention-Automatisierung auditieren | Kein laufender TTL-Purge-Job | Muss vor Pilot-Start als aktiv nachgewiesen werden |
 
