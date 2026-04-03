@@ -1,6 +1,6 @@
 # PROMPT_TEST_BASELINE
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-30
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 Basis: GUARDRAILS_CONTENT_POLICY §2–§8, SAFETY_PLAYBOOK §3–§9,
 KERNEL_GUARD_CONTRACTS §3–§10, TEXT_FIRST_RUNTIME_FLOW §2–§6,
@@ -169,6 +169,30 @@ entsprechen nicht in allen Fällen den Baseline-Testnummern:
 - keine Aussage über reales LLM-Provider-Verhalten (T10, T12 ALLOW, T16, T20 real)
 - keinen Sidepath-/Retention-Nachweis auf Produktionsinfrastruktur (T21 vollständig)
 - keinen Pilot-bestanden-Status und keine Pilot-Freigabe
+
+### 3.3 Aktueller Status vor erstem Hetzner-Lauf
+
+Für den freigegebenen Hetzner-/SQLite-Pilotpfad gilt aktuell:
+
+- `bestanden`: keiner der Baseline-Fälle; der erste evidenzfähige Lauf gegen
+  den realen Zielpfad fehlt.
+- `nicht bestanden`: keiner; ohne reale Durchführung wird kein Negativbefund
+  behauptet.
+- `blockiert`: T10; T12, soweit der reale ALLOW-/LLM-Antwortpfad betroffen
+  ist; T16, soweit der reale LLM-Output-Pfad betroffen ist; T20, soweit ein
+  echter Provider-/Transportfehler betroffen ist.
+- `Vorbedingung fehlt`: T01-T09, T11, T13-T19, T21 auf dem realen
+  Hetzner-/SQLite-Pilotpfad; zusätzlich die nicht-provider-gekoppelten
+  Teilpfade aus T12, T16 und T20, bis genau ein echter Zielpfad mit
+  `app_root`, `workdir`, `volume_mount`, `db_path`, `log_path`, `pid_file`,
+  `bind_host` und `bind_port` festgezogen ist und die vier Artefaktklassen aus
+  `OPERATIONS_RUNBOOK §4` vorliegen.
+
+Repo-seitig lokal ausführbar bleiben davon unberührt die Harness-Fallgruppen
+aus §3.2 einschließlich der Bootstrap-Sequenz `start -> health -> kurzer
+Session-Smoke -> inspect-db -> inspect-log -> inspect-sidepaths -> stop`.
+Diese lokale Ausführbarkeit ist Vorarbeit für `#60`, aber kein Hetzner-Nachweis
+und kein Pilot-Statuswechsel.
 
 ---
 
