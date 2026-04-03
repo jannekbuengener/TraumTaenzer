@@ -7,6 +7,7 @@
   - Keine autoritäre „Traumdeutung als Wahrheit“; nur Hypothesen/Fragen/Erlebnis.
   - Kein manipulativer Companion/Bindungs‑Design; keine Abhängigkeitsmechaniken.
   - Kein datenhungriges Tracking; Datenminimierung/Privacy-by-Default.
+  - Kein Ersatzpilot über maintainer-only internen Testbetrieb; Live-Pilot nur mit freigegebenem externem LLM-Pfad.
 - Owner: Jannek Büngener
 - Risiken:
   - Trigger-/Belastungsrisiko (Trauma, Dissoziation, Realitätsdrift) → Exit/Safeword/Notfall-Flow.
@@ -18,6 +19,6 @@
   - P0: Claim-Framework (Do/Don’t-Claims) + Nicht‑Therapie‑Positionierung schriftlich fixiert.
   - P0: Privacy-by-Design Paket (DPIA Draft, Retention, Export/Löschung, Subprozessor-Liste).
   - P0: Safety Playbook (Exit/Safeword, Trigger-Handling, Notfall-Templates, Escalation Path).
-  - P1: UX‑Prototyp „Sanfte Begegnung“ (Entry → Szene → Exit) + kleine Pilotgruppe (30–60).
+  - P1: UX‑Prototyp „Sanfte Begegnung“ (Entry → Szene → Exit) + kleine Pilotgruppe (30–60), aber nur mit freigegebenem externem LLM-Pfad; maintainer-only interner Testbetrieb ist kein Ersatzpilot.
   - P1: Guardrails/Content Policy (keine Diagnosen, keine absoluten Deutungen, keine Manipulation).
   - P2: Light/Core Pricing & Packaging (Light kostenlos, Core ca. 39€/Monat als Hypothese) validiert.

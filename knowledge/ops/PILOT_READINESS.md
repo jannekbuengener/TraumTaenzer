@@ -1,6 +1,6 @@
 # PILOT_READINESS
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-26
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 Basis: CLAIMS_FRAMEWORK, SAFETY_PLAYBOOK, PRIVACY_BY_DESIGN, ARCHITECTURE_OVERVIEW,
 UX_CORE_SEQUENCE, GUARDRAILS_CONTENT_POLICY, SYSTEM_INVARIANTS
@@ -55,7 +55,7 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | Input-Guards für Safeword und Krisensprache operativ | Abdeckung jeder denkbaren Formulierungsvariante | Safeword oder Krisensprache werden nicht erkannt |
 | Output-Guards-Kriterien definiert und angewandt | Automatisierte Prüfung jedes Outputs | Diagnose-, Therapie- oder Companion-Outputs werden nicht geblockt |
 | fail-closed-Verhalten bei Guard-Unsicherheit sowie Guard-, Adapter- und Provider-Output-Fehlerpfaden definiert | Vollständige Guard-Testabdeckung | Kein definiertes Verhalten bei Guard-Unsicherheit oder fehlerhaftem Provider-Output |
-| `PROMPT_TEST_BASELINE.md` als minimale Evidence-Baseline vorhanden; vor Pilotstart sind alle P0-Fälle sowie Leak-/fail-closed-/sidepath-Fälle gegen den freigegebenen Pilotpfad (`Hetzner Cloud Server` `nbg1` + `Hetzner Volume` + lokales `SQLite`) dokumentiert `bestanden`, und kein providergekoppelter Pflichtfall steht auf `blockiert`; `blockiert` ist für providergekoppelte Fälle bei offenem externem LLM-Gate reserviert; nicht-providergekoppelte Fälle ohne ausführbare Runtime, definierte Start-/Stop-/Health-/Log-Inspektionspfade und reale Artefakte stehen auf `Vorbedingung fehlt` – dieser Status ist kein `bestanden`; ein benannter Hetzner-/SQLite-Pilotpfad allein reicht nicht für evidenzfähige reale Durchführung | Vollständige Automatisierung, Fuzzing oder Langzeit-Drift-Tests | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Krisen-, Boundary-, Companion-, Leak-, Sidepath- und fail-closed-Pfade gegen den freigegebenen Pilotpfad |
+| `PROMPT_TEST_BASELINE.md` als minimale Evidence-Baseline vorhanden; vor Pilotstart sind alle P0-Fälle sowie Leak-/fail-closed-/sidepath-Fälle gegen den freigegebenen Pilotpfad (`Hetzner Cloud Server` `nbg1` + `Hetzner Volume` + lokales `SQLite`) dokumentiert `bestanden`, und kein providergekoppelter Pflichtfall steht auf `blockiert`; `blockiert` ist für providergekoppelte Fälle bei offenem externem LLM-Gate reserviert; nicht-providergekoppelte Fälle ohne ausführbare Runtime, definierte Start-/Stop-/Health-/Log-Inspektionspfade und reale Artefakte stehen auf `Vorbedingung fehlt` – dieser Status ist kein `bestanden`; ein benannter Hetzner-/SQLite-Pilotpfad allein reicht nicht für evidenzfähige reale Durchführung; maintainer-only interne Testläufe auf kontrolliertem Systempfad erzeugen nur interne System-Evidence und zählen nicht als `bestanden` oder Pilot-Nachweis für diesen Pfad | Vollständige Automatisierung, Fuzzing oder Langzeit-Drift-Tests | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Krisen-, Boundary-, Companion-, Leak-, Sidepath- und fail-closed-Pfade gegen den freigegebenen Pilotpfad |
 
 ### 3.4 Privacy- und Retention-Grundlagen
 
@@ -67,7 +67,7 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 | Löschpfad konzeptuell definiert | Vollständige DPIA | Kein definierter Löschpfad |
 | Zielkomponente für Event-Storage/Logs ist konkret benannt; 90-/30-Tage-Retention, automatische Löschung und Backup-/Nebenlogik dieses Pfads sind technisch belastbar beschrieben | Vollständige Audit-/Observability-Infrastruktur | Offener Event-Storage-/Hosting-Pfad oder nur behauptetes Retention-Enforcement |
 | Pilot-Teilnehmer wissen, dass das System KI-gestützt ist und welche Daten verarbeitet werden | Vollständige Datenschutzerklärung in Endform | Keine Information der Teilnehmer über Datenverarbeitung |
-| Kein Live-Nutzer mit externen Providern ohne ausgefüllte und positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md` | Vollständige juristische Endprüfung aller Verträge | Personenbezogene Daten fließen an einen Provider mit offener Matrix oder negativem Entscheidungsstatus |
+| Kein Live-Nutzer mit externen Providern ohne ausgefüllte und positiv bewertete `PROVIDER_DPA_INPUT_MATRIX.md`; maintainer-only interne Testläufe oder interne System-Evidence ersetzen weder positive Matrix noch Provider-Freigabe | Vollständige juristische Endprüfung aller Verträge | Personenbezogene Daten fließen an einen Provider mit offener Matrix oder negativem Entscheidungsstatus |
 | Retention, Training/Service-Verbesserung, Region/Transfer und Subprocessor-Lage des konkreten Produktpfads sind geklärt | Vollständige Vertragsarchivierung im Endzustand | Ungeklärte Retention-, Training-, Region- oder Subprocessor-Lage |
 
 **Aktueller Pilotpfad (Entscheid 2026-03-26):**
@@ -80,6 +80,13 @@ Es gilt vor dem ersten Nutzerkontakt. Bei Erfüllung aller Voraussetzungen darf 
 - Zusatzbedingungen: keine Server-Backups, keine Snapshots, keine externen
   Log-/Storage-Replikate; täglicher TTL-Purge + `VACUUM`; Host-Logs bleiben
   content-free und max. 30 Tage
+
+**Explizite Abgrenzung zum internen Testmodus:**
+Maintainer-only interne Testläufe nach `GOVERNANCE.md §5` und
+`PRIVACY_BY_DESIGN.md §2` sind kein Pilotpfad. Auch mit realem Eigenmaterial
+erzeugen sie nur interne System-Evidence; sie zählen weder als
+Pilot-Nachweis noch als Provider-Freigabe-Evidence und ändern keine negative
+Matrixbewertung.
 
 ### 3.5 Kernel- und Safe-State-Disziplin
 
@@ -129,6 +136,7 @@ Wenn auch nur eine dieser Bedingungen zutrifft: **kein Pilotstart**.
 | 13 | Kein definiertes Verhalten bei Safety-Ereignis (kein Safe State, kein fail-closed) |
 | 14 | Pilot-Teilnehmer wissen nicht, dass sie mit einem KI-System interagieren |
 | 15 | Keine minimale Red-Team-/Prompt-Testbaseline oder kein Nachweis für Safeword-, Krisen-, Boundary-, Companion-, Leak-, Sidepath- und fail-closed-Pfade gegen den freigegebenen Pilotpfad |
+| 16 | Maintainer-only interne Testläufe oder interne System-Evidence werden als Pilot-Nachweis oder Ersatz für positive Provider-Matrix behandelt |
 
 ---
 

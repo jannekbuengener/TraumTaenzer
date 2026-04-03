@@ -1,6 +1,6 @@
 # PROVIDER_DPA_INPUT_MATRIX
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-26
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-03
 
 Basis: PRIVACY_BY_DESIGN §2, §5, §6, §9; DEPLOYMENT_ENVELOPE §4–§7;
 PILOT_READINESS §3.4, §8; SYSTEM_INVARIANTS P-1–P-4, A-4
@@ -389,8 +389,18 @@ Console-/Support-/Debug-Nutzung als Produktbestandteil.
   Backup-/Replikationsreste bleibt offen.
 - DPA-Abdeckung für den EU-Residency-Pfad ohne aktives MAM/ZDR ist
   nicht belastbar geschlossen.
+- Für den aktuellen MVP zählt nur dieser dokumentierte Standardpfad
+  (`eu.api.openai.com` + `POST /v1/chat/completions`) als
+  Bewertungsmaßstab; approval-/sales-gesteuerte MAM-/ZDR-Sonderpfade
+  sind ohne bereits aktivierte, belastbar belegte Sondervereinbarung
+  kein belastbarer MVP-Standardkandidat.
 
 **Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
+
+Ein separater provider-neutraler maintainer-only interner Testmodus nach
+`GOVERNANCE.md §5` und `PRIVACY_BY_DESIGN.md §2` kann OpenAI nur als internen
+Arbeitsmotor auf kontrolliertem Systempfad zulassen; er ändert weder diese
+Live-Ampel noch eine Pilot- oder Provider-Freigabe.
 
 #### F. IONOS AI Model Hub – `openai.inference.de-txl.ionos.com` Pfad
 
