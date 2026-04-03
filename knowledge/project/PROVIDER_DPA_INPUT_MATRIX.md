@@ -398,7 +398,8 @@ Console-/Support-/Debug-Nutzung als Produktbestandteil.
 
 - IONOS: AI Model Hub Produktdokumentation und Inferenz-Endpunkt
   (`https://openai.inference.de-txl.ionos.com`)
-- IONOS: Datenschutz- und DPA-Dokumentation für Cloud-Dienste
+- IONOS: Data Handling, KI-Dienste, AVV-/Datenschutzpaket- und
+  Subunternehmer-Dokumentation für Cloud-Dienste
 
 **Belastbar geklärt:**
 
@@ -407,9 +408,13 @@ Console-/Support-/Debug-Nutzung als Produktbestandteil.
   text-only, stateless dokumentiert.
 - DE-Hosting in `de-txl` (Berlin, Deutschland) ist positiv; EU-Residency
   für den Kerndatenpfad damit belastbar.
-- IONOS äußert sich zu keinem Training mit Kundendaten
-  (no-training-nahe Aussagen positiv; operative Vertragsverankerung offen).
-- Als DE-Provider betreibt IONOS ein DPA-Framework für Hosting-Kunden.
+- Die öffentliche Data-Handling-Doku sagt für den Kernpfad
+  `discarding user prompts and outputs at the end of each session` sowie
+  `free from logging, recording, or reuse for model training`.
+- Die KI-Dienst-Bedingungen erlauben Input/Output nur zur
+  vertragsgemäßen Bereitstellung sowie zur technischen Sicherheit und
+  Fehlerbehebung; Weiterentwicklung, Training und Retraining sind
+  ausdrücklich untersagt.
 
 **Blocker / No-Go-Risiken:**
 
@@ -422,6 +427,9 @@ Console-/Support-/Debug-Nutzung als Produktbestandteil.
   nicht produktnah definiert.
 - AI-spezifische Subprocessor-Lage: welche Drittanbieter in die
   KI-Inferenz-Infrastruktur eingebunden sind, bleibt offen.
+- Öffentliche AVV-/UAV-Unterlagen sind generisch für Cloud-Dienste; eine
+  produktgenaue Art.-28-Zuordnung für den Standardpfad des `AI Model Hub`
+  ist damit nicht belastbar geschlossen.
 
 **Operativer Entscheid:** `nicht zulässig für Live-Nutzer`
 
