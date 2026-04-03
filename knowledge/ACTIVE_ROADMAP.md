@@ -1,6 +1,6 @@
 # ACTIVE_ROADMAP
 
-Stand: 2026-03-27 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette bis PR #42)
+Stand: 2026-04-03 – gespiegelt auf den aktuellen Canon-Stand inkl. interner Testmodus-Basis
 
 ---
 
@@ -26,14 +26,16 @@ Stand: 2026-03-27 – synchronisiert mit `main` (nach gemergter Docs-/Spec-Kette
 
 ## Now
 
-- **Kein freigabefähiger externer LLM-Pfad** (P0-Blocker vor Live-Nutzer): fünf Pfade bewertet (Azure OpenAI, Anthropic Claude API, Amazon Bedrock, OpenAI API, IONOS AI Model Hub) – keiner `zulässig für Pilot`; Provider-Gate bleibt offen
+- **Kein freigabefähiger externer LLM-Pfad** (P0-Blocker vor Live-Nutzer): fünf Pfade bewertet (Azure OpenAI, Anthropic Claude API, Amazon Bedrock, OpenAI API, IONOS AI Model Hub) – keiner `zulässig für Pilot`; OpenAI bleibt im Standardpfad `nicht zulässig für Live-Nutzer`; Provider-Gate bleibt offen
 - **Degraded mode ist kein Ersatzpilot**: degraded mode ist ausschließlich Safe-/Fehlerbetrieb; Live-Pilot nur mit freigegebenem externem LLM-Pfad
+- **Provider-neutraler maintainer-only interner Testmodus ist nur Arbeitsmodus**: befristeter Aufbaupfad auf kontrolliertem Systempfad für interne System-Evidence; kein Pilot, kein Live-Pfad und kein Provider-Go
 - **Lokales Harness vorhanden** (`harness/`): Kernel-Zustandsmaschine, deterministische Guards, content-freier SQLite-Event-Store, Stub-Adapter, Fault-Injection, Smoke-Check und Szenarien-Runner implementiert; nicht-provider-gekoppelte Testfälle lokal ausführbar; Hetzner-deploybare Runtime fehlt weiterhin; Vorbedingungsliste für Hetzner-Pfad in `OPERATIONS_RUNBOOK §3`; provider-gekoppelte Pflichtfälle bleiben `blockiert`
 
 ---
 
 ## Next
 
+- Interne Testläufe nur zur System-/Containment-Evidence nutzen und strikt getrennt von Pilot-/Provider-Freigabe halten; das offene Provider-Gate bleibt eigene P0-Lücke
 - Export-/IAM-Pfad nur bei echtem Persistenzbedarf konkretisieren
 - Non-LLM-MVP nur falls separat entschieden: eigener Scope, kein Fallback des aktuellen Piloten und keine Voraussetzung für Pilotfreigabe im aktuellen Rahmen
 
