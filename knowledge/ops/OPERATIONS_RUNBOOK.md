@@ -1,6 +1,6 @@
 # OPERATIONS_RUNBOOK
 
-Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-03-27
+Status: aktiv | Owner: Jannek Büngener | Zuletzt geprüft: 2026-04-20
 
 Basis: DEPLOYMENT_ENVELOPE §2–§9, KERNEL_GUARD_CONTRACTS §3–§10,
 TEXT_FIRST_RUNTIME_FLOW §2–§8, PILOT_READINESS §3.3–§3.4,
@@ -55,10 +55,14 @@ Konsequenz für PROMPT_TEST_BASELINE:
   BLOCK_REFER/CRISIS auf Hetzner-Pfad noch nicht ausgeführt; offen
 - LLM-gekoppelte Testfälle (TB-2): Status `blockiert` (offenes Provider-Gate)
 
-**Offene §3-Punkte nach erstem Evidence-Lauf (→§10):**
+**Offene §3-Punkte nach erstem Evidence-Lauf (2026-04-19; vor Follow-up #80, →§10):**
 - §3.5: TTL-Purge-Job nicht konfiguriert; VACUUM nach Purge nicht dokumentiert
 - §3.4: Log-Rotation (max. 30 Tage) nicht konfiguriert; Crash-Log-Verhalten nicht getestet
 - §3.6: SQLite-Event-Row-Dump (Pflicht-Artefakt §4) noch nicht abgerufen
+
+**Stand nach Follow-up #80 (2026-04-20):**
+- §3.5: erfüllt; täglicher `systemd`-Timer + TTL-Purge + `VACUUM` auf `/mnt/tt-volume/events.db` aktiv und manuell verifiziert
+- §3.4: Log-Rotation für `/var/log/traumtaenzer/runtime.log` konfiguriert und per `logrotate --debug` geprüft; Crash-Log-Verhalten weiterhin offen
 
 ---
 
@@ -215,7 +219,7 @@ starten; Befund dokumentieren; Vorbedingung schließen.
 
 ---
 
-## 7. Was dieses Runbook nach dem ersten Evidence-Lauf noch nicht abdeckt
+## 7. Was dieses Runbook nach dem ersten Evidence-Lauf (Stand 2026-04-19) noch nicht abdeckte
 
 | Lücke | Ursache | Konsequenz |
 |---|---|---|
@@ -355,13 +359,30 @@ Datum: 2026-04-19. Keine externen Provider. Kein Pilot-Claim.
 | T17 (Host-Log-Artefakte) | Infrastruktur verfügbar; **Szenario ausstehend** | Host-Log content-free verifiziert; BLOCK_REFER/CRISIS-Szenario nicht ausgeführt (Lauf verwendete BLOCK_EXIT/SAFEWORD); Event-Row-Dump fehlt |
 | T10, T12-ALLOW, T16-LLM, T20-real | **blockiert** | TB-2-Gate offen (unverändert) |
 
-### 10.6 Offene Follow-up-Punkte (nicht Teil dieses Laufs)
+### 10.6 Follow-up #80: TTL-Purge + VACUUM + Log-Rotation (2026-04-20)
 
-1. SQLite-Event-Row-Dump abrufen: `python -m harness.inspect_events` (ohne `--check-only`) auf Server ausführen oder `sqlite3` installieren (`apt-get install -y sqlite3`)
-2. TTL-Purge-Job konfigurieren: Cron oder systemd-Timer für täglichen Purge + VACUUM
-3. T17-Szenario auf Hetzner ausführen: BLOCK_REFER/CRISIS-Eingabe + Log-Row-Verifikation
-4. systemd-Service-Unit für Runtime-Prozess (vor Pilot; kein P0 jetzt)
-5. Log-Rotation konfigurieren (max. 30 Tage per DEPLOYMENT_ENVELOPE §7)
+| Nachweis | Artefakt / Befehl | Ergebnis |
+|---|---|---|
+| TTL-Purge-Skript | `/usr/local/sbin/traumtaenzer-events-retention.py` | Python-Stdlib-only; löscht `SYSTEM_ERROR` > 30 Tage und übrige Runtime-Events > 90 Tage; führt danach immer `VACUUM` aus; fail-closed bei fehlender DB, ungültigen Timestamps oder unvollständigem `VACUUM` |
+| TTL-Purge-Service | `/etc/systemd/system/traumtaenzer-events-retention.service` | `Type=oneshot`; `ExecStart=/usr/local/sbin/traumtaenzer-events-retention.py --db /mnt/tt-volume/events.db` |
+| TTL-Purge-Timer | `/etc/systemd/system/traumtaenzer-events-retention.timer` | `OnCalendar=daily`, `Persistent=true`; auf dem Host registriert; nächster Lauf: `2026-04-20 00:00:00 UTC` |
+| Manueller Testlauf | `systemctl start traumtaenzer-events-retention.service` + `systemctl status --no-pager traumtaenzer-events-retention.service` | Exit `0/SUCCESS`; Journal: `status=ok db=/mnt/tt-volume/events.db deleted_90d=0 deleted_30d=0 freelist_before=0 freelist_after=0 total_rows=17` |
+| Log-Rotation-Datei | `/etc/logrotate.d/traumtaenzer` | Konfiguriert: `daily`, `rotate 30`, `compress`, `missingok`, `notifempty`, `copytruncate` |
+| Logrotate-Debug | `logrotate --debug /etc/logrotate.d/traumtaenzer` | Parser sauber; `/var/log/traumtaenzer/runtime.log` erkannt; Rotation-Regel `after 1 days (30 rotations)` |
+
+Minimalpfad-Entscheid: `systemd`-Timer statt `cron`, weil der Host bereits
+native `systemd`-Timer nutzt (`logrotate.timer`, `apt-daily.timer` u. a.), kein
+Root-Crontab vorhanden war und Timer-/Service-Status plus Journal ohne
+Zusatztool belastbar prüfbar sind.
+
+Dieser Follow-up schließt nur den Ops-Restpunkt aus Issue #80. Das gezielte
+Crash-Log-Verhalten bleibt separat offen; die Evidence-Follow-ups aus #78 und
+#79 werden hier nicht erneut dokumentiert.
+
+### 10.7 Offene Follow-up-Punkte (Stand 2026-04-20)
+
+1. Crash-Log-Verhalten auf Hetzner gezielt testen; erst dann ist `OPERATIONS_RUNBOOK §3.4` vollständig erfüllt.
+2. systemd-Service-Unit für Runtime-Prozess (vor Pilot; kein P0 jetzt).
 
 **No-Go — lokaler Harness ist kein Pilot-Nachweis:**
 Harness-Laufartefakte zählen nicht als Pilot-bestanden-Nachweis im Sinne von
