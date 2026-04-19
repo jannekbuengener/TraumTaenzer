@@ -141,7 +141,7 @@ begründen keinen Pilot-bestanden-Status und ersetzen keine Hetzner-/Host-Log-Na
 | **A — vollständig lokal** | T02, T06, T07, T08, T09, T13, T14, T15, T18, T19 | Guard-Logik, Kernel-Transitionen und Stub-Adapter vollständig abgedeckt; kein Real-LLM benötigt |
 | **B — lokal für Guard-/Kernel-Logik; LLM-Output-Pfad nicht abgedeckt** | T01 (Guard-Verhalten; Phase ENTRY statt REFLECTION), T03 (BLOCK_PAUSE/BLOCK_REFER-Pfade), T04, T05, T11 (Guard-Muster; kein eigenes Szenario), T12 (BLOCK-Pfade), T16 (Input-Guard-Seite), T17 (SQLite-Schema), T20 (Adapter-Exception lokal), T21 (SQLite-Schema lokal) | Input-Guard-Entscheid und Kernel-Safe-State lokal testbar; Fälle mit ALLOW-Entscheid und realem LLM-Output nicht vollständig prüfbar |
 | **C — blockiert (provider-gekoppelt)** | T10, T12 (ALLOW-Pfade mit LLM-Antwort), T16 (LLM-Output-Pfad), T20 (Transport-/Provider-Fehler real) | kein freigegebener LLM-Pfad (TB-2-Gate offen); kein Harness-Ersatz |
-| **D — Vorbedingung fehlt (Deployment-abhängig)** | T17 (Host-Log-Artefakte), T21 (Hetzner-Volume-Sidepath-Nachweis) | Hetzner-Deployment nicht vorhanden; lokal nicht belegbar |
+| **D — Hetzner-Deployment-abhängig** | T17 (Host-Log-Artefakte), T21 (Hetzner-Volume-Sidepath-Nachweis) | Hetzner-Infra seit 2026-04-19 deployed; T21 `bestanden` (→§8); T17-Szenario BLOCK_REFER/CRISIS ausstehend |
 
 **Hinweis zur Szenario-Nummerierung in `harness/run_session.py`:**
 Die T-Bezeichnungen der Harness-Szenarien sind Orientierungsmarker und
@@ -532,3 +532,42 @@ Dieses Dokument wird aktualisiert, wenn:
 - ein Grenzfall in §4 als unzureichend dokumentiert gilt
 
 Änderungen: ausschließlich via PR + Review (→ GOVERNANCE). Keine Direktänderungen auf `main`.
+
+---
+
+## 8. Erster Hetzner-Evidence-Lauf – Protokoll (2026-04-19)
+
+Dieser Abschnitt dokumentiert die nicht-provider-gekoppelten Testergebnisse
+aus dem ersten realen Hetzner-/SQLite-Evidence-Lauf. Er ist kein Pilot-Nachweis
+und kein Provider-Go-Nachweis.
+
+**Laufdatum:** 2026-04-19
+**Zielhost:** `traumtaenzer-core-01` (ID 125786108, CX23, nbg1-dc3)
+**Volume:** `traumtaenzer-volume-01` (ID 105320450, 10GB, `/mnt/tt-volume`)
+**Runtime-Pfad:** vollständige Dokumentation in OPERATIONS_RUNBOOK §10
+
+**7-Schritt-Sequenz:** start → health → session-smoke → stop → inspect-db → inspect-log → inspect-sidepaths
+
+Alle 7 Schritte: **bestanden** (Exit-Code 0; kein Shadow-Store; kein Content im Log; DB content-free)
+
+### 8.1 Fallstatus nach Hetzner-Lauf
+
+| Fall | Neuer Status | Begründung |
+|---|---|---|
+| **T21** (Hetzner-Volume-Sidepath-Nachweis) | **bestanden** | `inspect-sidepaths` auf realem Volume ausgeführt; kein Shadow-Store, kein WAL, keine Content-Datei außer `events.db`; Sidepath-Pass-Kriterium vollständig erfüllt |
+| **T17** (Host-Log-Artefakte) | Infrastruktur verfügbar; **Szenario ausstehend** | Log content-free auf Hetzner-Host verifiziert; BLOCK_REFER/CRISIS-Eingabe nicht im Lauf enthalten (nur BLOCK_EXIT/SAFEWORD); Event-Row-Dump fehlt; Pflicht-Artefakt nach §4 noch nicht vorhanden |
+| T10, T12 ALLOW, T16 LLM, T20 real | **blockiert** (unverändert) | TB-2-Gate offen; kein freigegebener externer LLM-Pfad |
+
+### 8.2 Fehlende Pflicht-Artefakte (§4-Anforderung)
+
+§4 verlangt für jede formal `bestanden`-Markierung (außer Sidepath-Nachweisen):
+einen SQLite-Event-Row-Dump mit `(session_id, timestamp, event_type, decision/guard_category-Enum)`,
+der belegt, dass kein Freitext gespeichert ist.
+
+Im Lauf 2026-04-19 wurde nur `inspect-db --check-only` (Schema-Check) ausgeführt.
+`sqlite3`-CLI ist auf dem Server nicht installiert. Artefakt fehlt daher für alle
+Fälle außer T21.
+
+**Nächste Schritte (Follow-up-Issues):**
+- `sqlite3` auf Server installieren oder `python -m harness.inspect_events` ohne `--check-only` ausführen → Row-Dump erzeugen
+- T17-Szenario mit BLOCK_REFER/CRISIS-Eingabe auf Hetzner-Pfad ausführen

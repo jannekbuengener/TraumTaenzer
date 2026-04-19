@@ -1,6 +1,6 @@
 # CURRENT_STATUS – Traumtänzer
 
-Zuletzt aktualisiert: 2026-04-19
+Zuletzt aktualisiert: 2026-04-19 (Hetzner-Evidence-Lauf dokumentiert)
 
 ---
 
@@ -85,7 +85,7 @@ nur Safe-/Fehlerbetrieb
 |---|---|---|
 | Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`), Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`), OpenAI API (`eu.api.openai.com`, `POST /v1/chat/completions`) und IONOS AI Model Hub (`POST /v1/chat/completions`) ist aktuell kein externer LLM-Pfad freigabefähig; OpenAI bleibt im Standardpfad `nicht zulässig für Live-Nutzer`; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert; providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad); auf dem Hetzner-Pilotpfad verbleiben nicht-providergekoppelte Fälle auf `Vorbedingung fehlt`; im lokalen Harness sind bestimmte Fälle (Gruppen A/B) prüfbar (→ PROMPT_TEST_BASELINE §3.2); maintainer-only interne Testläufe auf kontrolliertem Systempfad können nur interne System-Evidence erzeugen und zählen nicht als Pilot- oder Provider-Freigabe-Evidence; degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE §3.1–§3.2, PILOT_READINESS §3.3 |
-| Lokales Harness (`harness/`) vorhanden und grün: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check, Szenarien-Runner; Nullkosten-Evidence-Stack grün validiert: `local_evidence`, `runtime_evidence`, `full_local_evidence` (kein Pilot-Nachweis, kein Hetzner-Nachweis); Fallgruppen-Mapping gegen Baseline in PROMPT_TEST_BASELINE §3.2 dokumentiert; Hetzner-deploybare Runtime fehlt weiterhin; konkrete Hetzner-Vorbedingungen in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung (Hetzner-Pfad) | PROMPT_TEST_BASELINE §3.2, OPERATIONS_RUNBOOK §3–§9 |
+| Lokales Harness (`harness/`) vorhanden und grün: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check, Szenarien-Runner; Nullkosten-Evidence-Stack grün validiert: `local_evidence`, `runtime_evidence`, `full_local_evidence` (kein Pilot-Nachweis, kein Hetzner-Nachweis); Fallgruppen-Mapping gegen Baseline in PROMPT_TEST_BASELINE §3.2 dokumentiert; **Hetzner-deploybare Runtime vorhanden und getestet (2026-04-19)**: erster nicht-provider-gekoppelter Evidence-Lauf vollständig bestanden (7/7 Schritte: start → health → session-smoke → stop → inspect-db → inspect-log → inspect-sidepaths); Runtime-Contract dokumentiert in OPERATIONS_RUNBOOK §10; T21 (Hetzner-Volume-Sidepath-Nachweis): `bestanden`; **offen**: SQLite-Event-Row-Dump (Pflicht-Artefakt OPERATIONS_RUNBOOK §4), T17-Szenario (BLOCK_REFER/CRISIS auf Hetzner-Pfad), TTL-Purge-Job nicht konfiguriert (OPERATIONS_RUNBOOK §3.5) | P0 vor Pilot-Freigabe | PROMPT_TEST_BASELINE §3.2, OPERATIONS_RUNBOOK §3–§10 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
@@ -97,14 +97,12 @@ Prüfung von fünf externen LLM-Pfaden (Azure OpenAI, Anthropic Claude API,
 Amazon Bedrock, OpenAI API, IONOS AI Model Hub) weiterhin kein
 freigabefähiger externer LLM-Providerpfad identifiziert; degraded mode ist
 kein Ersatzpilot, sondern nur Safe-/Fehlerbetrieb. Zweitens stehen die
-Pflichtfälle der MVP-Evidence-Baseline auf dem Hetzner-Pilotpfad nicht als
-`bestanden` fest: providergekoppelte Fälle sind durch das offene
-Provider-Gate `blockiert`; nicht-providergekoppelte Fälle auf dem
-Hetzner-Pfad haben Status `Vorbedingung fehlt`. Das lokale Harness
-(`harness/`) macht bestimmte nicht-provider-gekoppelte Fälle (Gruppe A/B,
-→ PROMPT_TEST_BASELINE §3.2) lokal prüfbar, ersetzt aber keinen
-Pilot-Nachweis und stellt keine Hetzner-Runtime bereit. Bis der
-Provider-Blocker und die Hetzner-Runtime-Vorbedingungen geschlossen sind,
-bleibt der Pilot gesperrt. Der provider-neutrale maintainer-only interne
-Testmodus kann Systemaufbau und interne System-Evidence stützen, schließt aber
-keinen dieser P0-Blocker und ersetzt weder Pilot- noch Provider-Freigabe.
+Pflichtfälle der MVP-Evidence-Baseline auf dem Hetzner-Pilotpfad nicht
+vollständig als `bestanden` fest: der erste nicht-provider-gekoppelte
+Evidence-Lauf auf dem Hetzner-Pilotpfad wurde am 2026-04-19 vollständig
+durchgeführt (7/7 Schritte bestanden; T21 `bestanden`); providergekoppelte
+Fälle bleiben durch das offene Provider-Gate `blockiert`; offene
+Folge-Schritte: SQLite-Event-Row-Dump (OPERATIONS_RUNBOOK §4 Pflicht-Artefakt),
+T17-Szenario (BLOCK_REFER/CRISIS auf Hetzner), TTL-Purge-Job konfigurieren.
+Bis der Provider-Blocker und die verbleibenden Baseline-Artefakte geschlossen
+sind, bleibt der Pilot gesperrt.
