@@ -95,7 +95,7 @@ _EXPLICIT_ABORT_PATTERNS = [
 _CRISIS_PATTERNS = [
     "suizid", "selbstmord", "umbringen",
     "nicht mehr leben", "kein ausweg", "keinen ausweg",
-    "mir etwas antun", "töten", "sterben wollen",
+    "mir etwas antun", "mir etwas anzutun", "töten", "sterben wollen",
     "ich denke daran zu sterben", "ich möchte tot sein",
     "alles sinnlos", "ich kann nicht mehr",
     "ich sehe keinen ausweg", "keinen sinn mehr",

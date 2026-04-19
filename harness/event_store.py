@@ -102,6 +102,15 @@ class EventStore:
             list(row.values()),
         )
         self._conn.commit()
+        if event_type == "INPUT_GUARD_RESULT":
+            logger.info(
+                "event_written session_id=%s event_type=%s decision=%s guard_category=%s",
+                session_id,
+                event_type,
+                row.get("decision"),
+                row.get("guard_category"),
+            )
+            return
         logger.info("event_written session=%s type=%s", session_id[:8], event_type)
 
     def close(self) -> None:
