@@ -103,6 +103,49 @@ Kein Pilot-Nachweis. Kein Live-Go. Kein Provider-Go.
 
 ---
 
+### Runtime Evidence Lauf
+
+Führt den vollständigen lokalen Runtime-Pfad als One-Command-Lauf aus:
+`start → health → session-smoke → stop → inspect-db → inspect-log → inspect-sidepaths`
+
+```bash
+# Sauberer Neustart: DB + Log + PID löschen, danach vollständiger Lauf
+python -m harness.runtime_evidence --fresh
+
+# Auf bestehendem Stand aufsetzen
+python -m harness.runtime_evidence
+
+# Anderen Port nutzen (Standard: 8081)
+python -m harness.runtime_evidence --fresh --port 8082
+```
+
+Die Session-Smoke treibt die lokale Runtime durch vier Zustände:
+`ENTRY → CHECK_IN → REFLECTION → EXIT`
+Dabei werden der Stub-Adapter (`--stub-mode SAFE`) und der Output-Guard
+tatsächlich traversiert.
+
+Fail-closed-Regeln:
+- Startet der Server nicht, werden alle weiteren Schritte übersprungen.
+- Stop wird immer versucht, wenn der Server gestartet wurde.
+- Inspection-Schritte (inspect-db, inspect-log, inspect-sidepaths) laufen nur
+  wenn Stop mit Exit-Code 0 abgeschlossen **und** der Server-Prozess wirklich
+  beendet ist.
+
+Schreibt ein content-freies JSON-Artefakt nach
+`harness/data/runtime_evidence_YYYYMMDD_HHMMSS_ffffff.json`.
+
+Exit-Code 0 = alle Schritte PASSED; 1 = mindestens ein Schritt FAILED oder SKIPPED.
+
+Optionen:
+- `--fresh` löscht `runtime_evidence.db` inkl. WAL-Sidecars, Log und PID-Datei
+  vor dem Lauf — empfohlen für reproduzierbare Evidence-Läufe.
+- `--port PORT` nutzt einen anderen Port (Standard: 8081).
+- `--host HOST` bindet an einen anderen Host (Standard: 127.0.0.1).
+
+Kein Pilot-Nachweis. Kein Live-Go. Kein Provider-Go.
+
+---
+
 ### Minimaler Runtime-Entrypoint
 
 Für den kleinsten deploybaren Mono-Prozess gibt es zusätzlich:
@@ -217,6 +260,10 @@ harness/
   run_session.py        Scripted Szenarien-Runner
   smoke_check.py        Start/Stop/Health-Verifikation
   inspect_events.py     Event-Store-Inspektion + Leak-Check
+  local_evidence.py     One-Command: smoke_check → run_session → inspect_events
+  runtime_server.py     Minimaler lokaler HTTP-Server
+  runtime_tools.py      Start/Stop/Health/Inspect-Tooling (subprocess-basiert)
+  runtime_evidence.py   One-Command: start → health → smoke → stop → inspect
   data/
     .gitkeep            Verzeichnis-Platzhalter (events.db gitignored)
 ```
