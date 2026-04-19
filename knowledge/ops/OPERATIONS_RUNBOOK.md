@@ -31,12 +31,15 @@ Es beantwortet:
 
 ## 2. Aktueller Status
 
-**Hetzner-deploybare Runtime:** nicht vorhanden
+**Hetzner-deploybare Runtime:** vorhanden; erster Evidence-Lauf 2026-04-19 bestanden
 **Lokale Harness-Runtime:** vorhanden (`harness/` — Python stdlib, kein Deployment, kein Provider)
 
 Der Pilotpfad (Hetzner/SQLite) ist infrastrukturell und datenschutzrechtlich
-freigegeben (PROVIDER_DPA_INPUT_MATRIX §7, DEPLOYMENT_ENVELOPE §7), aber
-nicht deployed und nicht ausführbar.
+freigegeben (PROVIDER_DPA_INPUT_MATRIX §7, DEPLOYMENT_ENVELOPE §7) und deployed.
+Der erste nicht-provider-gekoppelte Evidence-Lauf wurde am 2026-04-19 vollständig
+durchgeführt (7/7 Schritte: start → health → session-smoke → stop → inspect-db
+→ inspect-log → inspect-sidepaths; alle bestanden). Der konkrete Runtime-Contract
+ist in §10 dokumentiert.
 
 Das lokale Harness (`harness/`) implementiert den kanonischen Kernel, die
 deterministischen Guards, einen content-freien SQLite-Event-Store und
@@ -47,12 +50,15 @@ Hetzner-Pilotpfad und kein degraded-Mode-Pilot.
 Konsequenz für PROMPT_TEST_BASELINE:
 - Nicht-provider-gekoppelte Testfälle mit lokalem Harness: Status `ausführbar`;
   nach tatsächlichem Lauf: `bestanden` oder `nicht bestanden`
-- Nicht-provider-gekoppelte Testfälle ohne Runtime-Artefakte (Hetzner-Pfad):
-  Status `Vorbedingung fehlt`
+- T21 (Hetzner-Volume-Sidepath-Nachweis): `bestanden` (2026-04-19; →§10)
+- T17 (Host-Log-Artefakte): Hetzner-Infrastruktur verfügbar; Szenario
+  BLOCK_REFER/CRISIS auf Hetzner-Pfad noch nicht ausgeführt; offen
 - LLM-gekoppelte Testfälle (TB-2): Status `blockiert` (offenes Provider-Gate)
 
-Die §3-Punkte beziehen sich auf den Hetzner-Pilotpfad. Für lokale
-Harness-Läufe gilt §3.3/§3.8 als lokal erfüllt (smoke_check.py, fault_injection.py).
+**Offene §3-Punkte nach erstem Evidence-Lauf (→§10):**
+- §3.5: TTL-Purge-Job nicht konfiguriert; VACUUM nach Purge nicht dokumentiert
+- §3.4: Log-Rotation (max. 30 Tage) nicht konfiguriert; Crash-Log-Verhalten nicht getestet
+- §3.6: SQLite-Event-Row-Dump (Pflicht-Artefakt §4) noch nicht abgerufen
 
 ---
 
@@ -209,17 +215,18 @@ starten; Befund dokumentieren; Vorbedingung schließen.
 
 ---
 
-## 7. Was dieses Runbook aktuell nicht leisten kann
+## 7. Was dieses Runbook nach dem ersten Evidence-Lauf noch nicht abdeckt
 
 | Lücke | Ursache | Konsequenz |
 |---|---|---|
-| Konkrete Startbefehle | Runtime existiert nicht; kein deployedbarer Serverprozess | §3.1–§3.3 vollständig auf `Vorbedingung fehlt` |
-| Konkrete Dateipfade auf Hetzner Volume | Kein aktiver Deploy | §3.5 vollständig auf `Vorbedingung fehlt` |
-| TTL-Purge-Verifikation | Kein laufender Prozess, kein aktiver SQLite-Store | §3.5 vollständig auf `Vorbedingung fehlt` |
-| Fault-Injection-Stub (Hetzner-Deployment) | Kein deployebarer Prozess; lokales Harness ist kein Deployment | T18–T20 im Deployment-Kontext auf `Vorbedingung fehlt`; lokal via harness/ ausführbar |
-| LLM-gekoppelte Testfälle (T01–T17) | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | Status `blockiert` per PROMPT_TEST_BASELINE §3.1; T21 teilweise ebenfalls `blockiert` |
+| SQLite-Event-Row-Dump | `sqlite3`-CLI auf Server nicht installiert; `inspect_events.py` ohne `--check-only` nicht ausgeführt | §4-Pflicht-Artefakt fehlt; kein weiterer Testfall formal `bestanden` (außer T21); separates Follow-up |
+| TTL-Purge-Verifikation | Kein konfigurierter Cron-Job oder systemd-Timer auf Server | §3.5 teilweise offen; VACUUM nach Purge ebenfalls undokumentiert |
+| Log-Rotation (max. 30 Tage) | Nicht konfiguriert auf Server | §3.4 teilweise offen; DEPLOYMENT_ENVELOPE §7-Anforderung unerfüllt |
+| T17-Szenario (BLOCK_REFER/CRISIS) | Im ersten Evidence-Lauf BLOCK_EXIT/SAFEWORD statt BLOCK_REFER/CRISIS | T17 Host-Log-Artefakt-Nachweis für CRISIS-Pfad steht aus |
+| Fault-Injection-Stub im Hetzner-Deployment | Kein systemd-Service; kein steuerbarer Deployment-Start für T18–T20 auf Hetzner | T18–T20 im Deployment-Kontext weiter `Vorbedingung fehlt` für exaktes Hetzner-Szenario |
+| LLM-gekoppelte Testfälle (T01–T17 vollständig, T21 real) | Kein freigegebener externer LLM-Pfad (TB-2-Gate offen) | Status `blockiert` per PROMPT_TEST_BASELINE §3.1; T21 vollständig ebenfalls |
 | Automatisierte Testausführung | Kein CI-/Testframework vorhanden | Alle Läufe sind manuelle Review-Sessions |
-| Retention-Automatisierung auditieren | Kein laufender TTL-Purge-Job | Muss vor Pilot-Start als aktiv nachgewiesen werden |
+| systemd-Service-Unit | Kein Service-Unit für Runtime-Prozess auf Server | Manueller Start/Stop; kein Autostart nach Reboot |
 
 Dieses Runbook beschreibt den Soll-Stand für evidenzfähige Läufe. Es setzt
 keine Implementierung voraus und erfindet keine. Sobald einzelne Punkte aus §3
@@ -274,8 +281,87 @@ ohne Deployment und ohne echte Nutzer.
 **Grenzen — kein Ersatz für:**
 - Hetzner-Deployment, Volume-gebundene SQLite-Datei und Host-Log-Inspektion (§3.4–§3.5)
 - Reales LLM-Provider-Antwortverhalten: T10, T12 ALLOW-Pfade, T16 LLM-Output-Pfad, T20 real (→ `blockiert`)
-- Sidepath-/WAL-/Retention-Nachweis auf Produktionsinfrastruktur: T21 vollständig (→ `Vorbedingung fehlt`)
+- Sidepath-/WAL-/Retention-Nachweis auf Produktionsinfrastruktur (→ T21 `bestanden` 2026-04-19; §10)
 - Prozess-Lifecycle-Garantien auf Zielsystem: Start/Stop/Health/SIGTERM (§3.1–§3.3)
+
+---
+
+## 10. Erster Hetzner-Evidence-Lauf (2026-04-19)
+
+Dieser Abschnitt dokumentiert den ersten realen, nicht-provider-gekoppelten
+Evidence-Lauf auf dem freigegebenen Hetzner-/SQLite-Pilotpfad. Er ist kein
+Pilot-Nachweis, kein Live-Claim und kein Provider-Go-Nachweis.
+
+### 10.1 Infrastruktur-Fakten
+
+| Parameter | Wert |
+|---|---|
+| Server-Name / ID | `traumtaenzer-core-01` / `125786108` |
+| Region | `nbg1` (Nuremberg DC Park 1) |
+| Server-Typ | CX23 (2 vCPU, 4 GB RAM, 40 GB Disk) |
+| OS | Ubuntu 24.04 LTS |
+| IPv4 | `167.235.26.106` (nicht öffentlich exponiert — kein Dienst an 0.0.0.0) |
+| Volume-Name / ID | `traumtaenzer-volume-01` / `105320450` |
+| Volume-Größe | 10 GB |
+| Volume-UUID | `c828977a-0a9b-4a78-92bb-964d6b24bdde` |
+| Volume-Mount | `/mnt/tt-volume` (ext4, fstab-persistent, nofail,discard) |
+| Python | 3.12.3 (stdlib-only; kein pip benötigt) |
+| SSH-Key | `tt-hetzner` (ID 110232430); lokale Datei `~/.ssh/tt_hetzner` |
+
+### 10.2 Runtime-Contract
+
+| Parameter | Wert |
+|---|---|
+| `app_root` | `/opt/traumtaenzer` |
+| `workdir` | `/opt/traumtaenzer` |
+| `volume_mount` | `/mnt/tt-volume` |
+| `db_path` | `/mnt/tt-volume/events.db` |
+| `log_path` | `/var/log/traumtaenzer/runtime.log` |
+| `pid_file` | `/run/traumtaenzer.pid` |
+| `bind_host` | `127.0.0.1` |
+| `bind_port` | `8080` |
+
+### 10.3 Laufergebnis (7 Schritte)
+
+Datum: 2026-04-19. Keine externen Provider. Kein Pilot-Claim.
+
+| Schritt | Befehl / Endpunkt | Ergebnis |
+|---|---|---|
+| `start` | `python -m harness.runtime_tools start --db /mnt/tt-volume/events.db --log /var/log/traumtaenzer/runtime.log ...` | **bestanden** — PID 240004; `adapter_mode=SAFE`; DB initialisiert |
+| `health` | `GET /health` | **bestanden** — `{"status":"ok","adapter_mode":"SAFE","session_count":0}` |
+| `session-smoke` | `POST /v1/sessions` + `POST /v1/turns` (×3) | **bestanden** — Sequenz ENTRY→CHECK_IN→REFLECTION→EXIT via Safeword „stopp"; `terminal=true` |
+| `stop` | `POST /shutdown` | **bestanden** — Sauberer Shutdown; PID-Datei entfernt; `event_store_closed path=/mnt/tt-volume/events.db` im Log |
+| `inspect-db` | `python -m harness.runtime_tools inspect-db --db /mnt/tt-volume/events.db --check-only` | **bestanden** — `{"status":"ok","db_path":"/mnt/tt-volume/events.db"}`; keine Content-Violations im Schema |
+| `inspect-log` | `python -m harness.runtime_tools inspect-log --log /var/log/traumtaenzer/runtime.log` | **bestanden** — `{"status":"ok","tail_lines":25}`; 25 Zeilen content-free (nur State-Enums, keine Freitexte) |
+| `inspect-sidepaths` | `python -m harness.runtime_tools inspect-sidepaths ...` | **bestanden** — `{"status":"ok","scan_roots":["/mnt/tt-volume","/opt/traumtaenzer","/var/log/traumtaenzer"]}`; kein Shadow-Store; Volume-Listing: nur `events.db` + `lost+found` |
+
+### 10.4 §3-Status nach erstem Lauf
+
+| §3-Block | Status | Offene Punkte |
+|---|---|---|
+| §3.1 Ausführbare Runtime | **erfüllt** | — |
+| §3.2 Start-/Stop-Pfad | **erfüllt** | — |
+| §3.3 Health-/Smoke-Check | **erfüllt** | — |
+| §3.4 Log-Inspektionspfade | **teilweise erfüllt** | Log-Rotation (max. 30 Tage) nicht konfiguriert; Crash-Log-Eintrag nicht getestet |
+| §3.5 SQLite-Event-Store | **teilweise erfüllt** | TTL-Purge-Job nicht konfiguriert; VACUUM nach Purge nicht dokumentiert |
+| §3.6 Leak-/Redaction-Artefakte | **teilweise erfüllt** | SQLite-Event-Row-Dump (mit decision/guard-Enums) nicht abgerufen — nur `--check-only` Schema-Check; `sqlite3`-CLI nicht auf Server; Pflicht-Artefakt §4 offen |
+| §3.7 Sidepath-/Dateifallback | **erfüllt** | — |
+
+### 10.5 PROMPT_TEST_BASELINE-Status (Hetzner-Pfad)
+
+| Fall | Status | Begründung |
+|---|---|---|
+| T21 (Hetzner-Volume-Sidepath) | **bestanden** | inspect-sidepaths auf realem Volume bestanden; kein Shadow-Store; kein WAL; Pass-Kriterium vollständig erfüllt |
+| T17 (Host-Log-Artefakte) | Infrastruktur verfügbar; **Szenario ausstehend** | Host-Log content-free verifiziert; BLOCK_REFER/CRISIS-Szenario nicht ausgeführt (Lauf verwendete BLOCK_EXIT/SAFEWORD); Event-Row-Dump fehlt |
+| T10, T12-ALLOW, T16-LLM, T20-real | **blockiert** | TB-2-Gate offen (unverändert) |
+
+### 10.6 Offene Follow-up-Punkte (nicht Teil dieses Laufs)
+
+1. SQLite-Event-Row-Dump abrufen: `python -m harness.inspect_events` (ohne `--check-only`) auf Server ausführen oder `sqlite3` installieren (`apt-get install -y sqlite3`)
+2. TTL-Purge-Job konfigurieren: Cron oder systemd-Timer für täglichen Purge + VACUUM
+3. T17-Szenario auf Hetzner ausführen: BLOCK_REFER/CRISIS-Eingabe + Log-Row-Verifikation
+4. systemd-Service-Unit für Runtime-Prozess (vor Pilot; kein P0 jetzt)
+5. Log-Rotation konfigurieren (max. 30 Tage per DEPLOYMENT_ENVELOPE §7)
 
 **No-Go — lokaler Harness ist kein Pilot-Nachweis:**
 Harness-Laufartefakte zählen nicht als Pilot-bestanden-Nachweis im Sinne von
