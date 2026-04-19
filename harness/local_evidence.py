@@ -100,10 +100,16 @@ def main(argv: list[str] | None = None) -> int:
         default=str(DEFAULT_DB_PATH),
         help=f"SQLite DB path (default: {DEFAULT_DB_PATH})",
     )
+    parser.add_argument(
+        "--out-dir",
+        metavar="PATH",
+        default=None,
+        help="Directory for the artifact JSON (default: same directory as --db).",
+    )
     args = parser.parse_args(argv)
 
     db_path = Path(args.db)
-    out_dir = db_path.parent
+    out_dir = Path(args.out_dir) if args.out_dir else db_path.parent
 
     if args.fresh:
         if not _delete_db(db_path):

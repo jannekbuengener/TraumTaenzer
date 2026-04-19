@@ -146,6 +146,37 @@ Kein Pilot-Nachweis. Kein Live-Go. Kein Provider-Go.
 
 ---
 
+### Full Local Evidence Lauf (kombinierter Pack)
+
+Führt beide Runner als einheitlichen One-Command-Evidence-Pack aus:
+`local_evidence` + `runtime_evidence`
+
+```bash
+# Sauberer Neustart beider Sub-Runs + gemeinsamer Run-Ordner
+python -m harness.full_local_evidence --fresh
+
+# Auf bestehendem Stand aufsetzen
+python -m harness.full_local_evidence
+
+# Anderen Runtime-Port nutzen (Standard: 8081)
+python -m harness.full_local_evidence --fresh --port 8082
+```
+
+Beide Sub-Runs werden immer ausgeführt — auch wenn der erste fehlschlägt —
+damit der Befund vollständig ist. `overall_status` ist `FAILED`, wenn
+mindestens einer fehlschlägt.
+
+Erzeugt einen Run-Ordner unter
+`harness/data/evidence_runs/<YYYYMMDD_HHMMSS_ffffff>/`
+mit:
+- `local_evidence_*.json` — Artefakt des ersten Sub-Runs
+- `runtime_evidence_*.json` — Artefakt des zweiten Sub-Runs
+- `manifest.json` — Gesamtbefund: Sub-Run-Status, Artefaktliste, Gesamtstatus
+
+Kein Pilot-Nachweis. Kein Live-Go. Kein Provider-Go.
+
+---
+
 ### Minimaler Runtime-Entrypoint
 
 Für den kleinsten deploybaren Mono-Prozess gibt es zusätzlich:
@@ -264,6 +295,8 @@ harness/
   runtime_server.py     Minimaler lokaler HTTP-Server
   runtime_tools.py      Start/Stop/Health/Inspect-Tooling (subprocess-basiert)
   runtime_evidence.py   One-Command: start → health → smoke → stop → inspect
+  full_local_evidence.py  One-Command: local_evidence + runtime_evidence → manifest
   data/
     .gitkeep            Verzeichnis-Platzhalter (events.db gitignored)
+    evidence_runs/      Run-Ordner für full_local_evidence (gitignored)
 ```

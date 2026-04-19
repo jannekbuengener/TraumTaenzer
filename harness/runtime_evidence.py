@@ -275,10 +275,18 @@ def main(argv: list[str] | None = None) -> int:
         default=_DEFAULT_HOST,
         help=f"Bind host (default: {_DEFAULT_HOST}).",
     )
+    parser.add_argument(
+        "--out-dir",
+        metavar="PATH",
+        default=None,
+        help="Directory for the artifact JSON (default: harness/data/).",
+    )
     args = parser.parse_args(argv)
 
     data_dir = _DATA_DIR
     data_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(args.out_dir) if args.out_dir else data_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     db_path = data_dir / "runtime_evidence.db"
     log_path = data_dir / "runtime_evidence.log"
@@ -412,7 +420,7 @@ def main(argv: list[str] | None = None) -> int:
         "disclaimer": _DISCLAIMER,
     }
     artifact_name = f"runtime_evidence_{ts.strftime('%Y%m%d_%H%M%S_%f')}.json"
-    artifact_path = data_dir / artifact_name
+    artifact_path = out_dir / artifact_name
     artifact_path.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
     logger.info("Artifact written: %s", artifact_path)
 

@@ -29,3 +29,4 @@ harness/data/*.db-shm
 harness/data/*.pid
 harness/data/local_evidence_*.json
 harness/data/runtime_evidence_*.json
+harness/data/evidence_runs/
