@@ -1,6 +1,6 @@
 # CURRENT_STATUS – Traumtänzer
 
-Zuletzt aktualisiert: 2026-04-03
+Zuletzt aktualisiert: 2026-04-19
 
 ---
 
@@ -69,6 +69,14 @@ nur Safe-/Fehlerbetrieb
 - CI-Gates: CodeQL, Gitleaks, Dependency-Review, strukturelle Canon-Prüfung
 - Trivy-Action auf 0.35.0 (PR #31)
 
+### Harness / Bootstrap (lokaler Nullkosten-Evidence-Stack)
+- `harness/smoke_check.py`, `harness/run_session.py`, `harness/inspect_events.py`, `harness/event_store.py`, `harness/runtime_server.py`, `harness/runtime_tools.py` – grün validiert lokal; kein externer Provider, kein Netzwerk; kein Pilot-Nachweis
+- `harness/local_evidence.py` – Composite-Runner: smoke_check + run_session + inspect_events, fail-closed, JSON-Artefakt (2026-04-19)
+- `harness/runtime_evidence.py` – 7-Schritt lokaler HTTP-Evidence-Runner: start → health → session-smoke → stop → inspect-db/log/sidepaths, fail-closed, JSON-Artefakt (2026-04-19)
+- `harness/full_local_evidence.py` – kombinierter Runner mit `manifest.json` unter `harness/data/evidence_runs/<timestamp>/`; Nicht-Pilot-/Nicht-Live-Marker explizit (2026-04-19)
+- `harness/README.md` – dokumentiert alle Runner und deren lokale Grenzen
+- kein Pilot-Nachweis, kein Hetzner-Nachweis, kein Provider-Go impliziert
+
 ---
 
 ## Was noch offen ist
@@ -77,7 +85,7 @@ nur Safe-/Fehlerbetrieb
 |---|---|---|
 | Nach Bewertung von Azure OpenAI, Anthropic Claude API (`/v1/messages`), Amazon Bedrock (`InvokeModel` + `anthropic.claude-sonnet-4-6`), OpenAI API (`eu.api.openai.com`, `POST /v1/chat/completions`) und IONOS AI Model Hub (`POST /v1/chat/completions`) ist aktuell kein externer LLM-Pfad freigabefähig; OpenAI bleibt im Standardpfad `nicht zulässig für Live-Nutzer`; produktnahe Subprocessor-, Löschpfad- und Side-Artifact-Blocker bleiben live-relevant | P0 vor Live-Nutzer | PROVIDER_DPA_INPUT_MATRIX §7–§8 |
 | Die minimale Red-Team-/Prompt-Testbaseline ist auf den freigegebenen Pilotpfad gespiegelt; dokumentierte Pflichtnachweise sind definiert; providergekoppelte Fälle sind `blockiert` (kein freigegebener LLM-Pfad); auf dem Hetzner-Pilotpfad verbleiben nicht-providergekoppelte Fälle auf `Vorbedingung fehlt`; im lokalen Harness sind bestimmte Fälle (Gruppen A/B) prüfbar (→ PROMPT_TEST_BASELINE §3.2); maintainer-only interne Testläufe auf kontrolliertem Systempfad können nur interne System-Evidence erzeugen und zählen nicht als Pilot- oder Provider-Freigabe-Evidence; degraded mode ist kein Ersatzpilot | P0 vor Live-Nutzer | PROMPT_TEST_BASELINE §3.1–§3.2, PILOT_READINESS §3.3 |
-| Lokales Harness (`harness/`) vorhanden: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check und Szenarien-Runner; Fallgruppen-Mapping gegen Baseline in PROMPT_TEST_BASELINE §3.2 dokumentiert; Hetzner-deploybare Runtime fehlt weiterhin; lokale Harness-Artefakte sind kein Pilot-Nachweis; konkrete Hetzner-Vorbedingungen in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung (Hetzner-Pfad) | PROMPT_TEST_BASELINE §3.2, OPERATIONS_RUNBOOK §3–§9 |
+| Lokales Harness (`harness/`) vorhanden und grün: Kernel, Guards, Stub-Adapter, content-freier SQLite-Event-Store, Fault-Injection, Smoke-Check, Szenarien-Runner; Nullkosten-Evidence-Stack grün validiert: `local_evidence`, `runtime_evidence`, `full_local_evidence` (kein Pilot-Nachweis, kein Hetzner-Nachweis); Fallgruppen-Mapping gegen Baseline in PROMPT_TEST_BASELINE §3.2 dokumentiert; Hetzner-deploybare Runtime fehlt weiterhin; konkrete Hetzner-Vorbedingungen in OPERATIONS_RUNBOOK §3 | P0 vor Evidence-Ausführung (Hetzner-Pfad) | PROMPT_TEST_BASELINE §3.2, OPERATIONS_RUNBOOK §3–§9 |
 | Externe Ressourcenliste über Deutschland hinaus erweitern | bei Produktisierung | SAFETY_PLAYBOOK §7 |
 
 ---
