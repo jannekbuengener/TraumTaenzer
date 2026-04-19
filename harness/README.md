@@ -64,6 +64,45 @@ python -m harness.inspect_events --session harness-abc123
 Alle Skripte schreiben in `harness/data/events.db` (gitignored).
 Exit-Code 0 = ohne Ausnahme abgeschlossen; 1 = mindestens ein Fehler.
 
+> **Reproduzierbarer Evidence-Lauf:** Die DB akkumuliert Events über mehrere Läufe
+> hinweg. `inspect_events --check-only` prüft alle Zeilen — auch alte. Für einen
+> sauberen Neustart die DB vorher löschen:
+>
+> ```bash
+> # Windows
+> del harness\data\events.db
+> # Linux / macOS
+> rm harness/data/events.db
+> ```
+
+### One-Command Evidence Lauf
+
+```bash
+# Sauberer Neustart: DB löschen + alle drei Schritte + JSON-Artefakt
+python -m harness.local_evidence --fresh
+
+# Auf bestehendem DB-Stand aufsetzen
+python -m harness.local_evidence
+```
+
+Führt `smoke_check → run_session → inspect_events --check-only` in Reihenfolge aus.
+Schlägt ein Schritt fehl, werden alle folgenden übersprungen (fail-closed).
+Schreibt ein content-freies JSON-Artefakt nach
+`harness/data/local_evidence_YYYYMMDD_HHMMSS_ffffff.json`.
+
+Exit-Code 0 = alle Schritte PASSED; 1 = mindestens ein Schritt FAILED.
+
+Optionen:
+- `--fresh` löscht `events.db` inkl. WAL-Sidecars vor dem Lauf — empfohlen
+  für reproduzierbare Evidence-Läufe.
+- `--db PATH` nutzt einen anderen DB-Pfad; Artefakt landet im selben Verzeichnis.
+
+Die JSON-Artefakte akkumulieren wie `events.db` und sind gitignored.
+Sie enthalten keinen User-Content, keine Session-Inhalte und keinen LLM-Output.
+Kein Pilot-Nachweis. Kein Live-Go. Kein Provider-Go.
+
+---
+
 ### Minimaler Runtime-Entrypoint
 
 Für den kleinsten deploybaren Mono-Prozess gibt es zusätzlich:
