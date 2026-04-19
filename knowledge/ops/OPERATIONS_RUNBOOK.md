@@ -367,6 +367,7 @@ Datum: 2026-04-19. Keine externen Provider. Kein Pilot-Claim.
 | TTL-Purge-Service | `/etc/systemd/system/traumtaenzer-events-retention.service` | `Type=oneshot`; `ExecStart=/usr/local/sbin/traumtaenzer-events-retention.py --db /mnt/tt-volume/events.db` |
 | TTL-Purge-Timer | `/etc/systemd/system/traumtaenzer-events-retention.timer` | `OnCalendar=daily`, `Persistent=true`; auf dem Host registriert; nächster Lauf: `2026-04-20 00:00:00 UTC` |
 | Manueller Testlauf | `systemctl start traumtaenzer-events-retention.service` + `systemctl status --no-pager traumtaenzer-events-retention.service` | Exit `0/SUCCESS`; Journal: `status=ok db=/mnt/tt-volume/events.db deleted_90d=0 deleted_30d=0 freelist_before=0 freelist_after=0 total_rows=17` |
+| Wegwerf-Delete-Test | temporäre Kopie `/tmp/tt-issue80-retention-test.db` + `/usr/local/sbin/traumtaenzer-events-retention.py --db /tmp/tt-issue80-retention-test.db` | Synthese-Altlasten wurden gelöscht: `deleted_90d=1 deleted_30d=1`; Nachkontrolle: `retention_test_remaining_runtime=0 retention_test_remaining_error=0 freelist_after=0`; Temp-Datei danach entfernt |
 | Log-Rotation-Datei | `/etc/logrotate.d/traumtaenzer` | Konfiguriert: `daily`, `rotate 30`, `compress`, `missingok`, `notifempty`, `copytruncate` |
 | Logrotate-Debug | `logrotate --debug /etc/logrotate.d/traumtaenzer` | Parser sauber; `/var/log/traumtaenzer/runtime.log` erkannt; Rotation-Regel `after 1 days (30 rotations)` |
 
