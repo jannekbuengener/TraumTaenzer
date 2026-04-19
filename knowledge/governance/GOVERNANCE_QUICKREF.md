@@ -25,6 +25,18 @@ Einseitige operative Kurzreferenz. Kein Ersatz für die vollständigen Dokumente
 
 ---
 
+## Interner Testmodus (eng)
+
+- interner Testmodus != Pilot
+- interner Testmodus != Live
+- interner Testmodus != Provider-Freigabe
+- nur maintainer-only auf kontrolliertem Systempfad
+- keine Spiegelung in Repo, Tickets, Logs, Screenshots oder Testfixtures
+- lokale Rohablage nur eng begrenzt; max. 7 Tage, dann löschen
+- pro Lauf nur minimale content-freie Traceability: Zweck, erwarteter Erkenntnisgewinn, kurzer Befund, Löschhinweis
+
+---
+
 ## Sauberer Session-Abschluss
 
 - [ ] Dateien committed und gepusht
